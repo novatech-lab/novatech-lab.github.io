@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NovaTech | Sosyal Öğrenci Paneli</title>
+    <title>NovaTech | Sosyal Öğrenci Paneli Pro</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -31,126 +31,159 @@
             --primary: #0969da;
         }
 
-        * { box-sizing: border-box; transition: background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; transition: background 0.3s, border 0.3s; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text-main); margin: 0; min-height: 100vh; overflow-x: hidden; }
 
+        /* Bildirim Sistemi */
         #notify-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; pointer-events: none; width: 90%; max-width: 400px; }
-        .toast { background: var(--card-bg); border-left: 4px solid var(--primary); padding: 12px 20px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; animation: toastIn 0.3s ease forwards; border: 1px solid var(--border); }
-        @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .toast { background: var(--card-bg); border-left: 4px solid var(--primary); padding: 15px 20px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; border: 1px solid var(--border); color: var(--text-main); font-weight: 500; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
 
-        .btn { cursor: pointer; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-size: 0.9rem; }
+        /* Butonlar ve Girdiler */
+        .btn { cursor: pointer; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-size: 0.9rem; transition: transform 0.1s; }
+        .btn:active { transform: scale(0.96); }
         .btn-primary { background: var(--primary); color: #fff; }
         .btn-success { background: var(--accent); color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
-        .btn-ghost:hover { background: var(--border); color: var(--text-main); }
-        .btn-ghost.active { border-color: var(--primary); color: var(--primary); background: rgba(88, 166, 255, 0.1); }
+        .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
 
-        input, textarea, select { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: var(--text-main); margin-bottom: 8px; font-family: inherit; outline: none; }
-        input:focus { border-color: var(--primary); }
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 16px; position: relative; }
+        input, textarea, select { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: var(--text-main); margin-bottom: 10px; font-family: inherit; outline: none; transition: 0.2s; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1); }
+        
+        /* Modern Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
 
-        header { height: 65px; background: var(--card-bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 1000; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        /* Layout */
+        header { height: 70px; background: var(--card-bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; position: sticky; top: 0; z-index: 1000; }
         .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); }
 
-        .sidebar-left { position: fixed; left: 0; top: 65px; bottom: 0; width: var(--sidebar-w); background: var(--card-bg); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; z-index: 900; transition: transform 0.3s ease; }
-        .main-content { margin-left: var(--sidebar-w); margin-right: 300px; padding: 20px; min-height: calc(100vh - 65px); }
-        .sidebar-right { position: fixed; right: 0; top: 65px; bottom: 0; width: 300px; padding: 20px; border-left: 1px solid var(--border); background: var(--bg); overflow-y: auto; }
+        .sidebar-left { position: fixed; left: 0; top: 70px; bottom: 0; width: var(--sidebar-w); background: var(--card-bg); border-right: 1px solid var(--border); padding: 25px; overflow-y: auto; z-index: 900; transition: transform 0.3s ease; }
+        .main-content { margin-left: var(--sidebar-w); margin-right: 320px; padding: 25px; min-height: calc(100vh - 70px); }
+        .sidebar-right { position: fixed; right: 0; top: 70px; bottom: 0; width: 320px; padding: 25px; border-left: 1px solid var(--border); background: var(--bg); overflow-y: auto; }
 
-        @media (max-width: 1100px) { .sidebar-right { display: none; } .main-content { margin-right: 0; } }
-        @media (max-width: 768px) { .menu-toggle { display: block; } .sidebar-left { transform: translateX(-100%); width: 280px; } .sidebar-left.open { transform: translateX(0); } .main-content { margin-left: 0; padding: 15px; } .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 850; } .sidebar-overlay.open { display: block; } }
+        /* XP ve Rank */
+        .xp-container { position: relative; margin: 20px 0; }
+        .xp-text-overlay { position: absolute; width: 100%; text-align: center; top: -22px; font-size: 0.8rem; font-weight: 800; color: var(--xp-bar); letter-spacing: 0.5px; }
+        .xp-track { height: 12px; background: var(--border); border-radius: 6px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+        .xp-fill { height: 100%; background: linear-gradient(90deg, #f1c40f, #f39c12); width: 0%; transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .rank-badge { background: rgba(241, 196, 15, 0.1); color: var(--xp-bar); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; border: 1px solid var(--xp-bar); display: inline-block; margin-top: 5px; }
 
-        /* Forum & Comment Styles */
-        .forum-item { background: var(--card-bg); border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        .forum-post-img { width: 100%; border-radius: 8px; margin-top: 10px; cursor: zoom-in; max-height: 300px; object-fit: cover; }
-        .comment-section { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
-        .comment-item { font-size: 0.8rem; margin-bottom: 5px; color: var(--text-muted); }
-        .comment-item b { color: var(--text-main); }
+        /* Forum Görünümü */
+        .forum-item { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; margin-bottom: 20px; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .forum-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .forum-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .forum-post-img { width: 100%; border-radius: 12px; margin-top: 15px; cursor: zoom-in; max-height: 400px; object-fit: cover; border: 1px solid var(--border); }
 
-        /* Lightbox */
-        #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 20px; cursor: zoom-out; }
-        #lightbox img { max-width: 100%; max-height: 100%; border-radius: 8px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        /* Pomodoro */
+        .timer-display { font-size: 4rem; font-weight: 800; text-align: center; color: var(--primary); margin: 15px 0; font-variant-numeric: tabular-nums; text-shadow: 0 0 20px rgba(88, 166, 255, 0.2); }
+        
+        /* Mobil Uyumluluk */
+        @media (max-width: 1200px) { .sidebar-right { display: none; } .main-content { margin-right: 0; } }
+        @media (max-width: 768px) { 
+            .menu-toggle { display: block; } 
+            .sidebar-left { transform: translateX(-100%); width: 280px; } 
+            .sidebar-left.open { transform: translateX(0); } 
+            .main-content { margin-left: 0; padding: 15px; } 
+            header { padding: 0 15px; }
+        }
 
-        /* Progress & Ranks */
-        .xp-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin: 10px 0; }
-        .xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.5s ease; }
-        .rank-badge { background: rgba(241, 196, 15, 0.1); color: var(--xp-bar); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; border: 1px solid var(--xp-bar); }
-
-        #auth-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-box { background: var(--card-bg); padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; border: 1px solid var(--border); text-align: center; }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .timer-display { font-size: 3rem; font-weight: 800; text-align: center; color: var(--primary); margin: 10px 0; }
-        .history-list { font-size: 0.85rem; max-height: 300px; overflow-y: auto; }
-        .history-item { padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-
-        /* txAdmin Panel */
-        #txadmin-panel { display: none; background: #2d1b1b; border: 1px solid var(--danger); padding: 15px; border-radius: 12px; margin-top: 15px; }
+        /* Admin Terminal */
+        #admin-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
+        .admin-box { background: #000; border: 2px solid var(--danger); padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 0 50px rgba(218, 54, 51, 0.3); }
     </style>
 </head>
-<body onkeydown="handleGlobalKey(event)">
+<body class="dark-mode">
 
     <div id="notify-box"></div>
-    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleMenu()"></div>
     
-    <div id="lightbox" onclick="this.style.display='none'">
-        <img id="lightbox-img" src="">
+    <!-- Lightbox -->
+    <div id="lightbox" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:center; justify-content:center; cursor:zoom-out;" onclick="this.style.display='none'">
+        <img id="lightbox-img" style="max-width:90%; max-height:90%; border-radius:10px;">
     </div>
 
-    <!-- AUTH SCREEN -->
-    <div id="auth-overlay">
-        <div class="auth-box">
-            <h1 style="color: var(--primary); margin:0;"><i class="fas fa-bolt"></i> NovaTech</h1>
-            <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 25px;">Eğitimde Yeni Nesil Sosyal Panel</p>
-            <div id="login-form">
-                <input type="email" id="l-email" placeholder="E-posta">
-                <input type="password" id="l-pass" placeholder="Şifre">
-                <button class="btn btn-primary" style="width:100%" onclick="handleLogin()">Giriş Yap</button>
-                <p onclick="toggleAuth('signup')" style="cursor:pointer; font-size:0.8rem; margin-top:15px; color: var(--primary);">Yeni Hesap Oluştur</p>
+    <!-- Secret Admin Modal -->
+    <div id="admin-modal">
+        <div class="admin-box">
+            <h2 style="color:var(--danger); margin:0 0 20px 0; font-weight:800;"><i class="fas fa-terminal"></i> Terminal_v2</h2>
+            <div id="admin-login-step">
+                <input type="password" id="admin-secret" placeholder="Güvenlik Anahtarı">
+                <button class="btn btn-danger" style="width:100%" onclick="accessAdmin()">Erişim Sağla</button>
             </div>
-            <div id="signup-form" style="display:none;">
-                <input type="text" id="s-user" placeholder="Kullanıcı Adı">
-                <input type="email" id="s-email" placeholder="E-posta">
-                <input type="password" id="s-pass" placeholder="Şifre">
-                <button class="btn btn-success" style="width:100%" onclick="handleSignup()">Kayıt Ol</button>
-                <p onclick="toggleAuth('login')" style="cursor:pointer; font-size:0.8rem; margin-top:15px; color: var(--primary);">Zaten üyeyim</p>
+            <div id="admin-tools" style="display:none; margin-top:20px;">
+                <p style="font-size:0.8rem; color:var(--text-muted);">Kullanıcı veritabanı manipülasyonu aktif.</p>
+                <input type="text" id="tx-uid" placeholder="Kullanıcı UID">
+                <input type="number" id="tx-xp" placeholder="XP Değişimi (+/-)">
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-success" style="flex:1" onclick="modifyXP()">Uygula</button>
+                    <button class="btn btn-ghost" style="flex:1" onclick="closeAdmin()">Çıkış</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN APP -->
+    <!-- Auth Ekranı -->
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <h1 style="color: var(--primary); font-size: 2.5rem; margin-bottom: 5px;"><i class="fas fa-bolt"></i> NovaTech</h1>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Zekanı Sosyalleştir, Potansiyelini Keşfet</p>
+            <div id="login-form">
+                <input type="email" id="l-email" placeholder="E-posta Adresiniz">
+                <input type="password" id="l-pass" placeholder="Şifreniz">
+                <button class="btn btn-primary" style="width:100%" onclick="handleLogin()">Giriş Yap</button>
+                <p style="margin-top:20px; font-size:0.9rem;">Hesabın yok mu? <span onclick="toggleAuth('signup')" style="color:var(--primary); cursor:pointer; font-weight:600;">Kayıt Ol</span></p>
+            </div>
+            <div id="signup-form" style="display:none;">
+                <input type="text" id="s-user" placeholder="Kullanıcı Adı">
+                <input type="email" id="s-email" placeholder="E-posta">
+                <input type="password" id="s-pass" placeholder="Güçlü Bir Şifre">
+                <button class="btn btn-success" style="width:100%" onclick="handleSignup()">Hesabı Oluştur</button>
+                <p style="margin-top:20px; font-size:0.9rem;">Zaten üye misin? <span onclick="toggleAuth('login')" style="color:var(--primary); cursor:pointer; font-weight:600;">Giriş Yap</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Uygulama Ana Yapısı -->
     <div id="app-container" style="display:none;">
         <header>
             <div style="display:flex; align-items:center; gap:15px;">
                 <i class="fas fa-bars menu-toggle" onclick="toggleMenu()"></i>
-                <div style="font-weight:800; font-size:1.2rem; letter-spacing: -1px;">NOVA<span style="color:var(--primary)">TECH</span></div>
+                <div onclick="adminTrigger()" style="font-weight:800; font-size:1.4rem; cursor:pointer; letter-spacing:-1px;">NOVA<span style="color:var(--primary)">TECH</span></div>
             </div>
-            <div style="display:flex; align-items:center; gap:12px;">
-                <div style="text-align:right">
-                    <div id="h-xp" style="font-weight:800; color:var(--xp-bar); font-size:0.85rem;">0 XP</div>
-                    <div id="h-user" style="font-size:0.75rem; color:var(--text-muted)">-</div>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <div style="text-align:right" class="hide-mobile">
+                    <div id="h-user" style="font-weight:600; font-size:0.9rem;">-</div>
+                    <div id="h-rank-text" style="font-size:0.7rem; color:var(--xp-bar); font-weight:800;">YÜKLENİYOR...</div>
                 </div>
-                <img id="h-avatar" style="width:38px; height:38px; border-radius:50%; background:var(--border);">
+                <img id="h-avatar" src="" style="width:42px; height:42px; border-radius:50%; background:var(--border); object-fit:cover; border:2px solid var(--primary);">
             </div>
         </header>
 
         <aside class="sidebar-left" id="sidebar-left">
-            <div class="card" style="text-align:center;">
-                <img id="p-avatar" style="width:70px; height:70px; border-radius:50%; border:2px solid var(--primary); margin-bottom: 8px;">
-                <h3 id="p-user" style="margin:0; font-size:1rem;">-</h3>
-                <div id="p-rank" class="rank-badge">-</div>
-                <div class="xp-track"><div id="p-xp-fill" class="xp-fill"></div></div>
+            <div class="card" style="text-align:center; padding:15px;">
+                <img id="p-avatar" src="" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--primary); margin-bottom: 10px; object-fit:cover;">
+                <h3 id="p-user" style="margin:0; font-size:1.1rem;">-</h3>
+                <div id="p-rank" class="rank-badge">Seviye 1</div>
+                <div class="xp-container">
+                    <div id="xp-label" class="xp-text-overlay">0 / 1000 XP</div>
+                    <div class="xp-track"><div id="p-xp-fill" class="xp-fill"></div></div>
+                </div>
             </div>
-            <nav style="display:flex; flex-direction:column; gap:5px;">
-                <button class="btn btn-ghost active" onclick="switchTab('dash', this)"><i class="fas fa-chart-line"></i> Panel</button>
-                <button class="btn btn-ghost" onclick="switchTab('forum', this)"><i class="fas fa-users"></i> Forum</button>
-                <button class="btn btn-ghost" onclick="switchTab('leader', this)"><i class="fas fa-trophy"></i> Sıralama</button>
-                <button class="btn btn-ghost" onclick="switchTab('settings', this)"><i class="fas fa-cog"></i> Ayarlar</button>
-                <hr style="border:0; border-top:1px solid var(--border); margin: 10px 0;">
-                <button class="btn btn-ghost" style="color:var(--danger)" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
+            <nav style="display:flex; flex-direction:column; gap:8px;">
+                <button class="btn btn-ghost nav-btn active" onclick="switchTab('dash', this)"><i class="fas fa-th-large"></i> Dashboard</button>
+                <button class="btn btn-ghost nav-btn" onclick="switchTab('forum', this)"><i class="fas fa-comment-alt"></i> Topluluk</button>
+                <button class="btn btn-ghost nav-btn" onclick="switchTab('leader', this)"><i class="fas fa-medal"></i> Sıralama</button>
+                <button class="btn btn-ghost nav-btn" onclick="switchTab('settings', this)"><i class="fas fa-user-cog"></i> Profil Ayarları</button>
+                <hr style="border:0; border-top:1px solid var(--border); margin: 15px 0;">
+                <button class="btn btn-ghost" style="color:var(--danger)" onclick="handleLogout()"><i class="fas fa-power-off"></i> Güvenli Çıkış</button>
             </nav>
         </aside>
 
@@ -158,37 +191,47 @@
             <!-- DASHBOARD -->
             <div id="tab-dash" class="tab-content active">
                 <div class="card">
-                    <h4><i class="fas fa-edit"></i> Yeni Çalışma Kaydı</h4>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                        <select id="l-sel" onchange="loadTopics()"></select>
-                        <select id="t-sel"></select>
+                    <h4 style="margin-top:0;"><i class="fas fa-pen-nib"></i> Çalışma Girişi</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                        <div>
+                            <label style="font-size:0.8rem; color:var(--text-muted)">Ders Seçimi</label>
+                            <select id="l-sel" onchange="loadTopics()"></select>
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem; color:var(--text-muted)">Konu Başlığı</label>
+                            <select id="t-sel"></select>
+                        </div>
                     </div>
-                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:10px;">
-                        <input type="number" id="inp-c" placeholder="D">
-                        <input type="number" id="inp-w" placeholder="Y">
-                        <input type="number" id="inp-e" placeholder="B">
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:15px; margin-top:15px;">
+                        <input type="number" id="inp-c" placeholder="Doğru">
+                        <input type="number" id="inp-w" placeholder="Yanlış">
+                        <input type="number" id="inp-e" placeholder="Boş">
                     </div>
-                    <button class="btn btn-success" style="width:100%" onclick="saveWork()">Kaydet (+10 XP)</button>
+                    <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="saveWork()">Veriyi İşle (+10 XP)</button>
                 </div>
                 
                 <div class="card">
-                    <h4><i class="fas fa-history"></i> Çalışma Geçmişi</h4>
-                    <div id="history-list" class="history-list"></div>
+                    <h4 style="margin-top:0;"><i class="fas fa-stream"></i> Zaman Tüneli</h4>
+                    <div id="history-list" class="history-list">
+                        <p style="text-align:center; color:var(--text-muted)">Henüz çalışma verisi bulunamadı.</p>
+                    </div>
                 </div>
             </div>
 
             <!-- FORUM -->
             <div id="tab-forum" class="tab-content">
                 <div class="card">
-                    <textarea id="f-msg" placeholder="Bir soru paylaş veya topluluğa seslen..." rows="2"></textarea>
-                    <div id="f-prev-box" style="display:none; margin-bottom:10px; position:relative">
-                        <img id="f-prev-img" style="width:100px; border-radius:8px;">
-                        <button onclick="clearImg()" class="btn btn-danger" style="position:absolute; top:0; left:110px;">Sil</button>
+                    <textarea id="f-msg" placeholder="Bugün neler öğrendin? Bir soru sor veya toplulukla paylaş..." rows="3"></textarea>
+                    <div id="f-prev-container" style="display:none; margin-bottom:15px; position:relative;">
+                        <img id="f-prev-img" style="width:120px; border-radius:10px; border:2px solid var(--primary);">
+                        <button class="btn btn-danger" style="position:absolute; top:5px; left:130px; padding:5px 10px;" onclick="clearForumImg()"><i class="fas fa-times"></i></button>
                     </div>
-                    <div style="display:flex; gap:10px;">
-                        <input type="file" id="f-file" style="display:none" onchange="previewImg(event)">
-                        <button class="btn btn-ghost" onclick="document.getElementById('f-file').click()"><i class="fas fa-image"></i></button>
-                        <button class="btn btn-primary" style="flex:1" onclick="sendPost()">Paylaş</button>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; gap:10px;">
+                            <input type="file" id="f-file" style="display:none" accept="image/*" onchange="previewForumImg(event)">
+                            <button class="btn btn-ghost" onclick="document.getElementById('f-file').click()"><i class="fas fa-camera"></i></button>
+                        </div>
+                        <button class="btn btn-primary" style="padding: 10px 40px;" onclick="sendPost()">Paylaş</button>
                     </div>
                 </div>
                 <div id="forum-list"></div>
@@ -197,7 +240,8 @@
             <!-- LEADERBOARD -->
             <div id="tab-leader" class="tab-content">
                 <div class="card">
-                    <h3><i class="fas fa-crown" style="color:var(--xp-bar)"></i> Liderler</h3>
+                    <h3 style="margin-top:0;"><i class="fas fa-trophy" style="color:var(--xp-bar)"></i> Global Sıralama</h3>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:20px;">En çok XP toplayan ilk 10 öğrenci.</p>
                     <div id="leader-list"></div>
                 </div>
             </div>
@@ -205,45 +249,53 @@
             <!-- SETTINGS -->
             <div id="tab-settings" class="tab-content">
                 <div class="card">
-                    <h4><i class="fas fa-palette"></i> Görünüm</h4>
-                    <button class="btn btn-ghost" style="width:100%" onclick="toggleTheme()">Açık / Koyu Mod</button>
-                </div>
-                <div class="card">
-                    <h4><i class="fas fa-shield-alt"></i> txAdmin Girişi</h4>
-                    <input type="password" id="tx-pass" placeholder="Admin Şifresi">
-                    <button class="btn btn-primary" style="width:100%" onclick="loginAdmin()">Giriş Yap</button>
-                    
-                    <div id="txadmin-panel">
-                        <h5 style="color:var(--danger); margin:0 0 10px 0;">YÖNETİCİ PANELİ</h5>
-                        <input type="text" id="tx-uid" placeholder="Kullanıcı ID (Boşsa Kendin)">
-                        <input type="number" id="tx-xp" placeholder="Eklenecek XP Miktarı">
-                        <div style="display:flex; gap:5px;">
-                            <button class="btn btn-success" style="flex:1" onclick="txAddXP()">XP Ekle</button>
-                            <button class="btn btn-danger" style="flex:1" onclick="txBanUser()">Banla</button>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h4 style="margin:0;">Gece Modu</h4>
+                            <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Arayüzü koyu/açık tema yapın.</p>
                         </div>
+                        <label class="switch">
+                            <input type="checkbox" checked onchange="toggleTheme()">
+                            <span class="slider"></span>
+                        </label>
                     </div>
                 </div>
                 <div class="card">
-                    <h4 style="color:var(--danger)">Hesabı Sil</h4>
-                    <button class="btn btn-danger" style="width:100%" onclick="deleteAccount()">Kalıcı Olarak Sil</button>
+                    <h4 style="margin-top:0;">Profil Ayarlarını Güncelle</h4>
+                    <label style="font-size:0.8rem; color:var(--text-muted)">Yeni Profil Fotoğrafı (URL)</label>
+                    <input type="text" id="set-avatar" placeholder="https://resim-linki.com/foto.jpg">
+                    <button class="btn btn-primary" style="width:100%" onclick="updateAvatar()">Değişiklikleri Kaydet</button>
+                </div>
+                <div class="card" style="border-color:var(--danger)">
+                    <h4 style="color:var(--danger); margin-top:0;">Tehlikeli Bölge</h4>
+                    <p style="font-size:0.8rem;">Hesabınızı sildiğinizde tüm XP ve verileriniz kalıcı olarak yok edilir.</p>
+                    <button class="btn btn-danger" style="width:100%" onclick="deleteAccount()">Hesabı Kalıcı Olarak Sil</button>
                 </div>
             </div>
         </main>
 
         <aside class="sidebar-right">
             <div class="card">
-                <h4><i class="fas fa-stopwatch"></i> Pomodoro</h4>
-                <div style="display:flex; gap:5px; margin-bottom:10px;">
-                    <input type="number" id="pomo-min" placeholder="Dakika" value="25" style="margin:0;">
+                <h4 style="margin-top:0;"><i class="fas fa-clock"></i> Pomodoro Sayacı</h4>
+                <div id="pomo-setup">
+                    <select id="pomo-select">
+                        <option value="25">25 Dakika (Klasik)</option>
+                        <option value="45">45 Dakika (Sıkı Çalışma)</option>
+                        <option value="60">60 Dakika (Blok Çalışma)</option>
+                        <option value="5">5 Dakika (Kısa Mola)</option>
+                    </select>
                 </div>
-                <div class="timer-display" id="timer-text">25:00</div>
-                <div style="display:flex; gap:8px;">
-                    <button class="btn btn-primary" style="flex:1" id="timer-btn" onclick="toggleTimer()">Başlat</button>
-                    <button class="btn btn-ghost" onclick="resetTimer()"><i class="fas fa-redo"></i></button>
+                <div class="timer-display" id="timer-text">--:--</div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-primary" style="flex:2" id="timer-btn" onclick="toggleTimer()">Başlat</button>
+                    <button class="btn btn-ghost" style="flex:1" onclick="resetTimer()"><i class="fas fa-redo"></i></button>
                 </div>
             </div>
-            <div class="card">
-                <p id="quote" style="font-size:0.85rem; font-style:italic;">"Yarın bugünkü çalışmalarının meyvesini verecek."</p>
+            
+            <div class="card" style="background: linear-gradient(135deg, rgba(88,166,255,0.1), transparent);">
+                <i class="fas fa-quote-left" style="color:var(--primary); opacity:0.5;"></i>
+                <p id="quote" style="font-size:0.9rem; line-height:1.5; margin:10px 0;">"Eğitim, dünyayı değiştirmek için kullanabileceğiniz en güçlü silahtır."</p>
+                <small style="color:var(--text-muted); font-weight:600;">- Nelson Mandela</small>
             </div>
         </aside>
     </div>
@@ -264,236 +316,331 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        let currentUser = null, userData = null, selectedImg = "", timer = null, timeLeft = 1500, isAdmin = false;
+        let currentUser = null, userData = null, forumImg = "", timer = null, timeLeft = 0, adminClicks = 0;
 
         const CURRICULUM = {
-            "Matematik": ["Doğal sayılar", "Üslü sayılar", "Fonksiyonlar", "Trigonometri", "Türev-İntegral"],
-            "Fizik": ["Hareket", "Newton Yasaları", "Elektrik", "Modern Fizik"],
-            "Kimya": ["Atom", "Mol Kavramı", "Organik Kimya"],
-            "Biyoloji": ["Hücre", "Genetik", "Sistemler"],
-            "Diğer": ["Deneme", "Kitap Okuma"]
+            "Matematik": ["Sayılar ve Cebir", "Fonksiyonlar", "Geometri", "Trigonometri", "Türev/İntegral"],
+            "Fen Bilimleri": ["Fizik", "Kimya", "Biyoloji"],
+            "Sosyal": ["Tarih", "Coğrafya", "Felsefe"],
+            "Dil": ["Türkçe / Edebiyat", "İngilizce", "Paragraf"],
+            "Sınav": ["TYT Deneme", "AYT Deneme", "Genel Analiz"]
         };
 
-        // --- AUTH ---
-        onAuthStateChanged(auth, async (user) => {
+        // --- AUTH YÖNETİMİ ---
+        onAuthStateChanged(auth, (user) => {
             if(user) {
-                const s = await get(ref(db, 'users/' + user.uid));
-                if(s.exists() && s.val().isBanned) {
-                    signOut(auth);
-                    toast("Hesabınız banlanmıştır!", "error");
-                    return;
-                }
                 currentUser = user;
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('app-container').style.display = 'block';
-                initApp(user.uid);
+                initDashboard(user.uid);
             } else {
                 document.getElementById('auth-overlay').style.display = 'flex';
                 document.getElementById('app-container').style.display = 'none';
             }
         });
 
-        window.handleLogin = async () => {
-            const e = document.getElementById('l-email').value, p = document.getElementById('l-pass').value;
-            try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { toast("Giriş başarısız!", "error"); }
-        };
-
-        window.handleSignup = async () => {
-            const u = document.getElementById('s-user').value, e = document.getElementById('s-email').value, p = document.getElementById('s-pass').value;
-            try {
-                const res = await createUserWithEmailAndPassword(auth, e, p);
-                await set(ref(db, 'users/' + res.user.uid), {
-                    username: u, xp: 0, avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${u}`,
-                    isBanned: false
-                });
-            } catch(err) { toast("Kayıt başarısız!", "error"); }
-        };
-
-        window.handleLogout = () => signOut(auth);
-
-        // --- CORE APP ---
-        function initApp(uid) {
-            onValue(ref(db, 'users/' + uid), (s) => {
-                userData = s.val(); if(!userData) return;
-                updateUI();
+        function initDashboard(uid) {
+            // Kullanıcı Bilgileri
+            onValue(ref(db, 'users/' + uid), (snapshot) => {
+                userData = snapshot.val();
+                if(userData) syncUI();
             });
 
-            // Work History
-            onValue(ref(db, 'history/' + uid), (s) => {
+            // Çalışma Geçmişi Dinleyici
+            onValue(ref(db, 'history/' + uid), (snapshot) => {
                 const list = document.getElementById('history-list');
-                list.innerHTML = "";
-                const data = s.val(); if(!data) return;
-                Object.keys(data).reverse().forEach(id => {
+                const data = snapshot.val();
+                if(!data) {
+                    list.innerHTML = `<p style="text-align:center; color:var(--text-muted)">Henüz veri yok.</p>`;
+                    return;
+                }
+                list.innerHTML = Object.keys(data).reverse().map(id => {
                     const h = data[id];
-                    list.innerHTML += `
-                        <div class="history-item">
-                            <span><b>${h.topic}</b> (${h.c}D ${h.w}Y)</span>
-                            ${isAdmin ? `<button onclick="txDeleteHistory('${id}')" class="btn btn-danger" style="padding:4px 8px; font-size:0.6rem">Sil</button>` : ''}
-                        </div>`;
-                });
+                    return `<div class="history-item">
+                        <div><b>${h.topic}</b> <br> <small>${h.c}D ${h.w}Y ${h.e}B</small></div>
+                        <div style="font-size:0.7rem; color:var(--text-muted)">${new Date(h.ts).toLocaleDateString()}</div>
+                    </div>`;
+                }).join('');
             });
 
-            // Forum
-            onValue(ref(db, 'forum'), (s) => {
+            // Forum Dinleyici
+            onValue(ref(db, 'forum'), (snapshot) => {
                 const list = document.getElementById('forum-list');
+                const data = snapshot.val();
                 list.innerHTML = "";
-                const data = s.val(); if(!data) return;
-                Object.keys(data).reverse().forEach(id => {
+                if(!data) return;
+                Object.keys(data).reverse().slice(0, 30).forEach(id => {
                     const p = data[id];
-                    let commentsHTML = (p.comments ? Object.values(p.comments).map(c => `<div class="comment-item"><b>${c.user}:</b> ${c.msg}</div>`).join('') : '');
-                    
                     list.innerHTML += `
                         <div class="forum-item">
-                            <div style="display:flex; justify-content:space-between;">
-                                <b>${p.user}</b>
-                                ${ (isAdmin || p.uid === uid) ? `<button onclick="deletePost('${id}')" class="btn btn-danger" style="padding:2px 6px; font-size:0.6rem">Sil</button>` : ''}
+                            <div class="forum-header">
+                                <img src="${p.avatar || ''}" class="forum-avatar">
+                                <div><b>${p.username}</b> <br> <small style="font-size:0.6rem; color:var(--text-muted)">${new Date(p.ts).toLocaleString()}</small></div>
                             </div>
-                            <div style="margin:8px 0;">${p.msg}</div>
-                            ${p.img ? `<img src="${p.img}" class="forum-post-img" onclick="openLightbox('${p.img}')">` : ''}
-                            <div class="comment-section">
-                                ${commentsHTML}
-                                <div style="display:flex; gap:5px; margin-top:5px;">
-                                    <input type="text" id="cm-${id}" placeholder="Yorum yaz..." style="margin:0; padding:5px; font-size:0.7rem;">
-                                    <button class="btn btn-primary" style="padding:5px 10px;" onclick="sendComment('${id}')">></button>
-                                </div>
-                            </div>
-                        </div>`;
+                            <p>${p.msg}</p>
+                            ${p.img ? `<img src="${p.img}" class="forum-post-img" onclick="zoomImg('${p.img}')">` : ''}
+                        </div>
+                    `;
                 });
             });
 
-            // Leaderboard
-            onValue(ref(db, 'users'), (s) => {
+            // Liderlik Tablosu Dinleyici
+            onValue(ref(db, 'users'), (snapshot) => {
                 const list = document.getElementById('leader-list');
-                const users = Object.entries(s.val() || {}).map(([id, u]) => ({...u, id})).sort((a,b) => b.xp - a.xp).slice(0,10);
-                list.innerHTML = users.map((u, i) => `
-                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border)">
-                        <span>${i+1}. ${u.username} ${isAdmin ? `<small style="font-size:0.5rem">(${u.id})</small>` : ''}</span>
-                        <b>${u.xp} XP</b>
-                    </div>`).join('');
+                const allUsers = snapshot.val() || {};
+                const sorted = Object.values(allUsers).sort((a,b) => b.xp - a.xp).slice(0, 10);
+                
+                list.innerHTML = sorted.map((u, i) => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--border); background:${u.username === userData.username ? 'rgba(88,166,255,0.05)' : 'transparent'}">
+                        <span><b>${i+1}.</b> ${u.username}</span>
+                        <span style="color:var(--xp-bar); font-weight:800;">${u.xp} XP</span>
+                    </div>
+                `).join('');
             });
 
+            // Ders Seçeneklerini Yükle
             const lSel = document.getElementById('l-sel');
-            lSel.innerHTML = Object.keys(CURRICULUM).map(x => `<option value="${x}">${x}</option>`).join('');
+            lSel.innerHTML = Object.keys(CURRICULUM).map(k => `<option value="${k}">${k}</option>`).join('');
             loadTopics();
         }
 
-        window.updateUI = () => {
-            document.getElementById('h-xp').innerText = userData.xp + " XP";
-            document.getElementById('h-user').innerText = userData.username;
-            document.getElementById('h-avatar').src = userData.avatar;
-            document.getElementById('p-avatar').src = userData.avatar;
-            document.getElementById('p-user').innerText = userData.username;
-            document.getElementById('p-rank').innerText = userData.xp > 5000 ? "Profesör" : "Öğrenci";
-            document.getElementById('p-xp-fill').style.width = (userData.xp % 1000 / 10) + "%";
-        };
+        // --- UI GÜNCELLEME ---
+        function syncUI() {
+            const xp = userData.xp || 0;
+            const level = Math.floor(xp / 1000) + 1;
+            const nextXP = level * 1000;
+            const currentXP = xp % 1000;
+            const progress = (currentXP / 1000) * 100;
 
+            document.getElementById('h-user').innerText = userData.username;
+            document.getElementById('p-user').innerText = userData.username;
+            document.getElementById('h-rank-text').innerText = `SEVİYE ${level}`;
+            document.getElementById('p-rank').innerText = `Seviye ${level}`;
+            document.getElementById('xp-label').innerText = `${xp} / ${nextXP} XP`;
+            document.getElementById('p-xp-fill').style.width = progress + "%";
+            
+            const avatar = userData.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + userData.username;
+            document.getElementById('h-avatar').src = avatar;
+            document.getElementById('p-avatar').src = avatar;
+        }
+
+        // --- FONKSİYONLAR ---
         window.loadTopics = () => {
-            const l = document.getElementById('l-sel').value;
-            document.getElementById('t-sel').innerHTML = CURRICULUM[l].map(x => `<option value="${x}">${x}</option>`).join('');
+            const d = document.getElementById('l-sel').value;
+            const tSel = document.getElementById('t-sel');
+            tSel.innerHTML = CURRICULUM[d].map(t => `<option value="${t}">${t}</option>`).join('');
         };
 
         window.saveWork = () => {
             const c = parseInt(document.getElementById('inp-c').value) || 0;
             const w = parseInt(document.getElementById('inp-w').value) || 0;
+            const e = parseInt(document.getElementById('inp-e').value) || 0;
             const t = document.getElementById('t-sel').value;
-            
-            push(ref(db, 'history/' + currentUser.uid), { topic: t, c, w, ts: Date.now() });
-            update(ref(db, 'users/' + currentUser.uid), { xp: (userData.xp || 0) + 10 });
-            toast("Kaydedildi!");
+
+            if(c === 0 && w === 0) return toast("Lütfen değer giriniz.", "error");
+
+            push(ref(db, 'history/' + currentUser.uid), {
+                topic: t, c, w, e, ts: Date.now()
+            });
+
+            update(ref(db, 'users/' + currentUser.uid), {
+                xp: (userData.xp || 0) + 10
+            });
+
+            toast("Çalışma kaydedildi! +10 XP");
+            document.getElementById('inp-c').value = "";
+            document.getElementById('inp-w').value = "";
+            document.getElementById('inp-e').value = "";
         };
 
-        // --- FORUM ACTIONS ---
         window.sendPost = () => {
-            const m = document.getElementById('f-msg').value;
-            if(!m && !selectedImg) return;
-            push(ref(db, 'forum'), { uid: currentUser.uid, user: userData.username, msg: m, img: selectedImg, ts: Date.now() });
-            document.getElementById('f-msg').value = ""; clearImg();
-        };
+            const msg = document.getElementById('f-msg').value;
+            if(!msg && !forumImg) return toast("Boş paylaşım yapılamaz.");
 
-        window.deletePost = (id) => { if(confirm("Silinsin mi?")) remove(ref(db, 'forum/' + id)); };
-        
-        window.sendComment = (pid) => {
-            const val = document.getElementById('cm-' + pid).value;
-            if(!val) return;
-            push(ref(db, 'forum/' + pid + '/comments'), { user: userData.username, msg: val });
-            document.getElementById('cm-' + pid).value = "";
-        };
+            push(ref(db, 'forum'), {
+                username: userData.username,
+                avatar: userData.avatar,
+                msg: msg,
+                img: forumImg,
+                ts: Date.now(),
+                uid: currentUser.uid
+            });
 
-        window.previewImg = (e) => {
-            const reader = new FileReader();
-            reader.onload = (ev) => { selectedImg = ev.target.result; document.getElementById('f-prev-img').src = selectedImg; document.getElementById('f-prev-box').style.display = "block"; };
-            reader.readAsDataURL(e.target.files[0]);
+            document.getElementById('f-msg').value = "";
+            clearForumImg();
+            toast("Paylaşıldı!");
         };
-        window.clearImg = () => { selectedImg = ""; document.getElementById('f-prev-box').style.display = "none"; };
-        window.openLightbox = (src) => { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').style.display = 'flex'; };
 
         // --- POMODORO ---
         window.toggleTimer = () => {
-            if(timer) { clearInterval(timer); timer = null; document.getElementById('timer-btn').innerText = "Devam Et"; }
-            else {
-                if(timeLeft === 1500) { // Sadece ilk başlatmada al
-                    const m = parseInt(document.getElementById('pomo-min').value) || 25;
-                    timeLeft = m * 60;
+            const btn = document.getElementById('timer-btn');
+            if(timer) {
+                clearInterval(timer);
+                timer = null;
+                btn.innerText = "Devam Et";
+            } else {
+                if(timeLeft <= 0) {
+                    timeLeft = parseInt(document.getElementById('pomo-select').value) * 60;
+                    document.getElementById('pomo-setup').style.display = "none";
                 }
+                btn.innerText = "Duraklat";
                 timer = setInterval(() => {
                     timeLeft--;
-                    const m = Math.floor(timeLeft/60), s = timeLeft%60;
-                    document.getElementById('timer-text').innerText = `${m}:${s<10?'0':''}${s}`;
-                    if(timeLeft <= 0) { clearInterval(timer); toast("Süre doldu! +25 XP"); update(ref(db, 'users/'+currentUser.uid), {xp: userData.xp+25}); resetTimer(); }
+                    const m = Math.floor(timeLeft/60);
+                    const s = timeLeft % 60;
+                    document.getElementById('timer-text').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+
+                    if(timeLeft <= 0) {
+                        clearInterval(timer);
+                        timer = null;
+                        update(ref(db, 'users/' + currentUser.uid), { xp: (userData.xp || 0) + 30 });
+                        toast("Pomodoro bitti! +30 XP");
+                        resetTimer();
+                    }
                 }, 1000);
-                document.getElementById('timer-btn').innerText = "Durdur";
-            }
-        };
-        window.resetTimer = () => { clearInterval(timer); timer = null; timeLeft = 1500; document.getElementById('timer-text').innerText = "25:00"; document.getElementById('timer-btn').innerText = "Başlat"; };
-
-        // --- txADMIN ---
-        window.loginAdmin = () => {
-            const p = document.getElementById('tx-pass').value;
-            if(p === "admin123") { // Sabit şifre
-                isAdmin = true;
-                document.getElementById('txadmin-panel').style.display = 'block';
-                toast("txAdmin Yetkisi Aktif!", "success");
-                initApp(currentUser.uid); // UI Yenile (Sil butonları için)
-            } else { toast("Hatalı Şifre!", "error"); }
-        };
-
-        window.txAddXP = async () => {
-            const target = document.getElementById('tx-uid').value || currentUser.uid;
-            const amount = parseInt(document.getElementById('tx-xp').value) || 0;
-            const s = await get(ref(db, 'users/' + target));
-            if(s.exists()) {
-                update(ref(db, 'users/' + target), { xp: (s.val().xp || 0) + amount });
-                toast(`${amount} XP eklendi.`);
             }
         };
 
-        window.txBanUser = () => {
-            const target = document.getElementById('tx-uid').value;
-            if(!target) return toast("ID Gerekli!", "error");
-            update(ref(db, 'users/' + target), { isBanned: true });
-            toast("Kullanıcı banlandı.");
+        window.resetTimer = () => {
+            clearInterval(timer);
+            timer = null;
+            timeLeft = 0;
+            document.getElementById('timer-text').innerText = "--:--";
+            document.getElementById('timer-btn').innerText = "Başlat";
+            document.getElementById('pomo-setup').style.display = "block";
         };
 
-        window.txDeleteHistory = (hid) => { remove(ref(db, 'history/' + currentUser.uid + '/' + hid)); };
+        // --- MEDYA VE TEMA ---
+        window.previewForumImg = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                forumImg = ev.target.result;
+                document.getElementById('f-prev-container').style.display = "block";
+                document.getElementById('f-prev-img').src = forumImg;
+            };
+            reader.readAsDataURL(file);
+        };
 
-        // UI Helpers
+        window.clearForumImg = () => {
+            forumImg = "";
+            document.getElementById('f-prev-container').style.display = "none";
+            document.getElementById('f-file').value = "";
+        };
+
+        window.zoomImg = (src) => {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').style.display = "flex";
+        };
+
         window.toggleTheme = () => document.body.classList.toggle('light-mode');
-        window.toggleMenu = () => { document.getElementById('sidebar-left').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('open'); };
-        window.switchTab = (t, el) => {
+
+        window.updateAvatar = () => {
+            const url = document.getElementById('set-avatar').value;
+            if(!url.startsWith('http')) return toast("Geçersiz URL!");
+            update(ref(db, 'users/' + currentUser.uid), { avatar: url });
+            toast("Profil güncellendi.");
+        };
+
+        // --- ADMIN GİZLİ ---
+        window.adminTrigger = () => {
+            adminClicks++;
+            if(adminClicks >= 5) {
+                document.getElementById('admin-modal').style.display = 'flex';
+                adminClicks = 0;
+            }
+            setTimeout(() => adminClicks = 0, 5000);
+        };
+
+        window.accessAdmin = () => {
+            if(document.getElementById('admin-secret').value === "1071") {
+                document.getElementById('admin-login-step').style.display = "none";
+                document.getElementById('admin-tools').style.display = "block";
+            } else toast("Erişim engellendi.", "error");
+        };
+
+        window.modifyXP = async () => {
+            const targetUid = document.getElementById('tx-uid').value;
+            const xpVal = parseInt(document.getElementById('tx-xp').value);
+            if(!targetUid) return toast("UID girin.");
+            
+            const snap = await get(ref(db, 'users/' + targetUid));
+            if(snap.exists()) {
+                const currentXP = snap.val().xp || 0;
+                update(ref(db, 'users/' + targetUid), { xp: currentXP + xpVal });
+                toast("Veri manipüle edildi.");
+            } else toast("Kullanıcı bulunamadı.");
+        };
+
+        window.closeAdmin = () => {
+            document.getElementById('admin-modal').style.display = 'none';
+            document.getElementById('admin-login-step').style.display = "block";
+            document.getElementById('admin-tools').style.display = "none";
+            document.getElementById('admin-secret').value = "";
+        };
+
+        // --- GENEL UTILS ---
+        window.toggleMenu = () => {
+            document.getElementById('sidebar-left').classList.toggle('open');
+        };
+
+        window.switchTab = (tab, btn) => {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById('tab-'+t).classList.add('active');
-            document.querySelectorAll('.btn-ghost').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
-            if(window.innerWidth <= 768) toggleMenu();
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            btn.classList.add('active');
+            if(window.innerWidth < 768) toggleMenu();
         };
-        window.toast = (m, t='info') => {
-            const b = document.getElementById('notify-box'), d = document.createElement('div');
-            d.className = 'toast'; if(t==='error') d.style.borderLeftColor='var(--danger)';
-            d.innerHTML = `<span>${m}</span>`; b.appendChild(d);
-            setTimeout(() => d.remove(), 3000);
+
+        window.toast = (msg, type='info') => {
+            const box = document.getElementById('notify-box');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${msg}`;
+            if(type === 'error') t.style.borderColor = "var(--danger)";
+            box.appendChild(t);
+            setTimeout(() => t.remove(), 4000);
         };
-        window.toggleAuth = (m) => { document.getElementById('login-form').style.display = m==='login'?'block':'none'; document.getElementById('signup-form').style.display = m==='signup'?'block':'none'; };
-        window.deleteAccount = async () => { if(confirm("Hesap silinsin mi?")) { await remove(ref(db, 'users/'+currentUser.uid)); await deleteUser(auth.currentUser); } };
+
+        window.handleLogin = () => {
+            const e = document.getElementById('l-email').value;
+            const p = document.getElementById('l-pass').value;
+            signInWithEmailAndPassword(auth, e, p).catch(err => toast("Giriş başarısız: " + err.message, "error"));
+        };
+
+        window.handleSignup = async () => {
+            const u = document.getElementById('s-user').value;
+            const e = document.getElementById('s-email').value;
+            const p = document.getElementById('s-pass').value;
+            if(u.length < 3) return toast("Kullanıcı adı çok kısa.");
+            
+            createUserWithEmailAndPassword(auth, e, p).then(res => {
+                set(ref(db, 'users/' + res.user.uid), {
+                    username: u,
+                    xp: 0,
+                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=" + u,
+                    uid: res.user.uid
+                });
+            }).catch(err => toast(err.message, "error"));
+        };
+
+        window.handleLogout = () => signOut(auth);
+
+        window.deleteAccount = () => {
+            if(confirm("Bu işlem geri alınamaz. Hesabınızı silmek istediğinize emin misiniz?")) {
+                const user = auth.currentUser;
+                remove(ref(db, 'users/' + user.uid));
+                remove(ref(db, 'history/' + user.uid));
+                deleteUser(user).then(() => location.reload()).catch(err => toast("Hata: " + err.message, "error"));
+            }
+        };
+
+        window.toggleAuth = (mode) => {
+            document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none';
+            document.getElementById('signup-form').style.display = mode === 'signup' ? 'block' : 'none';
+        };
+
     </script>
 </body>
 </html>
