@@ -1,15 +1,26 @@
-<!DOCTYPE html>
-<html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NovaTech | Pro Sosyal Öğrenci Paneli</title>
     <title>NovaTech | Sosyal Öğrenci Platformu</title>
-    
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <style>
-        :root {
+<style>
+:root {
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --border: #30363d;
+            --primary: #58a6ff;
+            --accent: #238636;
+            --danger: #da3633;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --xp-bar: #f1c40f;
+            --sidebar-w: 260px;
             --bg: #0b0e14;
             --card-bg: #151921;
             --border: #262c36;
@@ -21,593 +32,1084 @@
             --text-muted: #9ca3af;
             --xp-bar: #fbbf24;
             --sidebar-w: 280px;
-        }
+}
 
-        body.light-mode {
+body.light-mode {
+            --bg: #f6f8fa;
             --bg: #f8fafc;
-            --card-bg: #ffffff;
+--card-bg: #ffffff;
+            --border: #d0d7de;
+            --text-main: #1f2328;
+            --text-muted: #656d76;
+            --primary: #0969da;
             --border: #e2e8f0;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --primary: #4f46e5;
-        }
+}
 
+        * { box-sizing: border-box; transition: background 0.3s, border 0.3s; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text-main); margin: 0; min-height: 100vh; overflow-x: hidden; }
         * { box-sizing: border-box; transition: background 0.2s, border 0.2s, color 0.1s; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); margin: 0; min-height: 100vh; overflow-x: hidden; }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-
+        /* Bildirim Sistemi - Gelişmiş */
+        #notify-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; pointer-events: none; width: 90%; max-width: 400px; }
+        .toast { background: var(--card-bg); border-left: 4px solid var(--primary); padding: 15px 20px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; border: 1px solid var(--border); color: var(--text-main); font-weight: 500; }
         /* Notifications */
         #notify-box { position: fixed; top: 20px; right: 20px; z-index: 10000; pointer-events: none; width: 320px; }
         .toast { background: var(--card-bg); border-radius: 12px; padding: 16px; margin-bottom: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s ease forwards; border: 1px solid var(--border); border-left: 4px solid var(--primary); }
-        .toast.error { border-left-color: var(--danger); }
-        .toast.success { border-left-color: var(--accent); }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+.toast.error { border-left-color: var(--danger); }
+.toast.success { border-left-color: var(--accent); }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Components */
-        .btn { cursor: pointer; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-size: 0.85rem; transition: 0.2s; }
-        .btn:active { transform: scale(0.96); }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); }
+        /* Butonlar ve Girdiler */
+        .btn { cursor: pointer; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-size: 0.9rem; transition: 0.2s; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--accent); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
         .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
         .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
-        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
-        .btn-danger:hover { background: var(--danger); color: white; }
 
-        input, textarea, select { width: 100%; background: rgba(0,0,0,0.1); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: var(--text-main); margin-bottom: 12px; font-family: inherit; outline: none; }
-        input:focus { border-color: var(--primary); }
+        input, textarea, select { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: var(--text-main); margin-bottom: 10px; font-family: inherit; outline: none; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1); }
         
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 24px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* Layout */
+/* Layout */
+        header { height: 70px; background: var(--card-bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; position: sticky; top: 0; z-index: 1000; }
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; }
+
+        .sidebar-left { position: fixed; left: 0; top: 70px; bottom: 0; width: var(--sidebar-w); background: var(--card-bg); border-right: 1px solid var(--border); padding: 25px; overflow-y: auto; z-index: 900; }
+        .main-content { margin-left: var(--sidebar-w); margin-right: 320px; padding: 25px; min-height: calc(100vh - 70px); }
+        .sidebar-right { position: fixed; right: 0; top: 70px; bottom: 0; width: 320px; padding: 25px; border-left: 1px solid var(--border); background: var(--bg); overflow-y: auto; }
+
+        /* XP ve Rank - Dinamik Renkler */
+        .xp-container { position: relative; margin: 25px 0; }
+        .xp-text-overlay { position: absolute; width: 100%; text-align: center; top: -22px; font-size: 0.75rem; font-weight: 800; color: var(--xp-bar); }
+        .xp-track { height: 14px; background: var(--border); border-radius: 7px; overflow: hidden; }
+        .xp-fill { height: 100%; background: linear-gradient(90deg, #f1c40f, #e67e22); width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         header { height: 80px; background: var(--card-bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; position: sticky; top: 0; z-index: 1000; }
-        
-        .layout-wrapper { display: flex; max-width: 1600px; margin: 0 auto; }
-        
-        .sidebar-left { width: var(--sidebar-w); height: calc(100vh - 80px); position: sticky; top: 80px; padding: 32px; border-right: 1px solid var(--border); overflow-y: auto; }
-        
+        .layout-wrapper { display: flex; max-width: 1400px; margin: 0 auto; }
+        .sidebar-left { width: var(--sidebar-w); height: calc(100vh - 80px); position: sticky; top: 80px; padding: 24px; border-right: 1px solid var(--border); overflow-y: auto; }
         .main-content { flex: 1; padding: 32px; min-height: calc(100vh - 80px); }
 
-        /* XP System */
-        .xp-wrapper { margin: 20px 0; }
-        .xp-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; color: var(--xp-bar); }
-        .xp-track { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
-        .xp-fill { height: 100%; background: linear-gradient(90deg, #fbbf24, #f59e0b); width: 0%; transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        /* Components */
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 24px; }
+        .btn { cursor: pointer; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; transition: 0.2s; font-size: 0.9rem; }
+        .btn:active { transform: scale(0.95); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+        /* Forum Kartları */
+        .forum-item { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; margin-bottom: 15px; position: relative; }
+        .forum-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .forum-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border); }
+        .forum-content { line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap; }
+        .forum-image { width: 100%; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; }
+        .forum-actions { display: flex; gap: 20px; border-top: 1px solid var(--border); pt: 10px; color: var(--text-muted); font-size: 0.85rem; }
+        .action-item { cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+        .action-item:hover { color: var(--primary); }
+
+        /* Zaman Tüneli */
+        .history-item { display: flex; justify-content: space-between; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2); margin-bottom: 8px; border-left: 3px solid var(--primary); }
+
+        /* Auth */
+        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .auth-box { width: 100%; max-width: 400px; padding: 40px; text-align: center; }
+
+        /* Tab Kontrolleri */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Mobil */
+        @media (max-width: 1100px) { .sidebar-right { display: none; } .main-content { margin-right: 0; } }
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .sidebar-left { transform: translateX(-100%); transition: 0.3s; }
+            .sidebar-left.open { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 15px; }
+        input, textarea, select { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: var(--text-main); margin-bottom: 12px; font-family: inherit; outline: none; }
+        input:focus { border-color: var(--primary); }
+
+        /* XP Progress */
+        .xp-wrapper { margin-top: 15px; }
+        .xp-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; color: var(--xp-bar); margin-bottom: 8px; }
+        .xp-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+        .xp-fill { height: 100%; background: linear-gradient(90deg, #fbbf24, #f59e0b); width: 0%; transition: 1s cubic-bezier(0.22, 1, 0.36, 1); }
 
         /* Forum */
         .post-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
-        .post-user { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; position: relative; }
-        .post-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--border); object-fit: cover; }
-        .post-meta b { display: block; font-size: 1rem; }
-        .post-meta span { font-size: 0.75rem; color: var(--text-muted); }
-        .post-content { font-size: 0.95rem; line-height: 1.6; margin-bottom: 16px; white-space: pre-wrap; }
-        .post-image { width: 100%; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border); }
-        
-        .post-actions { display: flex; gap: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
-        .action-btn { background: none; border: none; color: var(--text-muted); display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
-        .action-btn.liked { color: var(--danger); }
-        .action-btn:hover { color: var(--primary); }
+        .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; position: relative; }
+        .post-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
+        .post-content { line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap; }
+        .post-image { width: 100%; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .post-actions { display: flex; gap: 20px; border-top: 1px solid var(--border); padding-top: 15px; }
+        .action-item { cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 0.85rem; }
+        .action-item:hover, .action-item.active { color: var(--primary); }
+        .action-item.liked { color: var(--danger); }
 
-        .comment-section { margin-top: 16px; background: rgba(0,0,0,0.1); border-radius: 12px; padding: 12px; }
-        .comment-item { font-size: 0.85rem; padding: 8px 0; border-bottom: 1px solid var(--border); }
+        .comment-drawer { display: none; margin-top: 15px; background: rgba(0,0,0,0.15); border-radius: 12px; padding: 15px; border: 1px solid var(--border); }
+        .comment-item { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
         .comment-item:last-child { border: none; }
 
-        /* Tabs */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 600; margin-bottom: 6px; cursor: pointer; }
+        /* Nav */
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 600; cursor: pointer; margin-bottom: 4px; }
         .nav-link:hover { background: rgba(79, 70, 229, 0.05); color: var(--primary); }
         .nav-link.active { background: var(--primary); color: white; }
 
-        /* Settings Toggle */
-        .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Responsive */
-        @media (max-width: 1024px) {
+        @media (max-width: 900px) {
             .sidebar-left { width: 80px; padding: 15px; }
             .nav-link span { display: none; }
             .sidebar-left .card { display: none; }
-        }
-    </style>
+}
+</style>
 </head>
 <body class="dark-mode">
 
-    <div id="notify-box"></div>
+<div id="notify-box"></div>
 
-    <div id="auth-screen" style="position:fixed; inset:0; background:var(--bg); z-index:2000; display:flex; align-items:center; justify-content:center;">
+    <!-- Auth Ekranı -->
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <h1 style="color: var(--primary); font-size: 2.5rem; margin-bottom: 10px;"><i class="fas fa-rocket"></i> NovaTech</h1>
+            <p id="auth-status" style="color: var(--text-muted); margin-bottom: 30px;">Lütfen giriş yapın veya kayıt olun</p>
+    <!-- Login/Register -->
+    <div id="auth-screen" style="position:fixed; inset:0; background:var(--bg); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;">
         <div class="card" style="width:100%; max-width:400px; text-align:center;">
-            <h1 style="color:var(--primary); font-size:2rem; margin-bottom:8px;">NovaTech</h1>
-            <p id="auth-title" style="color:var(--text-muted); margin-bottom:24px;">Akıllı Öğrenci Platformu</p>
-            
+            <h1 style="color:var(--primary); font-size:2.2rem; margin-bottom:8px;">NovaTech</h1>
+            <p id="auth-title" style="color:var(--text-muted); margin-bottom:24px;">Geleceğin Eğitim Platformu</p>
+
+            <div id="login-form">
+                <input type="email" id="l-email" placeholder="E-posta">
+                <input type="password" id="l-pass" placeholder="Şifre">
+                <button class="btn btn-primary" style="width:100%" id="btn-login" onclick="handleLogin()">Giriş Yap</button>
+                <p style="margin-top:20px;">Hesabın yok mu? <span onclick="toggleAuth('signup')" style="color:var(--primary); cursor:pointer;">Kayıt Ol</span></p>
             <div id="login-box">
                 <input type="email" id="email" placeholder="E-posta">
                 <input type="password" id="pass" placeholder="Şifre">
                 <button class="btn btn-primary" style="width:100%" onclick="authAction('login')">Giriş Yap</button>
-                <p style="margin-top:20px; font-size:0.85rem;">Hesabınız yok mu? <a href="#" onclick="toggleAuth(false)" style="color:var(--primary)">Kayıt Ol</a></p>
-            </div>
+                <p style="margin-top:20px; font-size:0.85rem;">Hesabın yok mu? <a href="#" onclick="toggleAuth(false)" style="color:var(--primary)">Kayıt Ol</a></p>
+</div>
 
+            <div id="signup-form" style="display:none;">
+                <input type="text" id="s-user" placeholder="Kullanıcı Adı">
+                <input type="email" id="s-email" placeholder="E-posta">
+                <input type="password" id="s-pass" placeholder="Şifre">
+                <button class="btn btn-success" style="width:100%" id="btn-signup" onclick="handleSignup()">Hesap Oluştur</button>
+                <p style="margin-top:20px;">Zaten üye misin? <span onclick="toggleAuth('login')" style="color:var(--primary); cursor:pointer;">Giriş Yap</span></p>
             <div id="register-box" style="display:none">
                 <input type="text" id="reg-name" placeholder="Kullanıcı Adı">
                 <input type="email" id="reg-email" placeholder="E-posta">
                 <input type="password" id="reg-pass" placeholder="Şifre">
-                <button class="btn btn-primary" style="width:100%" onclick="authAction('register')">Kayıt Ol</button>
-                <p style="margin-top:20px; font-size:0.85rem;">Zaten üye misiniz? <a href="#" onclick="toggleAuth(true)" style="color:var(--primary)">Giriş Yap</a></p>
-            </div>
-        </div>
-    </div>
+                <button class="btn btn-primary" style="width:100%" onclick="authAction('register')">Hesabı Oluştur</button>
+                <p style="margin-top:20px; font-size:0.85rem;">Üye misin? <a href="#" onclick="toggleAuth(true)" style="color:var(--primary)">Giriş Yap</a></p>
+</div>
+</div>
+</div>
 
+    <!-- Ana Uygulama -->
+    <div id="app-container" style="display:none;">
+    <!-- Main App -->
     <div id="app-shell" style="display:none">
-        <header>
-            <div style="font-weight:800; font-size:1.6rem; letter-spacing:-1px;">NOVA<span style="color:var(--primary)">TECH</span></div>
-            <div style="display:flex; align-items:center; gap:16px;">
-                <div style="text-align:right">
-                    <div id="top-name" style="font-weight:700;">Yükleniyor...</div>
-                    <div id="top-rank" style="font-size:0.7rem; color:var(--xp-bar); font-weight:800; text-transform:uppercase;">Çaylak</div>
-                </div>
-                <img id="top-avatar" src="" style="width:48px; height:48px; border-radius:50%; object-fit:cover; background:var(--border);">
-            </div>
-        </header>
+<header>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <i class="fas fa-bars menu-toggle" onclick="toggleMenu()"></i>
+                <div onclick="adminTrigger()" style="font-weight:800; font-size:1.5rem; cursor:pointer;">NOVA<span style="color:var(--primary)">TECH</span></div>
+            <div style="font-weight:900; font-size:1.7rem; letter-spacing:-1.5px;">NOVA<span style="color:var(--primary)">TECH</span></div>
+            <div id="daily-btn-container">
+                <button class="btn btn-ghost" onclick="claimDailyReward()"><i class="fas fa-gift"></i> Günlük Ödül</button>
+</div>
+            <div style="display:flex; align-items:center; gap:15px;" id="header-user-info">
+            <div style="display:flex; align-items:center; gap:12px;">
+<div style="text-align:right">
+                    <div id="h-user-name" style="font-weight:600;">-</div>
+                    <div id="h-user-level" style="font-size:0.7rem; color:var(--xp-bar); font-weight:800;">SEVİYE 1</div>
+                    <div id="top-name" style="font-weight:700;">-</div>
+                    <div id="top-rank" style="font-size:0.65rem; color:var(--xp-bar); font-weight:800; letter-spacing:1px; text-transform:uppercase;">Seviye Hesaplanıyor</div>
+</div>
+                <img id="h-user-avatar" src="" style="width:45px; height:45px; border-radius:50%; background:var(--border); object-fit:cover;">
+                <img id="top-avatar" src="" style="width:45px; height:45px; border-radius:50%; object-fit:cover; background:var(--border);">
+</div>
+</header>
 
+        <aside class="sidebar-left" id="sidebar-left">
+            <div class="card" style="text-align:center; padding:20px;">
+                <img id="p-avatar" src="" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--primary); margin-bottom: 15px; object-fit:cover;">
+                <h3 id="p-username" style="margin:0;">-</h3>
+                <div id="p-level-badge" style="background:rgba(241,196,15,0.1); color:var(--xp-bar); padding:5px 15px; border-radius:20px; font-size:0.8rem; display:inline-block; margin:10px 0; border:1px solid var(--xp-bar);">Seviye 1</div>
+                
+                <div class="xp-container">
+                    <div id="xp-text" class="xp-text-overlay">0 / 1000 XP</div>
+                    <div class="xp-track"><div id="xp-bar-fill" class="xp-fill"></div></div>
         <div class="layout-wrapper">
             <aside class="sidebar-left">
-                <div class="card" style="padding:16px; margin-bottom:20px; text-align:center;">
-                    <img id="side-avatar" src="" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:12px;">
-                    <div id="side-name" style="font-weight:700; margin-bottom:4px;">-</div>
+                <div class="card" style="padding:15px; text-align:center;">
+                    <img id="side-avatar" src="" style="width:70px; height:70px; border-radius:50%; object-fit:cover; margin-bottom:12px;">
+                    <div id="side-name" style="font-weight:700; font-size:0.95rem;">-</div>
                     <div class="xp-wrapper">
                         <div class="xp-header">
-                            <span id="ui-level">LEVEL 1</span>
-                            <span id="ui-xp-text">0 / 1000 XP</span>
+                            <span id="ui-level">SEVİYE 1</span>
+                            <span id="ui-xp-text">0 / 500 XP</span>
                         </div>
                         <div class="xp-track"><div id="ui-xp-fill" class="xp-fill"></div></div>
                     </div>
-                </div>
+</div>
+            </div>
 
+            <nav style="display:flex; flex-direction:column; gap:10px;">
+                <button class="btn btn-ghost nav-btn active" onclick="switchTab('dash', this)"><i class="fas fa-home"></i> Ana Sayfa</button>
+                <button class="btn btn-ghost nav-btn" onclick="switchTab('forum', this)"><i class="fas fa-users"></i> Topluluk</button>
+                <button class="btn btn-ghost nav-btn" onclick="switchTab('leader', this)"><i class="fas fa-trophy"></i> Sıralama</button>
+                <button class="btn btn-ghost nav-btn" onclick="switchTab('profile', this)"><i class="fas fa-user-edit"></i> Profilim</button>
+                <hr style="border:0; border-top:1px solid var(--border); margin:10px 0;">
+                <button class="btn btn-ghost" style="color:var(--danger)" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <!-- DASHBOARD -->
+            <div id="tab-dash" class="tab-content active">
+                <div class="card">
+                    <h3 style="margin-top:0;">Ders Çalışma Girişi</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                        <select id="work-lesson" onchange="updateTopics()"></select>
+                        <select id="work-topic"></select>
                 <nav>
-                    <div class="nav-link active" onclick="showTab('home', this)"><i class="fas fa-home"></i> <span>Ana Sayfa</span></div>
-                    <div class="nav-link" onclick="showTab('forum', this)"><i class="fas fa-comments"></i> <span>Topluluk</span></div>
-                    <div class="nav-link" onclick="showTab('leaderboard', this)"><i class="fas fa-trophy"></i> <span>Sıralama</span></div>
-                    <div class="nav-link" onclick="showTab('support', this)"><i class="fas fa-headset"></i> <span>Destek</span></div>
-                    <div class="nav-link" onclick="showTab('settings', this)"><i class="fas fa-cog"></i> <span>Ayarlar</span></div>
-                    <hr style="border:none; border-top:1px solid var(--border); margin:10px 0;">
-                    <div class="nav-link" onclick="logout()" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i> <span>Çıkış Yap</span></div>
+                    <div class="nav-link active" onclick="showTab('home', this)"><i class="fas fa-book-open"></i> <span>Derslerim</span></div>
+                    <div class="nav-link" onclick="showTab('forum', this)"><i class="fas fa-users"></i> <span>Topluluk</span></div>
+                    <div class="nav-link" onclick="showTab('ranks', this)"><i class="fas fa-award"></i> <span>Sıralama</span></div>
+                    <div class="nav-link" onclick="showTab('support', this)"><i class="fas fa-comment-dots"></i> <span>Destek</span></div>
+                    <div class="nav-link" onclick="showTab('settings', this)"><i class="fas fa-sliders-h"></i> <span>Ayarlar</span></div>
+                    <hr style="border:none; border-top:1px solid var(--border); margin:12px 0;">
+                    <div class="nav-link" onclick="logout()" style="color:var(--danger)"><i class="fas fa-power-off"></i> <span>Çıkış</span></div>
                 </nav>
             </aside>
 
             <main class="main-content">
-                <!-- HOME TAB -->
+                <!-- HOME: STUDY TRACKER -->
                 <div id="tab-home" class="tab-content active">
                     <div class="card">
-                        <h2 style="margin-top:0;">Ders Takibi</h2>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                            <select id="study-lesson">
-                                <option>Matematik</option><option>Fizik</option><option>Kimya</option>
-                                <option>Biyoloji</option><option>Türkçe</option><option>Tarih</option>
-                            </select>
-                            <input type="text" id="study-topic" placeholder="Konu başlığı">
+                        <h2 style="margin:0 0 15px 0;">Yeni Çalışma Kaydı</h2>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                            <div>
+                                <label style="font-size:0.75rem; color:var(--text-muted)">Ders</label>
+                                <select id="lesson-select" onchange="updateTopics()">
+                                    <option value="Matematik">Matematik</option>
+                                    <option value="Fizik">Fizik</option>
+                                    <option value="Kimya">Kimya</option>
+                                    <option value="Biyoloji">Biyoloji</option>
+                                    <option value="Türkçe">Türkçe</option>
+                                    <option value="Tarih">Tarih</option>
+                                    <option value="Coğrafya">Coğrafya</option>
+                                    <option value="Felsefe">Felsefe</option>
+                                    <option value="İngilizce">İngilizce</option>
+                                    <option value="Din Kültürü">Din Kültürü</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size:0.75rem; color:var(--text-muted)">Konu</label>
+                                <select id="topic-select"></select>
+                            </div>
                         </div>
                         <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
-                            <input type="number" id="study-d" placeholder="Doğru">
-                            <input type="number" id="study-y" placeholder="Yanlış">
-                            <input type="number" id="study-b" placeholder="Boş">
+                            <div><input type="number" id="sc-d" placeholder="Doğru"></div>
+                            <div><input type="number" id="sc-y" placeholder="Yanlış"></div>
+                            <div><input type="number" id="sc-b" placeholder="Boş"></div>
                         </div>
-                        <button class="btn btn-primary" style="width:100%" onclick="saveStudy()">Veriyi Kaydet (+50 XP)</button>
-                    </div>
+                        <button class="btn btn-primary" style="width:100%" onclick="saveStudy()">Kaydı Tamamla (+50 XP)</button>
+</div>
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:15px; margin-top:15px;">
+                        <input type="number" id="w-correct" placeholder="Doğru">
+                        <input type="number" id="w-wrong" placeholder="Yanlış">
+                        <input type="number" id="w-empty" placeholder="Boş">
 
-                    <div class="card">
-                        <h3>Son Çalışmaların</h3>
-                        <div id="history-list"></div>
-                    </div>
+                    <h3>Son Faaliyetlerin</h3>
+                    <div id="history-feed"></div>
                 </div>
 
-                <!-- FORUM TAB -->
+                <!-- FORUM: COMMUNITY -->
                 <div id="tab-forum" class="tab-content">
                     <div class="card">
-                        <textarea id="post-text" placeholder="Bugün neler öğrendin?" rows="3"></textarea>
-                        <div id="post-preview" style="display:none; margin-bottom:12px;">
-                            <img id="post-preview-img" style="max-width:150px; border-radius:10px;">
+                        <textarea id="post-input" placeholder="Bugün neler başardın?" rows="3"></textarea>
+                        <div id="post-img-prev" style="display:none; margin-bottom:10px;">
+                            <img id="img-render" style="max-height:180px; border-radius:12px;">
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <div style="display:flex; gap:10px;">
-                                <input type="file" id="post-file" hidden accept="image/*" onchange="handleFile(event, 'post')">
-                                <button class="btn btn-ghost" onclick="document.getElementById('post-file').click()"><i class="fas fa-image"></i> Görsel</button>
+                                <input type="file" id="post-file-hidden" hidden accept="image/*" onchange="postFileChange(event)">
+                                <button class="btn btn-ghost" onclick="document.getElementById('post-file-hidden').click()"><i class="fas fa-camera"></i> Görsel</button>
                             </div>
-                            <button class="btn btn-primary" onclick="publishPost()">Paylaş</button>
+                            <button class="btn btn-primary" onclick="submitPost()">Paylaş</button>
                         </div>
-                    </div>
+</div>
+                    <button class="btn btn-primary" style="width:100%; margin-top:15px;" onclick="addWork()">Veriyi Kaydet (+25 XP)</button>
                     <div id="forum-feed"></div>
-                </div>
+</div>
 
-                <!-- LEADERBOARD TAB -->
-                <div id="tab-leaderboard" class="tab-content">
+                <div class="card">
+                    <h3>Son Çalışmalarım</h3>
+                    <div id="work-history">
+                        <p style="text-align:center; color:var(--text-muted);">Henüz bir veri girilmedi.</p>
+                <!-- RANKS -->
+                <div id="tab-ranks" class="tab-content">
                     <div class="card">
-                        <h2 style="text-align:center; margin-bottom:30px;"><i class="fas fa-medal" style="color:var(--xp-bar)"></i> Haftalık Sıralama</h2>
-                        <div id="leader-items"></div>
-                    </div>
-                </div>
+                        <h2 style="text-align:center;"><i class="fas fa-crown" style="color:var(--xp-bar)"></i> Nova Liderlik Tablosu</h2>
+                        <div id="rank-list" style="margin-top:20px;"></div>
+</div>
+</div>
+            </div>
 
-                <!-- SUPPORT TAB -->
+            <!-- FORUM -->
+            <div id="tab-forum" class="tab-content">
+                <div class="card">
+                    <textarea id="forum-input" placeholder="Neler düşünüyorsun? Sorun mu var? Paylaş!" rows="4"></textarea>
+                    <div id="forum-image-preview" style="display:none; margin-bottom:15px; position:relative;">
+                        <img id="img-preview-tag" src="" style="max-width:200px; border-radius:10px;">
+                        <button class="btn btn-danger" style="position:absolute; top:0; left:210px; padding:5px 10px;" onclick="clearImg()"><i class="fas fa-times"></i></button>
+                <!-- SUPPORT -->
                 <div id="tab-support" class="tab-content">
                     <div class="card">
-                        <h2><i class="fas fa-bug"></i> Hata ve Destek Bildir</h2>
-                        <p style="color:var(--text-muted)">Bir sorunla mı karşılaştın? Bize yaz, hemen çözelim.</p>
-                        <select id="support-type">
+                        <h2>Yardım & Destek</h2>
+                        <p style="color:var(--text-muted); font-size:0.9rem;">Bir sorun veya önerin mi var? Ekibimize bildir.</p>
+                        <select id="sup-type">
                             <option>Hata Bildirimi</option>
-                            <option>Öneri / İstek</option>
-                            <option>Hesap Sorunu</option>
+                            <option>Özellik Önerisi</option>
+                            <option>Şikayet</option>
                         </select>
-                        <textarea id="support-msg" placeholder="Lütfen detaylıca açıkla..." rows="5"></textarea>
-                        <button class="btn btn-primary" style="width:100%" onclick="sendSupport()">Bildirimi Gönder</button>
-                    </div>
+                        <textarea id="sup-msg" placeholder="Mesajın..." rows="5"></textarea>
+                        <button class="btn btn-primary" style="width:100%" onclick="sendSupport()">Gönder</button>
+</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <input type="file" id="forum-file" style="display:none" accept="image/*" onchange="previewImg(event)">
+                            <button class="btn btn-ghost" onclick="document.getElementById('forum-file').click()"><i class="fas fa-image"></i> Görsel</button>
                 </div>
 
-                <!-- SETTINGS TAB -->
+                <!-- SETTINGS -->
                 <div id="tab-settings" class="tab-content">
                     <div class="card">
-                        <h3>Görünüm Ayarları</h3>
-                        <div class="toggle-row">
-                            <span>Karanlık Tema</span>
-                            <button class="btn btn-ghost" onclick="toggleTheme()"><i class="fas fa-moon"></i> Değiştir</button>
-                        </div>
-                    </div>
+                        <h3>Tercihler</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;">
+                            <span>Karanlık Mod</span>
+                            <button class="btn btn-ghost" onclick="toggleTheme()"><i class="fas fa-adjust"></i></button>
+</div>
+                        <button class="btn btn-primary" id="btn-post" onclick="createPost()">Paylaş</button>
+</div>
+                </div>
+                <div id="forum-feed"></div>
+            </div>
+
+            <!-- LEADERBOARD -->
+            <div id="tab-leader" class="tab-content">
+                <div class="card">
+                    <h2 style="margin-top:0; text-align:center;"><i class="fas fa-medal" style="color:var(--xp-bar)"></i> En İyiler</h2>
+                    <div id="leader-list" style="margin-top:20px;"></div>
+                </div>
+            </div>
                     <div class="card">
-                        <h3>Profil Bilgileri</h3>
-                        <div style="margin-bottom:20px; text-align:center;">
-                            <img id="settings-avatar" src="" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:4px solid var(--border);">
+                        <h3>Profilimi Düzenle</h3>
+                        <div style="text-align:center; margin-bottom:20px;">
+                            <img id="sett-avatar" src="" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--border); object-fit:cover;">
                             <div style="margin-top:10px;">
-                                <input type="file" id="avatar-input" hidden accept="image/*" onchange="handleFile(event, 'avatar')">
-                                <button class="btn btn-ghost btn-sm" onclick="document.getElementById('avatar-input').click()">Fotoğraf Değiştir</button>
+                                <input type="file" id="sett-avatar-hidden" hidden accept="image/*" onchange="settAvatarChange(event)">
+                                <button class="btn btn-ghost" onclick="document.getElementById('sett-avatar-hidden').click()">Fotoğrafı Güncelle</button>
                             </div>
                         </div>
-                        <label>Kullanıcı Adı</label>
-                        <input type="text" id="set-username">
-                        <button class="btn btn-primary" style="width:100%" onclick="updateProfile()">Güncelle</button>
+                        <input type="text" id="sett-name" placeholder="Adın">
+                        <button class="btn btn-primary" style="width:100%" onclick="updateProfile()">Kaydet</button>
                     </div>
-                    <button class="btn btn-danger" style="width:100%" onclick="deleteMyAccount()">Hesabımı ve Verilerimi Kalıcı Olarak Sil</button>
+
+            <!-- PROFILE -->
+            <div id="tab-profile" class="tab-content">
+                <div class="card">
+                    <h3>Profili Düzenle</h3>
+                    <label>Profil Fotoğrafı URL</label>
+                    <input type="text" id="prof-avatar-url" placeholder="https://resim-linki.com/avatar.jpg">
+                    <button class="btn btn-primary" style="width:100%" onclick="saveProfile()">Güncelle</button>
+                </div>
+                <div class="card" style="border-color:var(--danger)">
+                    <h4 style="color:var(--danger)">Tehlikeli Bölge</h4>
+                    <p>Hesabınızı sildiğinizde tüm verileriniz kalıcı olarak silinir.</p>
+                    <button class="btn btn-danger" onclick="deleteAccount()">Hesabımı Sil</button>
+                </div>
+            </div>
+        </main>
+
+        <aside class="sidebar-right">
+            <div class="card">
+                <h4 style="margin-top:0;">Pomodoro</h4>
+                <div id="pomo-timer" style="font-size:3rem; font-weight:800; text-align:center; color:var(--primary); margin:20px 0;">25:00</div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-primary" style="flex:1" id="btn-pomo" onclick="togglePomo()">Başlat</button>
+                    <button class="btn btn-ghost" onclick="resetPomo()"><i class="fas fa-sync"></i></button>
+                </div>
+            </div>
+        </aside>
+    </div>
+                    <div class="card">
+                        <h3>Paylaşımlarım</h3>
+                        <div id="my-posts-list"></div>
+                    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:10001; align-items:center; justify-content:center;">
+        <div class="card" style="width:100%; max-width:400px; border:1px solid var(--danger);">
+            <h2 style="color:var(--danger)">Admin Terminal</h2>
+            <input type="password" id="admin-pass" placeholder="Kod">
+            <button class="btn btn-danger" style="width:100%" onclick="checkAdmin()">Eriş</button>
+            <div id="admin-controls" style="display:none; margin-top:20px;">
+                <input type="text" id="adm-uid" placeholder="Kullanıcı UID">
+                <input type="number" id="adm-xp" placeholder="Eklenecek XP">
+                <button class="btn btn-success" style="width:100%" onclick="adminAddXp()">XP Ver</button>
+                <button class="btn btn-ghost" style="width:100%; margin-top:10px;" onclick="document.getElementById('admin-panel').style.display='none'">Kapat</button>
+            </div>
+                    <button class="btn btn-danger" style="width:100%" onclick="deleteAccount()">Hesabımı Kalıcı Olarak Sil</button>
                 </div>
             </main>
-        </div>
-    </div>
+</div>
+</div>
 
-    <script type="module">
+<script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, set, push, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyBGFyQsqe32hGgskY5yRfrbXlH8MuHKaLE",
-            authDomain: "novatech-e7507.firebaseapp.com",
-            databaseURL: "https://novatech-e7507-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "novatech-e7507"
-        };
+        // Firebase Yapılandırması
+        // --- Config ---
+const firebaseConfig = {
+apiKey: "AIzaSyBGFyQsqe32hGgskY5yRfrbXlH8MuHKaLE",
+authDomain: "novatech-e7507.firebaseapp.com",
+@@ -275,327 +291,364 @@ <h2 style="color:var(--danger)">Admin Terminal</h2>
+};
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+const auth = getAuth(app);
         const db = getDatabase(app);
 
-        let currentUser = null;
-        let userData = null;
-        let tempPostImg = null;
+        // Global Değişkenler
+        let currentUser = null, userData = null, forumImg = "";
+        let pomoTimer = null, pomoSec = 25 * 60, isPomoRunning = false;
+        let adminClicks = 0;
 
-        // Auth Logic
+        const LESSONS = {
+            "Matematik": ["Sayılar", "Fonksiyonlar", "Geometri", "Trigonometri", "Türev-İntegral"],
+            "Fizik": ["Mekanik", "Elektrik", "Optik", "Modern Fizik"],
+            "Kimya": ["Atom", "Organik Kimya", "Sıvı Çözeltiler"],
+            "Biyoloji": ["Hücre", "Sistemler", "Genetik"],
+            "Türkçe": ["Paragraf", "Dil Bilgisi"],
+            "Sosyal": ["Tarih", "Coğrafya", "Felsefe"]
+        let user = null;
+        let uData = null;
+        let postImgBase64 = null;
+
+        const LESSON_DATA = {
+            "Matematik": ["Üslü Sayılar", "Fonksiyonlar", "Türev", "İntegral", "Trigonometri"],
+            "Fizik": ["Vektörler", "Kuvvet ve Hareket", "Optik", "Elektrik"],
+            "Kimya": ["Atom Modelleri", "Periyodik Cetvel", "Mol Kavramı", "Organik Kimya"],
+            "Biyoloji": ["Hücre Bölünmesi", "Kalıtım", "Sistemler", "Ekoloji"],
+            "Türkçe": ["Paragraf", "Dil Bilgisi", "Yazım Kuralları", "Sözcükte Anlam"],
+            "Tarih": ["Osmanlı Tarihi", "İnkılap Tarihi", "İlk Türk Devletleri"],
+            "Coğrafya": ["Harita Bilgisi", "İklim", "Nüfus", "Doğal Afetler"],
+            "Felsefe": ["Bilgi Felsefesi", "Varlık Felsefesi", "Ahlak Felsefesi"],
+            "İngilizce": ["Grammar", "Vocabulary", "Reading"],
+            "Din Kültürü": ["İbadet", "Ahlak", "Peygamberler"]
+};
+
+        // --- AUTH ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                initApp(user.uid);
-            } else {
+                loadUserData(user.uid);
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                startAppListeners();
+        // --- Auth Observer ---
+        onAuthStateChanged(auth, (u) => {
+            if (u) {
+                user = u;
+                syncUserData();
+} else {
+                document.getElementById('auth-overlay').style.display = 'flex';
+                document.getElementById('app-container').style.display = 'none';
                 document.getElementById('auth-screen').style.display = 'flex';
                 document.getElementById('app-shell').style.display = 'none';
-            }
-        });
+}
+});
 
-        async function initApp(uid) {
-            onValue(ref(db, `users/${uid}`), (snap) => {
-                userData = snap.val();
-                if (userData) {
-                    syncUI();
+        async function loadUserData(uid) {
+            onValue(ref(db, `users/${uid}`), (snapshot) => {
+                userData = snapshot.val();
+                if (userData) updateUI();
+        async function syncUserData() {
+            onValue(ref(db, `users/${user.uid}`), (snap) => {
+                uData = snap.val();
+                if (uData) {
+                    renderUI();
                     document.getElementById('auth-screen').style.display = 'none';
                     document.getElementById('app-shell').style.display = 'block';
                 }
-            });
-            loadForum();
-            loadLeaderboard();
-            loadHistory();
-        }
+});
+            updateTopics();
+            initFeeds();
+}
 
-        function syncUI() {
-            const xp = userData.xp || 0;
-            const level = Math.floor(xp / 1000) + 1;
-            const progress = (xp % 1000) / 10;
-
-            document.getElementById('top-name').innerText = userData.username;
-            document.getElementById('side-name').innerText = userData.username;
-            document.getElementById('set-username').value = userData.username;
-            document.getElementById('ui-level').innerText = `SEVİYE ${level}`;
-            document.getElementById('ui-xp-text').innerText = `${xp % 1000} / 1000 XP`;
-            document.getElementById('ui-xp-fill').style.width = `${progress}%`;
+        // --- UYGULAMA DİNLEYİCİLERİ (Hatalar düzeltildi) ---
+        function startAppListeners() {
+            // Dersleri yükle
+            const lSel = document.getElementById('work-lesson');
+            lSel.innerHTML = Object.keys(LESSONS).map(l => `<option value="${l}">${l}</option>`).join('');
+            updateTopics();
+        function renderUI() {
+            // XP & Level Logic (Geometrik: 500 * 2^(level-1))
+            let level = 1;
+            let xpNeeded = 500;
+            let tempXp = uData.xp || 0;
             
-            const avatar = userData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${userData.username}`;
-            document.getElementById('top-avatar').src = avatar;
-            document.getElementById('side-avatar').src = avatar;
-            document.getElementById('settings-avatar').src = avatar;
+            while (tempXp >= xpNeeded) {
+                tempXp -= xpNeeded;
+                level++;
+                xpNeeded *= 2;
+            }
 
-            const ranks = ["Çaylak", "Asistan", "Uzman", "Master", "Efsane"];
-            document.getElementById('top-rank').innerText = ranks[Math.min(level - 1, 4)];
+            document.getElementById('top-name').innerText = uData.username;
+            document.getElementById('side-name').innerText = uData.username;
+            document.getElementById('sett-name').value = uData.username;
+            document.getElementById('ui-level').innerText = `SEVİYE ${level}`;
+            document.getElementById('ui-xp-text').innerText = `${tempXp} / ${xpNeeded} XP`;
+            document.getElementById('ui-xp-fill').style.width = `${(tempXp / xpNeeded) * 100}%`;
+            
+            const rNames = ["Acemi", "Gezgin", "Bilgin", "Usta", "Dahi", "Efsane", "Yüce", "Mistik", "İlah", "Nova"];
+            document.getElementById('top-rank').innerText = rNames[Math.min(level-1, 9)];
+
+            const av = uData.avatar || `https://api.dicebear.com/7.x/identicon/svg?seed=${user.uid}`;
+            document.getElementById('top-avatar').src = av;
+            document.getElementById('side-avatar').src = av;
+            document.getElementById('sett-avatar').src = av;
         }
 
-        // --- FORUM ACTIONS ---
-        function loadForum() {
-            onValue(ref(db, 'forum'), (snap) => {
-                const feed = document.getElementById('forum-feed');
-                feed.innerHTML = "";
-                const data = snap.val();
-                if (!data) return;
+        // --- Home Logic ---
+        window.updateTopics = () => {
+            const lesson = document.getElementById('lesson-select').value;
+            const sel = document.getElementById('topic-select');
+            sel.innerHTML = LESSON_DATA[lesson].map(t => `<option value="${t}">${t}</option>`).join('');
+        };
 
-                Object.keys(data).reverse().forEach(postId => {
-                    const post = data[postId];
-                    const likeCount = post.likes ? Object.keys(post.likes).length : 0;
-                    const isLiked = post.likes && post.likes[currentUser.uid];
+        window.saveStudy = async () => {
+            const d = parseInt(document.getElementById('sc-d').value) || 0;
+            const y = parseInt(document.getElementById('sc-y').value) || 0;
+            const b = parseInt(document.getElementById('sc-b').value) || 0;
+            const lesson = document.getElementById('lesson-select').value;
+            const topic = document.getElementById('topic-select').value;
 
-                    const postEl = document.createElement('div');
-                    postEl.className = 'post-card';
-                    postEl.innerHTML = `
-                        <div class="post-user">
-                            <img src="${post.userAvatar}" class="post-avatar">
-                            <div class="post-meta">
-                                <b>${post.username}</b>
-                                <span>${new Date(post.ts).toLocaleString()}</span>
-                            </div>
-                            ${post.uid === currentUser.uid ? `<button class="btn btn-danger btn-sm" style="position:absolute; right:0" onclick="deletePost('${postId}')"><i class="fas fa-trash"></i></button>` : ''}
-                        </div>
-                        <div class="post-content">${post.text}</div>
-                        ${post.img ? `<img src="${post.img}" class="post-image">` : ''}
-                        <div class="post-actions">
-                            <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${postId}')">
-                                <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i> ${likeCount}
-                            </button>
-                            <button class="action-btn" onclick="toggleComments('${postId}')">
-                                <i class="far fa-comment"></i> ${post.comments ? Object.keys(post.comments).length : 0}
-                            </button>
-                        </div>
-                        <div id="comments-${postId}" class="comment-section" style="display:none">
-                            <div id="clist-${postId}"></div>
-                            <div style="display:flex; gap:8px; margin-top:10px;">
-                                <input type="text" id="cinput-${postId}" placeholder="Yorum yaz..." style="margin:0; font-size:0.8rem;">
-                                <button class="btn btn-primary" onclick="addComment('${postId}')"><i class="fas fa-paper-plane"></i></button>
-                            </div>
-                        </div>
-                    `;
-                    feed.appendChild(postEl);
-                    
-                    // Populate comments
-                    if (post.comments) {
-                        const clist = postEl.querySelector(`#clist-${postId}`);
-                        Object.values(post.comments).forEach(c => {
-                            clist.innerHTML += `<div class="comment-item"><b>${c.user}:</b> ${c.text}</div>`;
-                        });
-                    }
-                });
-            });
-        }
-
-        window.publishPost = async () => {
-            const text = document.getElementById('post-text').value;
-            if (!text && !tempPostImg) return toast("İçerik boş olamaz!", "error");
+            if (d === 0 && y === 0) return toast("Veri girmelisiniz!", "error");
 
             try {
-                await push(ref(db, 'forum'), {
-                    uid: currentUser.uid,
-                    username: userData.username,
-                    userAvatar: userData.avatar,
-                    text,
-                    img: tempPostImg,
-                    ts: Date.now()
+                await push(ref(db, `studies/${user.uid}`), { lesson, topic, d, y, b, ts: Date.now() });
+                await update(ref(db, `users/${user.uid}`), { xp: (uData.xp || 0) + 50 });
+                toast("Başarıyla kaydedildi! +50 XP", "success");
+                document.getElementById('sc-d').value = "";
+                document.getElementById('sc-y').value = "";
+            } catch(e) { toast(e.message, "error"); }
+        };
+
+        window.claimDailyReward = async () => {
+            const last = uData.lastDaily || 0;
+            const today = new Date().setHours(0,0,0,0);
+            if (last >= today) return toast("Bugün ödülünü zaten aldın!", "error");
+
+            // Forum Feed - Ayrı Dinleyici
+            onValue(ref(db, 'forum'), (snapshot) => {
+            await update(ref(db, `users/${user.uid}`), { 
+                xp: (uData.xp || 0) + 100,
+                lastDaily: today
+            });
+            toast("Günlük yoklama ödülü: +100 XP!", "success");
+        };
+
+        // --- Forum Logic ---
+        function initFeeds() {
+            // General Forum
+            onValue(ref(db, 'forum'), (snap) => {
+const feed = document.getElementById('forum-feed');
+                const data = snapshot.val();
+                const myFeed = document.getElementById('my-posts-list');
+feed.innerHTML = "";
+                myFeed.innerHTML = "";
+                const data = snap.val();
+if (!data) return;
+
+Object.keys(data).reverse().forEach(id => {
+                    const post = data[id];
+                    feed.innerHTML += `
+                        <div class="forum-item">
+                            <div class="forum-header">
+                                <img src="${post.avatar}" class="forum-avatar">
+                    const p = data[id];
+                    const likes = p.likes ? Object.keys(p.likes).length : 0;
+                    const isLiked = p.likes && p.likes[user.uid];
+                    const comments = p.comments ? Object.keys(p.comments).length : 0;
+
+                    const cardHtml = `
+                        <div class="post-card">
+                            <div class="post-header">
+                                <img src="${p.uAvatar}" class="post-avatar">
+                               <div>
+                                    <div style="font-weight:700">${post.username}</div>
+                                    <div style="font-size:0.7rem; color:var(--text-muted)">${new Date(post.ts).toLocaleString()}</div>
+                                    <div style="font-weight:700;">${p.uName}</div>
+                                    <div style="font-size:0.7rem; color:var(--text-muted)">${new Date(p.ts).toLocaleString()}</div>
+                               </div>
+                                ${p.uid === user.uid ? `<i class="fas fa-trash" style="position:absolute; right:0; cursor:pointer; color:var(--danger)" onclick="deletePost('${id}')"></i>` : ''}
+                           </div>
+                            <div class="forum-content">${post.msg}</div>
+                            ${post.img ? `<img src="${post.img}" class="forum-image">` : ''}
+                            <div class="forum-actions">
+                                <div class="action-item"><i class="far fa-heart"></i> Beğen</div>
+                                <div class="action-item"><i class="far fa-comment"></i> Yorum</div>
+                            <div class="post-content">${p.text}</div>
+                            ${p.img ? `<img src="${p.img}" class="post-image">` : ''}
+                            <div class="post-actions">
+                                <div class="action-item ${isLiked?'liked':''}" onclick="toggleLike('${id}')">
+                                    <i class="${isLiked?'fas':'far'} fa-heart"></i> ${likes}
+                                </div>
+                                <div class="action-item" onclick="toggleComments('${id}')">
+                                    <i class="far fa-comment"></i> ${comments}
+                                </div>
+                            </div>
+                            <div id="drawer-${id}" class="comment-drawer">
+                                <div id="clist-${id}"></div>
+                                <div style="display:flex; gap:10px; margin-top:10px;">
+                                    <input type="text" id="cinp-${id}" placeholder="Yanıtın..." style="margin:0; font-size:0.8rem;">
+                                    <button class="btn btn-primary" onclick="submitComment('${id}')"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+                           </div>
+                       </div>
+                   `;
+                    feed.innerHTML += cardHtml;
+
+                    if(p.uid === user.uid) {
+                        myFeed.innerHTML += `<div class="toggle-row" style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border)">
+                            <span style="font-size:0.8rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:200px;">${p.text}</span>
+                            <button class="btn btn-danger btn-sm" onclick="deletePost('${id}')">Sil</button>
+                        </div>`;
+                    }
+
+                    if(p.comments) {
+                        const cl = document.getElementById(`clist-${id}`);
+                        if(cl) {
+                            Object.values(p.comments).forEach(c => {
+                                cl.innerHTML += `<div class="comment-item"><b>${c.name}:</b> ${c.text}</div>`;
+                            });
+                        }
+                    }
+});
+});
+
+            // Liderlik - Ayrı Dinleyici
+            onValue(ref(db, 'users'), (snapshot) => {
+                const list = document.getElementById('leader-list');
+                const users = snapshot.val();
+                if (!users) return;
+                const sorted = Object.values(users).sort((a,b) => b.xp - a.xp).slice(0, 10);
+                list.innerHTML = sorted.map((u, i) => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; border-bottom:1px solid var(--border); ${u.uid === currentUser.uid ? 'background:rgba(88,166,255,0.1)' : ''}">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-weight:800; color:var(--text-muted)">#${i+1}</span>
+                            <img src="${u.avatar}" style="width:35px; height:35px; border-radius:50%">
+                            <b>${u.username}</b>
+            // Rank List
+            onValue(ref(db, 'users'), (snap) => {
+                const list = document.getElementById('rank-list');
+                list.innerHTML = "";
+                const users = Object.values(snap.val() || {}).sort((a,b) => (b.xp||0) - (a.xp||0));
+                users.forEach((u, i) => {
+                    list.innerHTML += `
+                        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px; border-bottom:1px solid var(--border); ${u.uid===user.uid?'background:rgba(79,70,229,0.1); border-radius:10px;':''}">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <span style="font-weight:900; width:20px; color:${i<3?'var(--xp-bar)':'var(--text-muted)'}">${i+1}</span>
+                                <img src="${u.avatar || 'https://api.dicebear.com/7.x/identicon/svg?seed='+u.uid}" style="width:30px; height:30px; border-radius:50%">
+                                <b>${u.username}</b>
+                            </div>
+                            <span style="font-weight:700; color:var(--xp-bar)">${u.xp || 0} XP</span>
+                       </div>
+                        <span style="color:var(--xp-bar); font-weight:800">${u.xp} XP</span>
+                    </div>
+                `).join('');
+                    `;
                 });
-                document.getElementById('post-text').value = "";
-                tempPostImg = null;
-                document.getElementById('post-preview').style.display = 'none';
-                toast("Paylaşıldı!");
-            } catch (e) { toast("Hata: " + e.message, "error"); }
+});
+
+            // Çalışma Geçmişi
+            onValue(ref(db, `history/${currentUser.uid}`), (snapshot) => {
+                const hist = document.getElementById('work-history');
+                const data = snapshot.val();
+                if (!data) return;
+                hist.innerHTML = Object.keys(data).reverse().slice(0, 5).map(id => {
+                    const h = data[id];
+                    return `
+                        <div class="history-item">
+                            <div><b>${h.topic}</b></div>
+                            <div style="color:var(--accent)">${h.c}D ${h.w}Y</div>
+            // Studies History
+            onValue(ref(db, `studies/${user.uid}`), (snap) => {
+                const feed = document.getElementById('history-feed');
+                feed.innerHTML = "";
+                const data = snap.val();
+                if(!data) return;
+                Object.values(data).reverse().slice(0, 5).forEach(s => {
+                    feed.innerHTML += `<div class="card" style="padding:15px; margin-bottom:10px;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <b>${s.lesson}</b>
+                            <span style="font-size:0.8rem; color:var(--accent)">${s.d} Doğru / ${s.y} Yanlış</span>
+                       </div>
+                    `;
+                }).join('');
+                        <div style="font-size:0.8rem; color:var(--text-muted)">${s.topic}</div>
+                    </div>`;
+                });
+});
+}
+
+        // --- UI GÜNCELLEME (XP Bar Mantığı) ---
+        function updateUI() {
+            const xp = userData.xp || 0;
+            const level = Math.floor(xp / 1000) + 1;
+            const levelXP = xp % 1000;
+            const progress = (levelXP / 1000) * 100;
+
+            document.getElementById('h-user-name').innerText = userData.username;
+            document.getElementById('h-user-level').innerText = `SEVİYE ${level}`;
+            document.getElementById('p-username').innerText = userData.username;
+            document.getElementById('p-level-badge').innerText = `Seviye ${level}`;
+            document.getElementById('xp-text').innerText = `${levelXP} / 1000 XP (Toplam: ${xp})`;
+            
+            // Bar doluluk ve renk
+            const bar = document.getElementById('xp-bar-fill');
+            bar.style.width = progress + "%";
+            if (progress > 80) bar.style.background = "linear-gradient(90deg, #f1c40f, #2ecc71)";
+            else bar.style.background = "linear-gradient(90deg, #f1c40f, #e67e22)";
+
+            const av = userData.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username}`;
+            document.getElementById('h-user-avatar').src = av;
+            document.getElementById('p-avatar').src = av;
+        }
+        window.submitPost = async () => {
+            const text = document.getElementById('post-input').value;
+            if(!text && !postImgBase64) return;
+            await push(ref(db, 'forum'), {
+                uid: user.uid,
+                uName: uData.username,
+                uAvatar: uData.avatar || "",
+                text,
+                img: postImgBase64,
+                ts: Date.now()
+            });
+            document.getElementById('post-input').value = "";
+            postImgBase64 = null;
+            document.getElementById('post-img-prev').style.display = 'none';
+            toast("Paylaşıldı!");
         };
 
-        window.toggleLike = async (postId) => {
-            const path = `forum/${postId}/likes/${currentUser.uid}`;
+        // --- FONKSİYONLAR ---
+        window.updateTopics = () => {
+            const l = document.getElementById('work-lesson').value;
+            const tSel = document.getElementById('work-topic');
+            tSel.innerHTML = LESSONS[l].map(t => `<option value="${t}">${t}</option>`).join('');
+        window.toggleLike = async (id) => {
+            const path = `forum/${id}/likes/${user.uid}`;
             const snap = await get(ref(db, path));
-            if (snap.exists()) {
-                await remove(ref(db, path));
-            } else {
-                await set(ref(db, path), true);
-            }
-        };
+            if(snap.exists()) await remove(ref(db, path));
+            else await set(ref(db, path), true);
+};
 
+        window.addWork = async () => {
+            const c = parseInt(document.getElementById('w-correct').value) || 0;
+            const w = parseInt(document.getElementById('w-wrong').value) || 0;
+            const e = parseInt(document.getElementById('w-empty').value) || 0;
+            const t = document.getElementById('work-topic').value;
         window.toggleComments = (id) => {
-            const el = document.getElementById(`comments-${id}`);
-            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+            const d = document.getElementById(`drawer-${id}`);
+            d.style.display = d.style.display === 'block' ? 'none' : 'block';
         };
 
-        window.addComment = async (postId) => {
-            const inp = document.getElementById(`cinput-${postId}`);
-            if (!inp.value) return;
-            await push(ref(db, `forum/${postId}/comments`), {
-                user: userData.username,
+            if (c === 0 && w === 0) return toast("Veri girmelisiniz!", "error");
+        window.submitComment = async (id) => {
+            const inp = document.getElementById(`cinp-${id}`);
+            if(!inp.value) return;
+            await push(ref(db, `forum/${id}/comments`), {
+                name: uData.username,
                 text: inp.value,
                 ts: Date.now()
             });
             inp.value = "";
         };
 
+            try {
+                await push(ref(db, `history/${currentUser.uid}`), { topic: t, c, w, e, ts: Date.now() });
+                await update(ref(db, `users/${currentUser.uid}`), { xp: userData.xp + 25 });
+                toast("Başarıyla kaydedildi! +25 XP", "success");
+                document.getElementById('w-correct').value = "";
+                document.getElementById('w-wrong').value = "";
+            } catch (err) {
+                toast("Hata oluştu: " + err.message, "error");
         window.deletePost = async (id) => {
-            if (confirm("Bu gönderiyi silmek istediğine emin misin?")) {
+            if(confirm("Bu paylaşımı silmek istediğine emin misin?")) {
                 await remove(ref(db, `forum/${id}`));
-                toast("Gönderi silindi.");
-            }
-        };
+                toast("Silindi.");
+}
+};
 
-        // --- STUDY ACTIONS ---
-        window.saveStudy = async () => {
-            const d = parseInt(document.getElementById('study-d').value) || 0;
-            const y = parseInt(document.getElementById('study-y').value) || 0;
-            const b = parseInt(document.getElementById('study-b').value) || 0;
-            const lesson = document.getElementById('study-lesson').value;
-            const topic = document.getElementById('study-topic').value || "Genel Çalışma";
+        window.createPost = async () => {
+            const msg = document.getElementById('forum-input').value;
+            if (!msg && !forumImg) return toast("Boş paylaşım yapılamaz.", "error");
 
-            if (d === 0 && y === 0) return toast("Veri girmelisiniz!", "error");
+            const btn = document.getElementById('btn-post');
+            btn.disabled = true;
 
             try {
-                await push(ref(db, `history/${currentUser.uid}`), { lesson, topic, d, y, b, ts: Date.now() });
-                await update(ref(db, `users/${currentUser.uid}`), { xp: (userData.xp || 0) + 50 });
-                toast("Harika! +50 XP kazandın.", "success");
-                document.getElementById('study-d').value = "";
-                document.getElementById('study-y').value = "";
-                document.getElementById('study-topic').value = "";
-            } catch (e) { toast(e.message, "error"); }
-        };
-
-        function loadHistory() {
-            onValue(ref(db, `history/${currentUser.uid}`), (snap) => {
-                const list = document.getElementById('history-list');
-                list.innerHTML = "";
-                const data = snap.val();
-                if (!data) return;
-                Object.values(data).reverse().slice(0, 5).forEach(h => {
-                    list.innerHTML += `
-                        <div class="toggle-row">
-                            <div><b>${h.lesson}</b> - ${h.topic}</div>
-                            <div style="font-size:0.8rem; color:var(--accent)">${h.d}D / ${h.y}Y</div>
-                        </div>
-                    `;
+                await push(ref(db, 'forum'), {
+                    uid: currentUser.uid,
+                    username: userData.username,
+                    avatar: userData.avatar,
+                    msg: msg,
+                    img: forumImg,
+                    ts: Date.now()
                 });
-            });
-        }
+                document.getElementById('forum-input').value = "";
+                clearImg();
+                toast("Paylaşıldı!");
+            } catch (err) {
+                toast("Paylaşım hatası.", "error");
+            } finally {
+                btn.disabled = false;
+            }
+        // --- Profile & Utils ---
+        window.postFileChange = (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                postImgBase64 = ev.target.result;
+                document.getElementById('post-img-prev').style.display = 'block';
+                document.getElementById('img-render').src = postImgBase64;
+            };
+            reader.readAsDataURL(file);
+};
 
-        // --- LEADERBOARD ---
-        function loadLeaderboard() {
-            onValue(ref(db, 'users'), (snap) => {
-                const list = document.getElementById('leader-items');
-                list.innerHTML = "";
-                const users = Object.values(snap.val() || {}).sort((a,b) => (b.xp || 0) - (a.xp || 0));
-                
-                users.forEach((u, i) => {
-                    list.innerHTML += `
-                        <div class="toggle-row" style="${u.uid === currentUser.uid ? 'background:rgba(79, 70, 229, 0.1); border-radius:10px; padding:12px;' : ''}">
-                            <div style="display:flex; align-items:center; gap:12px;">
-                                <span style="font-weight:800; width:20px;">${i+1}</span>
-                                <img src="${u.avatar}" style="width:32px; height:32px; border-radius:50%">
-                                <b>${u.username}</b>
-                            </div>
-                            <b style="color:var(--xp-bar)">${u.xp || 0} XP</b>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        // --- FILE HANDLING ---
-        window.handleFile = (e, type) => {
+        // --- POMODORO ---
+        window.togglePomo = () => {
+            const btn = document.getElementById('btn-pomo');
+            if (isPomoRunning) {
+                clearInterval(pomoTimer);
+                btn.innerText = "Devam Et";
+            } else {
+                pomoTimer = setInterval(() => {
+                    pomoSec--;
+                    updatePomoDisplay();
+                    if (pomoSec <= 0) {
+                        clearInterval(pomoTimer);
+                        update(ref(db, `users/${currentUser.uid}`), { xp: userData.xp + 50 });
+                        toast("Pomodoro Bitti! +50 XP", "success");
+                        resetPomo();
+                    }
+                }, 1000);
+                btn.innerText = "Durdur";
+            }
+            isPomoRunning = !isPomoRunning;
+        window.settAvatarChange = (e) => {
             const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = async (ev) => {
-                const base64 = ev.target.result;
-                if (type === 'post') {
-                    tempPostImg = base64;
-                    document.getElementById('post-preview').style.display = 'block';
-                    document.getElementById('post-preview-img').src = base64;
-                } else if (type === 'avatar') {
-                    await update(ref(db, `users/${currentUser.uid}`), { avatar: base64 });
-                    toast("Profil fotoğrafı güncellendi!");
-                }
+                const b64 = ev.target.result;
+                await update(ref(db, `users/${user.uid}`), { avatar: b64 });
+                toast("Profil fotoğrafı güncellendi.");
+            };
+            reader.readAsDataURL(file);
+};
+
+        function updatePomoDisplay() {
+            const m = Math.floor(pomoSec / 60);
+            const s = pomoSec % 60;
+            document.getElementById('pomo-timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+        }
+        window.updateProfile = async () => {
+            const name = document.getElementById('sett-name').value;
+            if(name.length < 3) return toast("İsim çok kısa!", "error");
+            await update(ref(db, `users/${user.uid}`), { username: name });
+            toast("Bilgiler kaydedildi.");
+        };
+
+        window.resetPomo = () => {
+            clearInterval(pomoTimer);
+            pomoSec = 25 * 60;
+            isPomoRunning = false;
+            updatePomoDisplay();
+            document.getElementById('btn-pomo').innerText = "Başlat";
+        window.sendSupport = async () => {
+            const type = document.getElementById('sup-type').value;
+            const msg = document.getElementById('sup-msg').value;
+            if(!msg) return;
+            await push(ref(db, 'support'), { uid: user.uid, type, msg, ts: Date.now() });
+            toast("Mesajın başarıyla iletildi.");
+            document.getElementById('sup-msg').value = "";
+};
+
+        // --- AUTH İŞLEMLERİ (Detaylı Hata Mesajları) ---
+        window.handleLogin = async () => {
+            const e = document.getElementById('l-email').value;
+            const p = document.getElementById('l-pass').value;
+            try {
+                await signInWithEmailAndPassword(auth, e, p);
+                toast("Hoş geldiniz!", "success");
+            } catch (err) {
+                let msg = "Giriş başarısız.";
+                if (err.code === "auth/user-not-found") msg = "Kullanıcı bulunamadı.";
+                if (err.code === "auth/wrong-password") msg = "Şifre hatalı.";
+                toast(msg, "error");
+            }
+        window.toggleTheme = () => {
+            document.body.classList.toggle('light-mode');
+            toast("Görünüm modu değişti.");
+};
+
+        window.handleSignup = async () => {
+            const u = document.getElementById('s-user').value;
+            const e = document.getElementById('s-email').value;
+            const p = document.getElementById('s-pass').value;
+            if (u.length < 3) return toast("İsim çok kısa.", "error");
+            
+            try {
+                const res = await createUserWithEmailAndPassword(auth, e, p);
+                await set(ref(db, `users/${res.user.uid}`), {
+                    uid: res.user.uid,
+                    username: u,
+                    xp: 0,
+                    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${u}`,
+                    joined: Date.now()
+                });
+                toast("Hesap oluşturuldu!", "success");
+            } catch (err) {
+                toast("Kayıt hatası: " + err.message, "error");
+        window.logout = () => signOut(auth);
+
+        window.deleteAccount = async () => {
+            if(confirm("DİKKAT! Tüm verilerin ve hesabın kalıcı olarak silinecek. Onaylıyor musun?")) {
+                const uid = user.uid;
+                await remove(ref(db, `users/${uid}`));
+                await remove(ref(db, `studies/${uid}`));
+                await deleteUser(user).catch(() => toast("Hata: Yeniden giriş yapmalısın.", "error"));
+}
+};
+
+        window.handleLogout = () => signOut(auth);
+
+        // --- UTILS ---
+        window.toast = (msg, type="info") => {
+        // --- Core Helpers ---
+        window.toast = (msg, type = "info") => {
+const box = document.getElementById('notify-box');
+const t = document.createElement('div');
+t.className = `toast ${type}`;
+            t.innerHTML = `<i class="fas fa-${type === 'error' ? 'times-circle' : 'check-circle'}"></i> ${msg}`;
+            t.innerHTML = `<i class="fas fa-${type==='error'?'exclamation-circle':'check-circle'}"></i> <span>${msg}</span>`;
+box.appendChild(t);
+setTimeout(() => t.remove(), 4000);
+};
+
+        window.switchTab = (tab, btn) => {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+        window.showTab = (id, btn) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(`tab-${id}`).classList.add('active');
+btn.classList.add('active');
+            if (window.innerWidth < 768) toggleMenu();
+};
+
+        window.toggleMenu = () => document.getElementById('sidebar-left').classList.toggle('open');
+        window.toggleAuth = (m) => {
+            document.getElementById('login-form').style.display = m === 'login' ? 'block' : 'none';
+            document.getElementById('signup-form').style.display = m === 'signup' ? 'block' : 'none';
+        window.toggleAuth = (isLogin) => {
+            document.getElementById('login-box').style.display = isLogin ? 'block' : 'none';
+            document.getElementById('register-box').style.display = isLogin ? 'none' : 'block';
+            document.getElementById('auth-title').innerText = isLogin ? 'Geleceğin Eğitim Platformu' : 'Yeni Bir Başlangıç Yap';
+};
+
+        window.previewImg = (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (ex) => {
+                forumImg = ex.target.result;
+                document.getElementById('forum-image-preview').style.display = 'block';
+                document.getElementById('img-preview-tag').src = forumImg;
             };
             reader.readAsDataURL(file);
         };
 
-        // --- SETTINGS & MISC ---
-        window.updateProfile = async () => {
-            const name = document.getElementById('set-username').value;
-            if (name.length < 3) return toast("İsim çok kısa!", "error");
-            await update(ref(db, `users/${currentUser.uid}`), { username: name });
-            toast("Bilgiler güncellendi.");
+        window.clearImg = () => {
+            forumImg = "";
+            document.getElementById('forum-image-preview').style.display = 'none';
+            document.getElementById('forum-file').value = "";
         };
 
-        window.sendSupport = async () => {
-            const type = document.getElementById('support-type').value;
-            const msg = document.getElementById('support-msg').value;
-            if (!msg) return;
-            await push(ref(db, 'support'), { uid: currentUser.uid, type, msg, ts: Date.now() });
-            toast("Bildirimin alındı, teşekkürler!");
-            document.getElementById('support-msg').value = "";
-        };
-
-        window.toggleTheme = () => {
-            document.body.classList.toggle('light-mode');
-            toast("Tema değiştirildi.");
-        };
-
-        window.logout = () => signOut(auth);
-
-        window.deleteMyAccount = async () => {
-            if (confirm("TÜM VERİLERİN ve HESABIN kalıcı olarak silinecektir. Emin misin?")) {
-                try {
-                    const uid = currentUser.uid;
-                    await remove(ref(db, `users/${uid}`));
-                    await remove(ref(db, `history/${uid}`));
-                    await deleteUser(currentUser);
-                    toast("Hesap silindi.");
-                } catch (e) { toast("Hata: Yeniden giriş yapmanız gerekebilir.", "error"); }
+        window.adminTrigger = () => {
+            adminClicks++;
+            if (adminClicks > 5) {
+                document.getElementById('admin-panel').style.display = 'flex';
+                adminClicks = 0;
             }
         };
 
-        // --- UTILS ---
-        window.toast = (msg, type = "info") => {
-            const box = document.getElementById('notify-box');
-            const t = document.createElement('div');
-            t.className = `toast ${type}`;
-            t.innerHTML = `<i class="fas fa-${type==='error'?'circle-exclamation':'circle-check'}"></i> <span>${msg}</span>`;
-            box.appendChild(t);
-            setTimeout(() => t.remove(), 4000);
+        window.checkAdmin = () => {
+            if (document.getElementById('admin-pass').value === "1071") {
+                document.getElementById('admin-controls').style.display = 'block';
+            }
         };
 
-        window.showTab = (id, btn) => {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById('tab-' + id).classList.add('active');
-            btn.classList.add('active');
-        };
-
-        window.toggleAuth = (isLogin) => {
-            document.getElementById('login-box').style.display = isLogin ? 'block' : 'none';
-            document.getElementById('register-box').style.display = isLogin ? 'none' : 'block';
-            document.getElementById('auth-title').innerText = isLogin ? 'Akıllı Öğrenci Platformu' : 'Yeni bir maceraya başla';
-        };
-
+        window.adminAddXp = async () => {
+            const uid = document.getElementById('adm-uid').value;
+            const xp = parseInt(document.getElementById('adm-xp').value);
+            const s = await get(ref(db, `users/${uid}`));
+            if (s.exists()) {
+                update(ref(db, `users/${uid}`), { xp: s.val().xp + xp });
+                toast("Admin: XP eklendi.");
+            }
         window.authAction = async (type) => {
             try {
-                if (type === 'login') {
-                    const e = document.getElementById('email').value;
-                    const p = document.getElementById('pass').value;
-                    await signInWithEmailAndPassword(auth, e, p);
+                const email = document.getElementById('email').value || document.getElementById('reg-email').value;
+                const pass = document.getElementById('pass').value || document.getElementById('reg-pass').value;
+                
+                if(type === 'login') {
+                    await signInWithEmailAndPassword(auth, email, pass);
                     toast("Hoş geldin!", "success");
                 } else {
-                    const n = document.getElementById('reg-name').value;
-                    const e = document.getElementById('reg-email').value;
-                    const p = document.getElementById('reg-pass').value;
-                    if (n.length < 2) throw new Error("İsim çok kısa!");
-                    const res = await createUserWithEmailAndPassword(auth, e, p);
+                    const name = document.getElementById('reg-name').value;
+                    if(name.length < 2) throw new Error("Kullanıcı adı çok kısa!");
+                    const res = await createUserWithEmailAndPassword(auth, email, pass);
                     await set(ref(db, `users/${res.user.uid}`), {
                         uid: res.user.uid,
-                        username: n,
+                        username: name,
                         xp: 0,
                         joined: Date.now(),
                         avatar: ""
                     });
                 }
-            } catch (e) { toast(e.message, "error"); }
-        };
+            } catch(e) { toast(e.message, "error"); }
+};
 
-    </script>
-</body>
-</html>
+</script>
