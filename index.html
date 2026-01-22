@@ -353,11 +353,15 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, set, push, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Firebase Config (Hassas Bilgiler)
-        const firebaseConfig = {
+        // Global Variables provided by environment
+        // FIX: Remove invalid characters like "." from appId for Firebase paths
+        const rawAppId = typeof __app_id !== 'undefined' ? __app_id : 'novatech-v4-ultra';
+        const appId = rawAppId.replace(/[.#$\[\]]/g, '_'); 
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "AIzaSyBGFyQsqe32hGgskY5yRfrbXlH8MuHKaLE",
             authDomain: "novatech-e7507.firebaseapp.com",
             databaseURL: "https://novatech-e7507-default-rtdb.europe-west1.firebasedatabase.app",
@@ -387,16 +391,30 @@
 
         const RANKS = ["Acemi", "Çaylak", "Gezgin", "Gözcü", "Araştırmacı", "Bilgin", "Usta", "Dahi", "Efsane", "Yüce", "Mistik", "Nova"];
 
-        // --- AUTH ---
+        // --- AUTH LOGIC (RULE 3) ---
+        const initAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                // If no token provided, try anonymous for canvas environment
+                await signInAnonymously(auth);
+            }
+        };
+        initAuth();
+
         onAuthStateChanged(auth, user => {
             if (user) {
                 currentUser = user;
-                onValue(ref(db, `users/${user.uid}`), snap => {
+                // Rule 1: artifacts/{appId}/users/{userId}/profile
+                onValue(ref(db, `artifacts/${appId}/users/${user.uid}/profile`), snap => {
                     userData = snap.val();
                     if (userData) {
                         renderUI();
                         document.getElementById('app').style.display = 'block';
                         document.getElementById('auth-overlay').style.display = 'none';
+                    } else {
+                        // Initialize new user
+                        handleFirstTimeUser(user);
                     }
                 });
                 initApp();
@@ -406,13 +424,24 @@
             }
         });
 
+        async function handleFirstTimeUser(user) {
+            const initialData = {
+                uid: user.uid,
+                username: user.email ? user.email.split('@')[0] : "Anonim",
+                xp: 0,
+                avatar: ""
+            };
+            await set(ref(db, `artifacts/${appId}/users/${user.uid}/profile`), initialData);
+        }
+
         function renderUI() {
+            if (!userData) return;
             let lvl = 1, req = 500, tempXp = userData.xp || 0;
             while(tempXp >= req) { tempXp -= req; lvl++; req = Math.floor(req * 1.5); }
             const perc = (tempXp / req) * 100;
             const rank = RANKS[Math.min(lvl - 1, RANKS.length - 1)];
 
-            document.getElementById('user-display-name').innerText = userData.username;
+            document.getElementById('user-display-name').innerText = userData.username || "Kullanıcı";
             document.getElementById('user-rank-name').innerText = `${rank} • LVL ${lvl}`;
             document.getElementById('xp-text-cur').innerText = `${Math.floor(tempXp)} XP`;
             document.getElementById('xp-text-max').innerText = `${req} XP`;
@@ -422,12 +451,12 @@
             document.getElementById('side-avatar').src = av;
             document.getElementById('nav-avatar').src = av;
             document.getElementById('prof-avatar').src = av;
-            document.getElementById('prof-username').value = userData.username;
+            document.getElementById('prof-username').value = userData.username || "";
         }
 
         function initApp() {
             const ls = document.getElementById('study-lesson');
-            ls.innerHTML = Object.keys(LESSONS).map(l => `<option value="${l}">${l}</option>`).join('');
+            if (ls) ls.innerHTML = Object.keys(LESSONS).map(l => `<option value="${l}">${l}</option>`).join('');
             loadTopics();
             syncForum();
             syncLeaderboard();
@@ -437,34 +466,43 @@
         window.loadTopics = () => {
             const lesson = document.getElementById('study-lesson').value;
             const ts = document.getElementById('study-topic');
-            ts.innerHTML = LESSONS[lesson].map(t => `<option value="${t}">${t}</option>`).join('');
+            if (ts && lesson) ts.innerHTML = LESSONS[lesson].map(t => `<option value="${t}">${t}</option>`).join('');
         };
 
-        // --- CORE ---
+        // --- CORE (STUDY REGISTRATION) ---
         window.saveStudy = async () => {
+            if (!currentUser) return toast("Giriş yapmalısınız.", "error");
+            
             const d = parseInt(document.getElementById('val-d').value) || 0;
             const y = parseInt(document.getElementById('val-y').value) || 0;
             const b = parseInt(document.getElementById('val-b').value) || 0;
-            if (d === 0 && y === 0) return toast("Lütfen veri girin!", "error");
+            if (d === 0 && y === 0 && b === 0) return toast("Lütfen veri girin!", "error");
 
             const lesson = document.getElementById('study-lesson').value;
             const topic = document.getElementById('study-topic').value;
 
-            // Rule 1 Compliance: artifacts/{appId}/users/{userId}/...
-            await push(ref(db, `studies/${currentUser.uid}`), { lesson, topic, d, y, b, ts: Date.now() });
-            
-            const xpGain = (d * 5) + 10;
-            await update(ref(db, `users/${currentUser.uid}`), { xp: (userData.xp || 0) + xpGain });
+            try {
+                const studiesRef = ref(db, `artifacts/${appId}/users/${currentUser.uid}/studies`);
+                await push(studiesRef, { lesson, topic, d, y, b, ts: Date.now() });
+                
+                const xpGain = (d * 5) + 10;
+                const profileRef = ref(db, `artifacts/${appId}/users/${currentUser.uid}/profile`);
+                await update(profileRef, { xp: (userData.xp || 0) + xpGain });
 
-            toast(`+${xpGain} XP Kazandın!`);
-            ['val-d','val-y','val-b'].forEach(i => document.getElementById(i).value = "");
+                toast(`+${xpGain} XP Kazandın!`);
+                ['val-d','val-y','val-b'].forEach(i => document.getElementById(i).value = "");
+            } catch (err) {
+                console.error(err);
+                toast("Veri kaydedilemedi.", "error");
+            }
         };
 
         window.dailyCheckIn = async () => {
+            if (!currentUser) return;
             const today = new Date().toDateString();
             if (userData.lastCheck === today) return toast("Zaten ödülünü aldın!", "error");
 
-            await update(ref(db, `users/${currentUser.uid}`), {
+            await update(ref(db, `artifacts/${appId}/users/${currentUser.uid}/profile`), {
                 xp: (userData.xp || 0) + 150,
                 lastCheck: today
             });
@@ -473,7 +511,8 @@
 
         // --- FORUM ---
         function syncForum() {
-            onValue(ref(db, 'forum'), snap => {
+            const forumRef = ref(db, `artifacts/${appId}/public/data/forum`);
+            onValue(forumRef, snap => {
                 const feed = document.getElementById('forum-feed');
                 feed.innerHTML = "";
                 const data = snap.val();
@@ -507,10 +546,12 @@
         }
 
         window.createPost = async () => {
+            if (!currentUser) return;
             const text = document.getElementById('forum-input').value;
             if (!text && !tempImage) return;
 
-            await push(ref(db, 'forum'), {
+            const forumRef = ref(db, `artifacts/${appId}/public/data/forum`);
+            await push(forumRef, {
                 uid: currentUser.uid,
                 author: userData.username,
                 avatar: userData.avatar || "",
@@ -526,22 +567,26 @@
         };
 
         window.likePost = async id => {
-            const path = `forum/${id}/likes/${currentUser.uid}`;
+            const path = `artifacts/${appId}/public/data/forum/${id}/likes/${currentUser.uid}`;
             const s = await get(ref(db, path));
             if (s.exists()) await remove(ref(db, path));
             else await set(ref(db, path), true);
         };
 
         window.deletePost = async id => {
-            if (confirm("Silmek istiyor musun?")) await remove(ref(db, `forum/${id}`));
+            if (confirm("Silmek istiyor musun?")) await remove(ref(db, `artifacts/${appId}/public/data/forum/${id}`));
         };
 
         // --- OTHERS ---
         function syncLeaderboard() {
-            onValue(ref(db, 'users'), snap => {
+            const publicScoresRef = ref(db, `artifacts/${appId}/public/data/leaderboard`);
+            onValue(publicScoresRef, snap => {
                 const list = document.getElementById('leaderboard');
                 list.innerHTML = "";
-                const users = Object.values(snap.val() || {}).sort((a,b) => (b.xp||0) - (a.xp||0));
+                const data = snap.val();
+                if (!data) return;
+
+                const users = Object.values(data).sort((a,b) => (b.xp||0) - (a.xp||0));
                 users.forEach((u, i) => {
                     list.innerHTML += `
                         <div style="display:flex; align-items:center; gap:12px; padding:12px; border-bottom:1px solid var(--border); ${u.uid===currentUser.uid?'background:rgba(99,102,241,0.05);':''}">
@@ -553,10 +598,20 @@
                     `;
                 });
             });
+
+            if (currentUser && userData) {
+                set(ref(db, `artifacts/${appId}/public/data/leaderboard/${currentUser.uid}`), {
+                    uid: currentUser.uid,
+                    username: userData.username,
+                    xp: userData.xp,
+                    avatar: userData.avatar || ""
+                });
+            }
         }
 
         function syncHistory() {
-            onValue(ref(db, `studies/${currentUser.uid}`), snap => {
+            const studiesRef = ref(db, `artifacts/${appId}/users/${currentUser.uid}/studies`);
+            onValue(studiesRef, snap => {
                 const list = document.getElementById('history-list');
                 list.innerHTML = "";
                 const data = snap.val();
@@ -592,7 +647,7 @@
             const f = e.target.files[0];
             const r = new FileReader();
             r.onload = async ev => {
-                await update(ref(db, `users/${currentUser.uid}`), { avatar: ev.target.result });
+                await update(ref(db, `artifacts/${appId}/users/${currentUser.uid}/profile`), { avatar: ev.target.result });
                 toast("Profil resmi güncellendi.");
             };
             r.readAsDataURL(f);
@@ -601,15 +656,15 @@
         window.updateProfile = async () => {
             const nick = document.getElementById('prof-username').value;
             if (nick.length < 3) return toast("Çok kısa!", "error");
-            await update(ref(db, `users/${currentUser.uid}`), { username: nick });
+            await update(ref(db, `artifacts/${appId}/users/${currentUser.uid}/profile`), { username: nick });
             toast("Profil güncellendi.");
         };
 
         window.deleteAccount = async () => {
-            if (confirm("Hesabını silmek istediğine emin misin? TÜM VERİLERİN SİLİNECEK!")) {
+            if (confirm("Hesabını silmek istediğine emin misin?")) {
                 const uid = currentUser.uid;
-                await remove(ref(db, `users/${uid}`));
-                await remove(ref(db, `studies/${uid}`));
+                await remove(ref(db, `artifacts/${appId}/users/${uid}`));
+                await remove(ref(db, `artifacts/${appId}/public/data/leaderboard/${uid}`));
                 await deleteUser(currentUser).catch(() => toast("Güvenlik için tekrar giriş yapın.", "error"));
             }
         };
@@ -647,13 +702,7 @@
                     const e = document.getElementById('reg-email').value;
                     const p = document.getElementById('reg-pass').value;
                     if (u.length < 2) throw new Error("İsim çok kısa.");
-                    const res = await createUserWithEmailAndPassword(auth, e, p);
-                    await set(ref(db, `users/${res.user.uid}`), {
-                        uid: res.user.uid,
-                        username: u,
-                        xp: 0,
-                        avatar: ""
-                    });
+                    await createUserWithEmailAndPassword(auth, e, p);
                 }
             } catch (e) { toast(e.message, "error"); }
         };
