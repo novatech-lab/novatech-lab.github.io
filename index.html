@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NovaTech Ultra | Eğitim ve Sosyal Platform</title>
+    <title>NovaTech V4 Pro Ultimate</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -14,7 +14,6 @@
             --card: #0c0f16;
             --border: #1e2532;
             --primary: #6366f1;
-            --primary-glow: rgba(99, 102, 241, 0.4);
             --accent: #10b981;
             --danger: #ef4444;
             --text: #f9fafb;
@@ -24,7 +23,6 @@
             --sidebar-w: 250px;
         }
 
-        /* Light Mode Variables */
         body.light-mode {
             --bg: #f4f7fa;
             --card: #ffffff;
@@ -33,197 +31,257 @@
             --text-dim: #64748b;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; transition: background 0.3s, border-color 0.3s; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.5; font-size: 14px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; font-size: 14px; }
 
-        #notification-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 8px; }
-        .toast { background: var(--card); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px; min-width: 200px; font-size: 0.8rem; animation: slideIn 0.3s ease forwards; }
-        @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
+        /* Bildirimler */
+        #notification-container { position: fixed; top: 20px; right: 20px; z-index: 10000; }
+        .toast { background: var(--card); border: 1px solid var(--border); padding: 12px 18px; border-radius: 10px; margin-bottom: 8px; animation: slide 0.3s ease forwards; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+        @keyframes slide { from { transform: translateX(120%); } to { transform: translateX(0); } }
 
-        .app-container { display: flex; min-height: 100vh; }
+        /* Layout */
         header { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 900; }
-        .sidebar { width: var(--sidebar-w); background: var(--card); border-right: 1px solid var(--border); padding: 15px; display: flex; flex-direction: column; position: fixed; top: var(--nav-h); bottom: 0; z-index: 800; transition: transform 0.3s ease; }
-        .main-content { flex: 1; margin-left: var(--sidebar-w); margin-top: var(--nav-h); padding: 15px; max-width: 1000px; }
+        .sidebar { width: var(--sidebar-w); background: var(--card); border-right: 1px solid var(--border); padding: 15px; position: fixed; top: var(--nav-h); bottom: 0; z-index: 800; transition: transform 0.3s; overflow-y: auto; }
+        .main-content { margin-left: var(--sidebar-w); margin-top: var(--nav-h); padding: 20px; max-width: 900px; min-height: calc(100vh - var(--nav-h)); }
 
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        
-        .btn { padding: 6px 12px; border-radius: 6px; border: none; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; font-size: 0.75rem; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 15px; position: relative; }
+        .btn { padding: 10px 18px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-        .btn-secondary { background: rgba(0,0,0,0.05); color: var(--text); border: 1px solid var(--border); }
-        .btn:active { transform: scale(0.95); }
+        .btn-ai { background: linear-gradient(45deg, #6366f1, #a855f7); color: white; }
+        .btn-secondary { background: rgba(128,128,128,0.1); color: var(--text); }
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
         
-        input, select, textarea { width: 100%; background: rgba(0,0,0,0.05); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; color: var(--text); margin-bottom: 10px; outline: none; font-size: 0.8rem; }
-        body.light-mode input, body.light-mode select, body.light-mode textarea { background: #fff; }
+        input, select, textarea { width: 100%; background: rgba(128,128,128,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: var(--text); margin-bottom: 10px; outline: none; }
 
-        .xp-bar { height: 5px; background: rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden; }
-        .xp-fill { height: 100%; background: var(--primary); width: 0%; transition: 1s ease-out; }
+        .xp-bar { height: 8px; background: rgba(0,0,0,0.1); border-radius: 10px; margin-top: 10px; overflow: hidden; }
+        .xp-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
 
-        .nav-link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: var(--text-dim); text-decoration: none; border-radius: 10px; margin-bottom: 2px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.8rem; }
-        .nav-link.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px; color: var(--text-dim); text-decoration: none; border-radius: 12px; cursor: pointer; font-weight: 600; margin-bottom: 5px; }
+        .nav-link.active { background: rgba(99, 102, 241, 0.12); color: var(--primary); }
 
-        .post { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
-        .avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); background: #eee; }
-        
-        .action-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; }
-        .action-btn:hover { background: rgba(0,0,0,0.03); }
-        .action-btn.active { color: var(--danger); }
+        /* Forum Görsel Alanı */
+        .image-preview-container { display: none; margin: 10px 0; position: relative; width: fit-content; }
+        .image-preview { max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid var(--border); }
+        .remove-img { position: absolute; top: -8px; right: -8px; background: var(--danger); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
 
-        .comments-section { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); display: none; }
-        .comment-item { font-size: 0.75rem; margin-bottom: 6px; padding: 6px; background: rgba(0,0,0,0.02); border-radius: 6px; }
+        .post-img { width: 100%; border-radius: 10px; margin-top: 10px; border: 1px solid var(--border); cursor: pointer; }
+
+        /* Rütbe Rozetleri */
+        .rank-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 20px; background: rgba(99, 102, 241, 0.1); color: var(--primary); border: 1px solid var(--primary); }
 
         @media (max-width: 900px) {
-            .sidebar { transform: translateX(-100%); }
+            .sidebar { transform: translateX(-100%); width: 280px; }
             .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-            .menu-toggle { display: block !important; }
+            .main-content { margin-left: 0; padding-bottom: 80px; }
         }
-        .menu-toggle { display: none; background: none; border: none; color: var(--text); font-size: 1.1rem; cursor: pointer; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        .toggle-switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(20px); }
 
-        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .ai-loading { position: absolute; inset: 0; background: rgba(12, 15, 22, 0.9); display: none; align-items: center; justify-content: center; border-radius: 12px; z-index: 20; color: var(--primary); font-weight: 800; gap: 10px; }
+
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
+        .stat-item { background: rgba(128,128,128,0.05); padding: 12px; border-radius: 10px; text-align: center; }
+        .stat-val { display: block; font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        .stat-lbl { font-size: 0.7rem; color: var(--text-dim); }
+
+        .teacher-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--border); }
+        .teacher-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
     </style>
 </head>
 <body>
 
     <div id="notification-container"></div>
 
-    <!-- Auth Section -->
-    <div id="auth-overlay">
-        <div class="card" style="width: 100%; max-width: 320px; text-align: center;">
-            <h2 style="font-size: 1.2rem; margin-bottom: 20px;">NOVA<span style="color:var(--primary)">TECH</span></h2>
-            <div id="login-box">
-                <input type="email" id="auth-email" placeholder="E-posta">
-                <input type="password" id="auth-pass" placeholder="Şifre">
-                <button class="btn btn-primary" style="width:100%" id="btn-login">Giriş Yap</button>
-                <p style="margin-top:15px; font-size:0.7rem">Hesabın yok mu? <span style="color:var(--primary); cursor:pointer" onclick="toggleAuth(false)">Kayıt Ol</span></p>
-            </div>
-            <div id="register-box" style="display:none">
-                <input type="text" id="reg-name" placeholder="Kullanıcı Adı">
-                <input type="email" id="reg-email" placeholder="E-posta">
-                <input type="password" id="reg-pass" placeholder="Şifre">
-                <button class="btn btn-primary" style="width:100%" id="btn-register">Kayıt Ol</button>
-                <p style="margin-top:15px; font-size:0.7rem">Üye misin? <span style="color:var(--primary); cursor:pointer" onclick="toggleAuth(true)">Giriş Yap</span></p>
-            </div>
+    <!-- Auth -->
+    <div id="auth-screen">
+        <div class="card" style="width: 100%; max-width: 350px; text-align: center;">
+            <h1 style="margin-bottom: 10px; font-weight: 900; font-size: 1.8rem;">NOVA<span style="color:var(--primary)">TECH</span></h1>
+            <p style="color:var(--text-dim); font-size: 0.8rem; margin-bottom: 25px;">Eğitimin Yeni Nesil Sosyal Ağı</p>
+            <input type="email" id="email" placeholder="E-posta">
+            <input type="password" id="password" placeholder="Şifre">
+            <button class="btn btn-primary" style="width: 100%;" onclick="handleAuth()">Hadi Başlayalım</button>
         </div>
     </div>
 
-    <!-- Main App -->
-    <div id="app" style="display:none">
+    <div id="app-root" style="display: none;">
         <header>
-            <div style="display:flex; align-items:center; gap:10px;">
-                <button class="menu-toggle" onclick="toggleSidebar(true)"><i class="fas fa-bars"></i></button>
-                <div style="font-weight: 800; font-size: 0.85rem;">NOVATECH</div>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <button class="btn btn-secondary" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+                <b style="letter-spacing: 1px; font-size: 1.1rem;">NOVATECH</b>
             </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-                <button class="btn btn-secondary" onclick="dailyCheckIn()"><i class="fas fa-gift" style="color:var(--xp)"></i> Yoklama</button>
-                <img id="nav-avatar" src="" class="avatar" style="width:30px; height:30px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div id="daily-reward-btn" class="btn btn-secondary" onclick="claimDailyReward()" style="padding: 6px 10px; cursor: pointer;">
+                    <i class="fas fa-calendar-check" style="color: var(--xp)"></i>
+                </div>
+                <div style="text-align: right;">
+                    <div id="header-xp" style="font-size: 0.8rem; color: var(--xp); font-weight: 800;">0 XP</div>
+                </div>
+                <img id="user-avatar" class="avatar" style="width:36px; height:36px; border: 2px solid var(--border); border-radius: 50%;">
             </div>
         </header>
 
         <div class="app-container">
             <aside class="sidebar" id="sidebar">
-                <div class="card" style="padding: 10px; margin-bottom: 10px; border-color: var(--primary);">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <img id="side-avatar" src="" class="avatar">
-                        <div style="overflow:hidden">
-                            <div id="user-display-name" style="font-weight:700; font-size:0.75rem;">...</div>
-                            <div id="user-rank-name" style="color:var(--primary); font-size:0.6rem; font-weight:800;">YÜKLENİYOR</div>
+                <div class="card" style="padding: 15px; margin-bottom: 15px;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <img id="side-avatar" class="avatar" style="width:45px; height:45px; border-radius: 50%;">
+                        <div style="flex:1">
+                            <div id="side-name" style="font-weight: 800; font-size: 0.9rem;">Yükleniyor...</div>
+                            <span id="side-rank" class="rank-badge">Acemi</span>
                         </div>
                     </div>
-                    <div class="xp-bar" style="margin-top:8px;"><div id="xp-inner-bar" class="xp-fill"></div></div>
+                    <div class="xp-bar"><div id="xp-fill" class="xp-fill"></div></div>
+                    <p id="next-rank-info" style="font-size: 0.6rem; color: var(--text-dim); margin-top: 5px; text-align: center;"></p>
                 </div>
-                <nav style="flex:1">
-                    <div class="nav-link active" onclick="switchTab('study', this)"><i class="fas fa-pen-nib"></i> <span>Ders Takip</span></div>
-                    <div class="nav-link" onclick="switchTab('forum', this)"><i class="fas fa-comments"></i> <span>NovaSocial</span></div>
-                    <div class="nav-link" onclick="switchTab('ranks', this)"><i class="fas fa-award"></i> <span>Sıralama</span></div>
-                    <div class="nav-link" onclick="switchTab('profile', this)"><i class="fas fa-user-gear"></i> <span>Ayarlar</span></div>
+
+                <nav>
+                    <div class="nav-link active" onclick="showTab('forum')"><i class="fas fa-hashtag"></i> NovaSocial</div>
+                    <div class="nav-link" onclick="showTab('study')"><i class="fas fa-book-open"></i> Ders Takibi</div>
+                    <div class="nav-link" onclick="showTab('teachers')"><i class="fas fa-chalkboard-teacher"></i> Öğretmenler</div>
+                    <div class="nav-link" onclick="showTab('ranks')"><i class="fas fa-trophy"></i> Sıralama</div>
+                    <div class="nav-link" onclick="showTab('settings')"><i class="fas fa-cog"></i> Ayarlar</div>
                 </nav>
-                <button class="btn btn-danger" onclick="logout()" style="width:100%"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
+
+                <div class="card" style="margin-top: 20px; background: rgba(99, 102, 241, 0.05); border: 1px dashed var(--primary);">
+                    <h4 style="font-size: 0.75rem; margin-bottom: 5px;">AI Asistan</h4>
+                    <p style="font-size: 0.65rem; color: var(--text-dim);">Derslerinle ilgili tavsiye almak için profilini geliştir.</p>
+                </div>
+
+                <button class="btn btn-danger" onclick="logout()" style="width:100%; margin-top: 15px;"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
             </aside>
 
             <main class="main-content">
-                <!-- Study Tab -->
-                <div id="tab-study" class="tab-content active">
-                    <div class="card">
-                        <h4 style="margin-bottom:10px; font-size:0.85rem;">Soru Çözüm Analizi</h4>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                            <select id="study-lesson" onchange="loadTopics()"></select>
-                            <select id="study-topic"></select>
+                <!-- AI Advice Panel -->
+                <div class="card" id="ai-panel" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)); border: 1px solid var(--primary);">
+                    <div id="ai-loading-main" class="ai-loading"><i class="fas fa-circle-notch fa-spin"></i> Zeka Analiz Ediyor...</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <i class="fas fa-robot" style="color: var(--primary);"></i>
+                            <b style="font-size: 0.85rem;">Nova AI Koç</b>
                         </div>
-                        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px;">
-                            <input type="number" id="val-d" placeholder="Doğru">
-                            <input type="number" id="val-y" placeholder="Yanlış">
-                            <input type="number" id="val-b" placeholder="Boş">
-                        </div>
-                        <button class="btn btn-primary" style="width:100%" onclick="saveStudy()">Verileri İşle</button>
+                        <button class="btn btn-ai" style="padding: 5px 12px; font-size: 0.65rem;" onclick="getAIAdvice()">Tavsiye Üret ✨</button>
                     </div>
+                    <p id="ai-advice-text" style="font-size: 0.75rem; margin-top: 10px; line-height: 1.5;">Bugün harika bir gün! Çalışma verilerini girerek sana özel analizi başlatabilirsin.</p>
                 </div>
 
                 <!-- Forum Tab -->
-                <div id="tab-forum" class="tab-content">
+                <section id="tab-forum" class="tab-pane">
                     <div class="card">
-                        <textarea id="forum-input" rows="2" placeholder="Topluluğa bir şeyler yaz..."></textarea>
-                        <div style="display:flex; justify-content:flex-end;">
-                            <button class="btn btn-primary" onclick="createPost()">Gönder</button>
+                        <div id="ai-loading-post" class="ai-loading"><i class="fas fa-magic fa-spin"></i> Metin Parlatılıyor...</div>
+                        <textarea id="post-text" rows="2" placeholder="Neler çalışıyorsun?"></textarea>
+                        
+                        <div id="image-preview-area" class="image-preview-container">
+                            <img id="preview-img" class="image-preview">
+                            <div class="remove-img" onclick="clearImage()"><i class="fas fa-times"></i></div>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; gap:8px;">
+                                <label class="btn btn-secondary" title="Görsel Ekle" style="cursor: pointer;">
+                                    <i class="fas fa-image"></i>
+                                    <input type="file" id="post-image-input" hidden accept="image/*" onchange="previewImage(this)">
+                                </label>
+                                <button class="btn btn-secondary" onclick="enhancePost()" title="AI İle Düzenle">
+                                    <i class="fas fa-sparkles"></i>
+                                </button>
+                            </div>
+                            <button class="btn btn-primary" onclick="addPost()">Paylaş</button>
                         </div>
                     </div>
-                    <div id="forum-feed"></div>
-                </div>
+                    <div id="feed"></div>
+                </section>
+
+                <!-- Study Tab -->
+                <section id="tab-study" class="tab-pane" style="display:none;">
+                    <div class="card">
+                        <h3><i class="fas fa-pen-nib"></i> Çalışma Girişi</h3>
+                        <div style="margin-top: 15px;">
+                            <label style="font-size:0.7rem;">Ders</label>
+                            <select id="lesson-select" onchange="updateTopics()">
+                                <option value="Matematik">Matematik</option>
+                                <option value="Fizik">Fizik</option>
+                                <option value="Kimya">Kimya</option>
+                                <option value="Biyoloji">Biyoloji</option>
+                                <option value="Türkçe">Türkçe</option>
+                                <option value="Tarih">Tarih</option>
+                                <option value="Coğrafya">Coğrafya</option>
+                                <option value="Geometri">Geometri</option>
+                                <option value="İngilizce">İngilizce</option>
+                                <option value="Felsefe">Felsefe</option>
+                            </select>
+                            <label style="font-size:0.7rem;">Konu Başlığı</label>
+                            <select id="topic-select"></select>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                                <input type="number" id="q-correct" placeholder="Doğru">
+                                <input type="number" id="q-wrong" placeholder="Yanlış">
+                                <input type="number" id="q-empty" placeholder="Boş">
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%;" onclick="saveStudy()">Kaydet ve +50 XP Kazan</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-chart-line"></i> Son Çalışmaların</h3>
+                        <div id="study-history" style="margin-top:10px;"></div>
+                    </div>
+                </section>
+
+                <!-- Teachers Tab -->
+                <section id="tab-teachers" class="tab-pane" style="display:none;">
+                    <div class="card">
+                        <h3>Sana Yardım Edebilirler</h3>
+                        <p style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 15px;">Platformdaki uzman öğretmenlerimizle tanışın.</p>
+                        <div id="teacher-list"></div>
+                    </div>
+                </section>
 
                 <!-- Ranks Tab -->
-                <div id="tab-ranks" class="tab-content">
+                <section id="tab-ranks" class="tab-pane" style="display:none;">
                     <div class="card">
-                        <h4 style="margin-bottom:12px;">Top 10 Üye</h4>
-                        <div id="leaderboard" style="display:flex; flex-direction:column; gap:6px;"></div>
+                        <h3 style="margin-bottom: 15px;"><i class="fas fa-crown"></i> Liderler</h3>
+                        <div id="rank-list"></div>
                     </div>
-                </div>
+                </section>
 
                 <!-- Settings Tab -->
-                <div id="tab-profile" class="tab-content">
+                <section id="tab-settings" class="tab-pane" style="display:none;">
                     <div class="card">
-                        <h4 style="margin-bottom:15px;">Genel Ayarlar</h4>
-                        
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid var(--border);">
-                            <span>Görünüm Modu (Karanlık/Aydınlık)</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
-                                <span class="slider"></span>
+                        <h3>Profil Yönetimi</h3>
+                        <div style="margin-top:15px; display:flex; align-items:center; gap:15px;">
+                            <img id="settings-avatar" class="avatar" style="width:60px; height:60px; border-radius: 50%;">
+                            <label class="btn btn-secondary" style="cursor:pointer;">
+                                Fotoğrafı Değiştir
+                                <input type="file" hidden accept="image/*" onchange="updateAvatar(this)">
                             </label>
                         </div>
-
-                        <div style="margin-bottom:15px;">
-                            <label style="font-size:0.7rem; color:var(--text-dim); margin-bottom:4px; display:block;">Kullanıcı Adını Güncelle</label>
-                            <div style="display:flex; gap:8px;">
-                                <input type="text" id="prof-username" placeholder="Yeni İsim" style="margin-bottom:0;">
-                                <button class="btn btn-primary" onclick="updateProfile()">Güncelle</button>
-                            </div>
-                        </div>
-
-                        <div style="padding-top:10px;">
-                            <h4 style="color:var(--danger); font-size:0.8rem; margin-bottom:8px;">Kritik İşlemler</h4>
-                            <button class="btn btn-danger" style="width:100%; justify-content:flex-start;" onclick="deleteAccount()">
-                                <i class="fas fa-user-slash"></i> Hesabı ve Verileri Kalıcı Olarak Sil
-                            </button>
+                        <div style="margin-top:20px;">
+                            <input type="text" id="new-name" placeholder="Yeni Adınız">
+                            <button class="btn btn-primary" style="width:100%" onclick="updateName()">İsmi Güncelle</button>
                         </div>
                     </div>
-                </div>
+
+                    <div class="card">
+                        <h3>Görünüm</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>Karanlık Mod</span>
+                            <button class="btn btn-secondary" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="border-color: var(--danger);">
+                        <h3 style="color:var(--danger)">Tehlikeli Bölge</h3>
+                        <button class="btn btn-danger" style="width:100%; margin-top:10px;" onclick="confirmDeleteAccount()">Hesabımı Tamamen Sil</button>
+                    </div>
+                </section>
             </main>
         </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, set, push, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const apiKey = ""; // Gemini API
 
         const firebaseConfig = {
             apiKey: "AIzaSyBGFyQsqe32hGgskY5yRfrbXlH8MuHKaLE",
@@ -235,256 +293,385 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const appId = "novatech_v4_ultra";
+        const appId = "novatech_v4_pro_ultimate";
 
-        let currentUser = null;
-        let userData = null;
+        let userState = null;
+        let selectedBase64Image = null;
 
+        const RANKS = ["Acemi", "Çaylak", "Gezgin", "Araştırmacı", "Bilgin", "Usta", "Dahi", "Efsane", "Yüce", "Mistik", "Ebedi", "Nova"];
         const LESSONS = {
-            "Matematik": ["Sayılar", "Fonksiyonlar", "Limit", "Türev", "Geometri", "Diğer"],
-            "Fizik": ["Kuvvet", "Optik", "Elektrik", "Modern Fizik", "Diğer"],
-            "Kimya": ["Atom", "Bağlar", "Mol", "Organik Kimya", "Diğer"],
-            "Türkçe": ["Paragraf", "Dil Bilgisi", "Cümle Anlamı", "Diğer"],
-            "Sohbet & Genel": ["Serbest Sohbet", "Duyuru", "Soru Sorma", "Diğer"]
+            "Matematik": ["Limit", "Türev", "İntegral", "Logaritma", "Sayılar", "Polinomlar", "Trigonometri", "Fonksiyonlar", "Diziler", "Permütasyon"],
+            "Fizik": ["Vektörler", "Kuvvet", "Optik", "Dalgalar", "Elektrik", "Modern Fizik", "Enerji", "Manyetizma", "Newton Kanunları", "Madde"],
+            "Kimya": ["Atom", "Mol", "Periyodik Cetvel", "Karışımlar", "Asitler", "Organik Kimya", "Gazlar", "Çözeltiler", "Enerji", "Hız"],
+            "Biyoloji": ["Hücre", "Genetik", "Sistemler", "Ekoloji", "Bitki Biyolojisi", "Evrim", "Protein Sentezi", "Fotosentez", "Solunum", "Canlılar"],
+            "Türkçe": ["Paragraf", "Yazım Kuralları", "Noktalama", "Dil Bilgisi", "Anlam Bilgisi", "Cümle Öğeleri", "Sözcük Yapısı", "Edebiyat", "Şiir", "Roman"],
+            "Tarih": ["İslamiyet Öncesi", "Osmanlı", "İnkılap Tarihi", "Avrupa Tarihi", "İlk Çağ Uygarlıkları", "Selçuklu", "Milli Mücadele", "Atatürk İlkeleri", "Dünya Savaşı", "Cumhuriyet"],
+            "Coğrafya": ["Dünya Şekli", "Harita Bilgisi", "İklimler", "Nüfus", "Türkiye Coğrafyası", "Ekonomik Coğrafya", "Doğal Afetler", "Çevre", "Ulaşım", "Kayaçlar"],
+            "Geometri": ["Üçgenler", "Çemberler", "Katı Cisimler", "Analitik Geometri", "Çokgenler", "Dörtgenler", "Açı Kenar Bağıntıları", "Benzerlik", "Alan", "Hacim"],
+            "İngilizce": ["Tenses", "Modals", "Passives", "Vocabulary", "Reading", "Grammar", "Listening", "Writing", "Phrasal Verbs", "Clauses"],
+            "Felsefe": ["Bilgi Felsefesi", "Varlık", "Ahlak", "Din", "Siyaset", "Sanat", "Felsefeye Giriş", "Mantık", "Psikoloji", "Sosyoloji"]
         };
-        const RANKS = ["ACEMİ", "ÇAYLAK", "GEZGİN", "ARAŞTIRMACI", "BİLGİN", "USTA", "DAHİ", "EFSANE", "NOVA"];
 
-        // --- AUTH & DATA SYNC ---
-        onAuthStateChanged(auth, user => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('auth-overlay').style.display = 'none';
-                document.getElementById('app').style.display = 'block';
-                
-                onValue(ref(db, `artifacts/${appId}/users/${user.uid}/profile`), snap => {
-                    userData = snap.val();
-                    if (!userData) {
-                        const d = { uid: user.uid, username: user.email.split('@')[0], xp: 0, lastCheckIn: 0 };
-                        set(ref(db, `artifacts/${appId}/users/${user.uid}/profile`), d);
-                    } else {
-                        renderUI();
-                        syncForum();
-                        syncLeaderboard();
-                    }
+        const TEACHERS = [
+            { name: "Mustafa Hoca", branch: "Matematik", img: "https://i.pravatar.cc/150?u=mustafa" },
+            { name: "Selin Öğretmen", branch: "Fizik", img: "https://i.pravatar.cc/150?u=selin" },
+            { name: "Ahmet Bey", branch: "Kimya", img: "https://i.pravatar.cc/150?u=ahmet" },
+            { name: "Buse Hanım", branch: "Biyoloji", img: "https://i.pravatar.cc/150?u=buse" }
+        ];
+
+        // --- GEMINI ---
+        async function callAI(prompt, sys = "") {
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        systemInstruction: { parts: [{ text: sys }] }
+                    })
                 });
+                const res = await response.json();
+                return res.candidates?.[0]?.content?.parts?.[0]?.text || "Şu an cevap veremiyorum.";
+            } catch { return "Bir hata oluştu."; }
+        }
+
+        window.getAIAdvice = async () => {
+            document.getElementById('ai-loading-main').style.display = 'flex';
+            const advice = await callAI(`İsmim ${userState.name}, XP puanım ${userState.xp}. Bir öğrenciyim. Bana çok kısa ve etkileyici bir çalışma tavsiyesi ver.`, "Sen bir eğitim koçusun.");
+            document.getElementById('ai-advice-text').innerText = advice;
+            document.getElementById('ai-loading-main').style.display = 'none';
+        };
+
+        window.enhancePost = async () => {
+            const txt = document.getElementById('post-text').value;
+            if(!txt) return;
+            document.getElementById('ai-loading-post').style.display = 'flex';
+            const enhanced = await callAI(`Aşağıdaki metni bir eğitim forumunda paylaşılacak şekilde düzelt ve daha ilgi çekici yap: "${txt}"`, "Sadece düzeltilmiş metni ver.");
+            document.getElementById('post-text').value = enhanced;
+            document.getElementById('ai-loading-post').style.display = 'none';
+        };
+
+        // --- AUTH ---
+        window.handleAuth = async () => {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('password').value;
+            if(!e || !p) return showToast("Boş alan bırakmayın", "error");
+            try { await signInWithEmailAndPassword(auth, e, p); }
+            catch {
+                try { await createUserWithEmailAndPassword(auth, e, p); }
+                catch { showToast("Giriş hatası", "error"); }
+            }
+        };
+
+        onAuthStateChanged(auth, user => {
+            if(user) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app-root').style.display = 'block';
+                sync(user);
             } else {
-                document.getElementById('auth-overlay').style.display = 'flex';
-                document.getElementById('app').style.display = 'none';
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('app-root').style.display = 'none';
             }
         });
 
-        function renderUI() {
-            if(!userData) return;
-            document.querySelectorAll('#user-display-name').forEach(e => e.innerText = userData.username);
-            const av = `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username}`;
-            document.getElementById('side-avatar').src = av;
-            document.getElementById('nav-avatar').src = av;
-            document.getElementById('prof-username').value = userData.username;
-            
-            const lvl = Math.floor(userData.xp / 500);
-            document.getElementById('user-rank-name').innerText = RANKS[Math.min(lvl, RANKS.length-1)];
-            document.getElementById('xp-inner-bar').style.width = `${Math.min((userData.xp % 500) / 5, 100)}%`;
+        async function sync(user) {
+            const uRef = ref(db, `artifacts/${appId}/users/${user.uid}/profile`);
+            onValue(uRef, snap => {
+                const data = snap.val();
+                if(!data) {
+                    const init = { uid: user.uid, name: user.email.split('@')[0], xp: 0, avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${user.uid}`, lastReward: 0 };
+                    set(uRef, init);
+                } else {
+                    userState = data;
+                    updateUI();
+                }
+            });
+            loadForum();
+            loadRanks();
+            loadHistory();
+            loadTeachers();
         }
 
-        // --- FORUM ACTIONS ---
-        window.createPost = async () => {
-            const text = document.getElementById('forum-input').value.trim();
-            if(!text) return toast("Boş mesaj gönderilemez!", "error");
-            await push(ref(db, `artifacts/${appId}/public/data/forum`), {
-                uid: currentUser.uid,
-                author: userData.username,
-                text,
-                likes: {},
-                likeCount: 0,
-                ts: Date.now()
-            });
-            document.getElementById('forum-input').value = "";
-            toast("Gönderildi!");
+        function updateUI() {
+            const rIdx = Math.min(Math.floor(userState.xp / 1000), RANKS.length - 1);
+            document.getElementById('side-name').innerText = userState.name;
+            document.getElementById('side-rank').innerText = RANKS[rIdx];
+            document.getElementById('header-xp').innerText = userState.xp + " XP";
+            document.getElementById('xp-fill').style.width = (userState.xp % 1000 / 10) + "%";
+            document.getElementById('next-rank-info').innerText = `${1000 - (userState.xp % 1000)} XP sonraki rütbe`;
+            
+            document.getElementById('user-avatar').src = userState.avatar;
+            document.getElementById('side-avatar').src = userState.avatar;
+            document.getElementById('settings-avatar').src = userState.avatar;
+        }
+
+        // --- IMAGE HANDLING ---
+        window.previewImage = (input) => {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                selectedBase64Image = e.target.result;
+                document.getElementById('preview-img').src = selectedBase64Image;
+                document.getElementById('image-preview-area').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
         };
+
+        window.clearImage = () => {
+            selectedBase64Image = null;
+            document.getElementById('post-image-input').value = "";
+            document.getElementById('image-preview-area').style.display = 'none';
+        };
+
+        // --- FORUM ---
+        window.addPost = async () => {
+            const txt = document.getElementById('post-text').value.trim();
+            if(!txt && !selectedBase64Image) return;
+            const p = {
+                uid: userState.uid,
+                name: userState.name,
+                avatar: userState.avatar,
+                text: txt,
+                img: selectedBase64Image,
+                ts: Date.now(),
+                likes: 0,
+                likedBy: {}
+            };
+            await push(ref(db, `artifacts/${appId}/public/forum`), p);
+            document.getElementById('post-text').value = "";
+            clearImage();
+            showToast("Paylaşıldı!");
+        };
+
+        function loadForum() {
+            onValue(ref(db, `artifacts/${appId}/public/forum`), snap => {
+                const feed = document.getElementById('feed');
+                feed.innerHTML = "";
+                const data = snap.val();
+                if(!data) return;
+                Object.entries(data).sort((a,b)=>b[1].ts - a[1].ts).forEach(([id, p]) => {
+                    const isLiked = p.likedBy && p.likedBy[userState.uid];
+                    const div = document.createElement('div');
+                    div.className = 'post card';
+                    div.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                            <img src="${p.avatar}" class="avatar" style="width:35px; height:35px; border-radius:50%">
+                            <b style="font-size:0.85rem;">${p.name}</b>
+                            ${p.uid === userState.uid ? `<i class="fas fa-trash" style="margin-left:auto; color:var(--danger); cursor:pointer;" onclick="deletePost('${id}')"></i>` : ''}
+                        </div>
+                        <p style="font-size:0.85rem; line-height:1.5;">${p.text}</p>
+                        ${p.img ? `<img src="${p.img}" class="post-img" onclick="window.open('${p.img}')">` : ''}
+                        <div style="display:flex; gap:15px; margin-top:15px; border-top:1px solid var(--border); padding-top:10px;">
+                            <button class="action-btn ${isLiked?'liked':''}" onclick="likePost('${id}')" style="background:none; border:none; color:${isLiked?'var(--danger)':'var(--text-dim)'}; cursor:pointer;">
+                                <i class="${isLiked?'fas':'far'} fa-heart"></i> ${p.likes || 0}
+                            </button>
+                            <button class="action-btn" onclick="toggleComments('${id}')" style="background:none; border:none; color:var(--text-dim); cursor:pointer;">
+                                <i class="far fa-comment"></i> Yorumlar
+                            </button>
+                        </div>
+                        <div id="comments-${id}" style="display:none; margin-top:15px;">
+                            <div id="clist-${id}"></div>
+                            <div style="display:flex; gap:10px; margin-top:10px;">
+                                <input type="text" id="cin-${id}" placeholder="Yorum yaz..." style="margin-bottom:0; font-size:0.75rem;">
+                                <button class="btn btn-primary" onclick="addComment('${id}')">Gönder</button>
+                            </div>
+                        </div>
+                    `;
+                    feed.appendChild(div);
+                    loadComments(id);
+                });
+            });
+        }
 
         window.likePost = async (id) => {
-            const postRef = ref(db, `artifacts/${appId}/public/data/forum/${id}`);
-            const s = await get(postRef);
-            const p = s.val();
-            const likes = p.likes || {};
-            if(likes[currentUser.uid]) delete likes[currentUser.uid];
-            else likes[currentUser.uid] = true;
-            await update(postRef, { likes, likeCount: Object.keys(likes).length });
-        };
-
-        window.deletePost = async (id) => {
-            if(confirm("Bu gönderiyi silmek istediğinden emin misin?")) {
-                await remove(ref(db, `artifacts/${appId}/public/data/forum/${id}`));
-                toast("Gönderi silindi.");
-            }
+            const r = ref(db, `artifacts/${appId}/public/forum/${id}`);
+            const s = await get(r);
+            const d = s.val();
+            const lb = d.likedBy || {};
+            if(lb[userState.uid]) { delete lb[userState.uid]; d.likes--; }
+            else { lb[userState.uid] = true; d.likes = (d.likes||0) + 1; }
+            update(r, { likes: d.likes, likedBy: lb });
         };
 
         window.toggleComments = (id) => {
-            const section = document.getElementById(`comments-${id}`);
-            section.style.display = section.style.display === 'block' ? 'none' : 'block';
+            const el = document.getElementById(`comments-${id}`);
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
         };
 
-        window.addComment = async (postId) => {
-            const inp = document.getElementById(`comment-input-${postId}`);
-            const text = inp.value.trim();
-            if(!text) return;
-            await push(ref(db, `artifacts/${appId}/public/data/forum/${postId}/comments`), {
-                author: userData.username,
-                text,
+        window.addComment = async (pid) => {
+            const inp = document.getElementById(`cin-${pid}`);
+            if(!inp.value.trim()) return;
+            await push(ref(db, `artifacts/${appId}/public/forum/${pid}/comments`), {
+                name: userState.name,
+                text: inp.value,
                 ts: Date.now()
             });
             inp.value = "";
         };
 
-        function syncForum() {
-            onValue(ref(db, `artifacts/${appId}/public/data/forum`), snap => {
-                const feed = document.getElementById('forum-feed');
-                feed.innerHTML = "";
+        function loadComments(pid) {
+            onValue(ref(db, `artifacts/${appId}/public/forum/${pid}/comments`), snap => {
+                const list = document.getElementById(`clist-${pid}`);
+                if(!list) return;
+                list.innerHTML = "";
                 const data = snap.val();
-                if(!data) return;
-                
-                Object.entries(data).sort((a,b)=>b[1].ts - a[1].ts).forEach(([id, p]) => {
-                    const liked = p.likes && p.likes[currentUser.uid];
-                    const comments = p.comments ? Object.values(p.comments) : [];
-                    
-                    feed.innerHTML += `
-                        <div class="post">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${p.author}" style="width:28px; border-radius:50%">
-                                    <b style="font-size:0.75rem;">${p.author}</b>
-                                </div>
-                                ${p.uid === currentUser.uid ? `<button class="action-btn" onclick="deletePost('${id}')" style="color:var(--danger)"><i class="fas fa-trash-can"></i></button>` : ''}
+                if(data) {
+                    Object.values(data).forEach(c => {
+                        list.innerHTML += `<div style="background:rgba(128,128,128,0.05); padding:8px 12px; border-radius:8px; margin-bottom:5px; font-size:0.75rem;"><b>${c.name}:</b> ${c.text}</div>`;
+                    });
+                }
+            });
+        }
+
+        window.deletePost = (id) => { if(confirm("Silmek istiyor musun?")) remove(ref(db, `artifacts/${appId}/public/forum/${id}`)); };
+
+        // --- STUDY ---
+        window.updateTopics = () => {
+            const l = document.getElementById('lesson-select').value;
+            const t = document.getElementById('topic-select');
+            t.innerHTML = LESSONS[l].map(x => `<option value="${x}">${x}</option>`).join('');
+        };
+        window.updateTopics();
+
+        window.saveStudy = async () => {
+            const c = parseInt(document.getElementById('q-correct').value) || 0;
+            const w = parseInt(document.getElementById('q-wrong').value) || 0;
+            const e = parseInt(document.getElementById('q-empty').value) || 0;
+            const lesson = document.getElementById('lesson-select').value;
+            const topic = document.getElementById('topic-select').value;
+
+            const newXp = userState.xp + 50;
+            await update(ref(db, `artifacts/${appId}/users/${userState.uid}/profile`), { xp: newXp });
+            await update(ref(db, `artifacts/${appId}/public/ranks/${userState.uid}`), { name: userState.name, xp: newXp });
+            await push(ref(db, `artifacts/${appId}/users/${userState.uid}/history`), { lesson, topic, c, w, e, ts: Date.now() });
+
+            showToast("Çalışma kaydedildi! +50 XP");
+            document.getElementById('q-correct').value = "";
+            document.getElementById('q-wrong').value = "";
+            document.getElementById('q-empty').value = "";
+        };
+
+        function loadHistory() {
+            onValue(ref(db, `artifacts/${appId}/users/${userState.uid}/history`), snap => {
+                const list = document.getElementById('study-history');
+                list.innerHTML = "";
+                const data = snap.val();
+                if(!data) { list.innerHTML = "<p style='font-size:0.7rem; color:var(--text-dim)'>Henüz kayıt yok.</p>"; return; }
+                Object.values(data).reverse().slice(0, 5).forEach(h => {
+                    list.innerHTML += `
+                        <div class="stat-item" style="margin-bottom:8px; text-align:left; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <b style="font-size:0.8rem;">${h.lesson} - ${h.topic}</b>
+                                <div style="font-size:0.65rem; color:var(--text-dim)">D: ${h.c} | Y: ${h.w} | B: ${h.e}</div>
                             </div>
-                            <p style="font-size:0.8rem; margin-bottom:10px;">${p.text}</p>
-                            <div style="display:flex; gap:10px;">
-                                <button class="action-btn ${liked?'active':''}" onclick="likePost('${id}')">
-                                    <i class="${liked?'fas':'far'} fa-heart"></i> ${p.likeCount || 0}
-                                </button>
-                                <button class="action-btn" onclick="toggleComments('${id}')">
-                                    <i class="far fa-comment"></i> ${comments.length} Yorum
-                                </button>
-                            </div>
-                            <div id="comments-${id}" class="comments-section">
-                                <div id="comment-list-${id}">
-                                    ${comments.map(c => `<div class="comment-item"><b>${c.author}:</b> ${c.text}</div>`).join('')}
-                                </div>
-                                <div style="display:flex; gap:5px; margin-top:8px;">
-                                    <input type="text" id="comment-input-${id}" placeholder="Yorum yaz..." style="margin-bottom:0; padding:5px;">
-                                    <button class="btn btn-primary" style="padding:4px 8px;" onclick="addComment('${id}')">Ekle</button>
-                                </div>
-                            </div>
-                        </div>`;
+                            <span style="font-size:0.6rem; opacity:0.5;">${new Date(h.ts).toLocaleDateString()}</span>
+                        </div>
+                    `;
                 });
             });
         }
 
-        // --- PROGRESS & SETTINGS ---
-        window.dailyCheckIn = async () => {
+        // --- TEACHERS ---
+        function loadTeachers() {
+            const list = document.getElementById('teacher-list');
+            list.innerHTML = TEACHERS.map(t => `
+                <div class="teacher-item">
+                    <img src="${t.img}" class="teacher-avatar">
+                    <div>
+                        <div style="font-weight:700;">${t.name}</div>
+                        <div style="font-size:0.7rem; color:var(--primary); font-weight:600;">${t.branch}</div>
+                    </div>
+                    <button class="btn btn-secondary" style="margin-left:auto; font-size:0.6rem;">Mesaj Gönder</button>
+                </div>
+            `).join('');
+        }
+
+        // --- DAILY REWARD ---
+        window.claimDailyReward = async () => {
             const now = Date.now();
-            if (now - (userData.lastCheckIn || 0) < 86400000) return toast("Henüz hazır değil!", "error");
-            await update(ref(db, `artifacts/${appId}/users/${currentUser.uid}/profile`), {
-                xp: userData.xp + 150, lastCheckIn: now
-            });
-            toast("+150 XP Eklendi!");
-        };
-
-        window.saveStudy = async () => {
-            const d = parseInt(document.getElementById('val-d').value) || 0;
-            if(d <= 0) return toast("Doğru sayısı girilmeli!", "error");
-            const bonus = d * 10 + 50;
-            await update(ref(db, `artifacts/${appId}/users/${currentUser.uid}/profile`), { xp: userData.xp + bonus });
-            toast(`+${bonus} XP Kaydedildi!`);
-            document.getElementById('val-d').value = "";
-        };
-
-        window.updateProfile = async () => {
-            const name = document.getElementById('prof-username').value.trim();
-            if(name.length < 3) return toast("İsim çok kısa!", "error");
-            await update(ref(db, `artifacts/${appId}/users/${currentUser.uid}/profile`), { username: name });
-            toast("İsim güncellendi.");
-        };
-
-        window.deleteAccount = async () => {
-            if(confirm("DİKKAT! Tüm verileriniz silinecek. Onaylıyor musunuz?")) {
-                await remove(ref(db, `artifacts/${appId}/users/${currentUser.uid}`));
-                await remove(ref(db, `artifacts/${appId}/public/data/leaderboard/${currentUser.uid}`));
-                deleteUser(currentUser).then(() => location.reload());
+            const last = userState.lastReward || 0;
+            if(now - last < 24 * 60 * 60 * 1000) {
+                const rem = 24 - Math.floor((now - last) / (60 * 60 * 1000));
+                return showToast(`Ödülü zaten aldın! ${rem} saat sonra tekrar dene.`, "error");
             }
+            const nxp = userState.xp + 150;
+            await update(ref(db, `artifacts/${appId}/users/${userState.uid}/profile`), { xp: nxp, lastReward: now });
+            await update(ref(db, `artifacts/${appId}/public/ranks/${userState.uid}`), { name: userState.name, xp: nxp });
+            showToast("Günlük ödül alındı! +150 XP ✨");
+        };
+
+        // --- RANKS ---
+        function loadRanks() {
+            onValue(ref(db, `artifacts/${appId}/public/ranks`), snap => {
+                const list = document.getElementById('rank-list');
+                list.innerHTML = "";
+                const data = snap.val();
+                if(!data) return;
+                Object.values(data).sort((a,b)=>b.xp - a.xp).forEach((u, i) => {
+                    const isMe = u.uid === userState.uid;
+                    list.innerHTML += `
+                        <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid var(--border); ${isMe?'background:rgba(99,102,241,0.05)':''}">
+                            <span><b>${i+1}.</b> ${u.name}</span>
+                            <span style="color:var(--xp); font-weight:800;">${u.xp} XP</span>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // --- PROFILE SETTINGS ---
+        window.updateAvatar = (input) => {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                await update(ref(db, `artifacts/${appId}/users/${userState.uid}/profile`), { avatar: e.target.result });
+                showToast("Avatar güncellendi!");
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.updateName = async () => {
+            const n = document.getElementById('new-name').value.trim();
+            if(n.length < 2) return;
+            await update(ref(db, `artifacts/${appId}/users/${userState.uid}/profile`), { name: n });
+            await update(ref(db, `artifacts/${appId}/public/ranks/${userState.uid}`), { name: n });
+            showToast("İsim güncellendi.");
+            document.getElementById('new-name').value = "";
+        };
+
+        window.confirmDeleteAccount = async () => {
+            if(confirm("Tüm verilerin silinecek. Emin misin?")) {
+                await remove(ref(db, `artifacts/${appId}/users/${userState.uid}`));
+                await remove(ref(db, `artifacts/${appId}/public/ranks/${userState.uid}`));
+                deleteUser(auth.currentUser).then(() => location.reload());
+            }
+        };
+
+        // --- UTILS ---
+        window.showTab = (id) => {
+            document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(`tab-${id}`).style.display = 'block';
+            event.currentTarget.classList.add('active');
         };
 
         window.toggleTheme = () => {
             document.body.classList.toggle('light-mode');
-            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
         };
 
-        // --- SYSTEM ---
-        window.loadTopics = () => {
-            const l = document.getElementById('study-lesson').value;
-            const t = document.getElementById('study-topic');
-            t.innerHTML = LESSONS[l].map(x => `<option value="${x}">${x}</option>`).join('');
+        window.showToast = (msg, type="success") => {
+            const c = document.getElementById('notification-container');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':'exclamation-circle'}" style="color:${type==='success'?'var(--accent)':'var(--danger)'}"></i> ${msg}`;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
         };
 
-        function syncLeaderboard() {
-            onValue(ref(db, `artifacts/${appId}/public/data/leaderboard`), snap => {
-                const div = document.getElementById('leaderboard');
-                div.innerHTML = "";
-                const data = snap.val() || {};
-                Object.values(data).sort((a,b)=>b.xp-a.xp).slice(0,10).forEach((u, i) => {
-                    const isMe = u.username === userData.username;
-                    div.innerHTML += `
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:${isMe?'rgba(99,102,241,0.1)':'rgba(0,0,0,0.02)'}; border-radius:8px;">
-                            <span style="font-size:0.75rem;">${i+1}. ${u.username}</span>
-                            <span style="font-size:0.7rem; font-weight:700; color:var(--primary)">${u.xp} XP</span>
-                        </div>`;
-                });
-            });
-            if(currentUser && userData) {
-                set(ref(db, `artifacts/${appId}/public/data/leaderboard/${currentUser.uid}`), { username: userData.username, xp: userData.xp });
-            }
-        }
-
-        const ls = document.getElementById('study-lesson');
-        if(ls) {
-            ls.innerHTML = Object.keys(LESSONS).map(l => `<option value="${l}">${l}</option>`).join('');
-            loadTopics();
-        }
-
-        window.switchTab = (id, btn) => {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById(`tab-${id}`).classList.add('active');
-            btn.classList.add('active');
-            if(window.innerWidth < 900) toggleSidebar(false);
-        };
-
-        window.toggleSidebar = (s) => document.getElementById('sidebar').classList.toggle('open', s);
-        window.toggleAuth = (l) => {
-            document.getElementById('login-box').style.display = l ? 'block' : 'none';
-            document.getElementById('register-box').style.display = l ? 'none' : 'block';
-        };
-
-        window.toast = (m, t="success") => {
-            const d = document.createElement('div');
-            d.className = 'toast';
-            d.innerHTML = `<i class="fas fa-${t==='error'?'circle-exclamation':'circle-check'}" style="color:${t==='error'?'var(--danger)':'var(--accent)'}"></i> ${m}`;
-            document.getElementById('notification-container').appendChild(d);
-            setTimeout(()=>d.remove(), 2500);
-        };
-
-        document.getElementById('btn-login').onclick = () => {
-            signInWithEmailAndPassword(auth, document.getElementById('auth-email').value, document.getElementById('auth-pass').value).catch(()=>toast("Hata!","error"));
-        };
-        document.getElementById('btn-register').onclick = () => {
-            createUserWithEmailAndPassword(auth, document.getElementById('reg-email').value, document.getElementById('reg-pass').value).catch(e=>toast(e.message,"error"));
-        };
         window.logout = () => signOut(auth);
 
-        // Theme memory
-        if(localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-mode');
-            document.getElementById('theme-toggle').checked = true;
-        }
     </script>
 </body>
 </html>
