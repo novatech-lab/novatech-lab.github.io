@@ -103,17 +103,6 @@
             max-width: 1200px;
         }
 
-        /* --- Hamburger Menu --- */
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px;
-        }
-
         /* --- Components --- */
         .card {
             background: var(--card);
@@ -139,7 +128,6 @@
         .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px var(--primary-glow); }
         .btn-primary:hover { transform: translateY(-2px); opacity: 0.9; }
         .btn-secondary { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); }
-        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
 
         input, select, textarea {
             width: 100%;
@@ -151,15 +139,10 @@
             margin-bottom: 15px;
             outline: none;
         }
-        input:focus { border-color: var(--primary); }
 
-        /* --- XP System --- */
-        .xp-container { margin-top: 15px; }
-        .xp-header { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; margin-bottom: 6px; }
         .xp-bar { height: 8px; background: #1e293b; border-radius: 10px; overflow: hidden; }
         .xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #818cf8); width: 0%; transition: 1s ease-out; }
 
-        /* --- Navigation --- */
         .nav-link {
             display: flex;
             align-items: center;
@@ -173,53 +156,27 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .nav-link:hover { background: rgba(255,255,255,0.03); color: var(--text); }
         .nav-link.active { background: var(--primary); color: white; }
 
-        /* --- Social Forum --- */
         .post { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
-        .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
         .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); background: #111; }
-        .post-img { width: 100%; border-radius: 15px; margin: 15px 0; max-height: 400px; object-fit: cover; }
-        .post-actions { display: flex; gap: 20px; padding-top: 15px; border-top: 1px solid var(--border); }
-        .action-item { cursor: pointer; color: var(--text-dim); font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
-        .action-item.liked { color: var(--danger); }
 
-        /* --- Mobile Responsive --- */
         @media (max-width: 900px) {
-            .menu-toggle { display: block; }
-            .sidebar {
-                transform: translateX(-100%);
-                top: 0;
-                height: 100vh;
-                width: 75%;
-                max-width: 300px;
-                box-shadow: 20px 0 50px rgba(0,0,0,0.8);
-            }
+            .sidebar { transform: translateX(-100%); z-index: 1001; }
             .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; padding: 20px 15px; }
-            header { padding: 0 15px; }
-            .desktop-only { display: none; }
-            .sidebar-overlay {
-                display: none;
-                position: fixed;
-                inset: 0;
-                background: rgba(0,0,0,0.7);
-                backdrop-filter: blur(4px);
-                z-index: 750;
-            }
-            .sidebar-overlay.active { display: block; }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: block !important; }
         }
 
+        .menu-toggle { display: none; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeInUp 0.4s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
+        .tab-content.active { display: block; }
+        
         #auth-overlay {
             position: fixed;
             inset: 0;
             background: var(--bg);
-            z-index: 1000;
+            z-index: 2000;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -230,7 +187,6 @@
 <body>
 
     <div id="notification-container"></div>
-    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
 
     <!-- Auth Panel -->
     <div id="auth-overlay">
@@ -243,7 +199,7 @@
             <div id="login-box">
                 <input type="email" id="auth-email" placeholder="E-posta">
                 <input type="password" id="auth-pass" placeholder="Şifre">
-                <button class="btn btn-primary" style="width:100%" onclick="handleAuth('login')">Giriş Yap</button>
+                <button class="btn btn-primary" style="width:100%" id="btn-login">Giriş Yap</button>
                 <p style="margin-top:20px; text-align:center; font-size:0.8rem; color:var(--text-dim)">Hesabın yok mu? <span style="color:var(--primary); cursor:pointer" onclick="toggleAuth(false)">Kayıt Ol</span></p>
             </div>
 
@@ -251,7 +207,7 @@
                 <input type="text" id="reg-name" placeholder="Kullanıcı Adı">
                 <input type="email" id="reg-email" placeholder="E-posta">
                 <input type="password" id="reg-pass" placeholder="Şifre">
-                <button class="btn btn-primary" style="width:100%" onclick="handleAuth('register')">Hesap Oluştur</button>
+                <button class="btn btn-primary" style="width:100%" id="btn-register">Hesap Oluştur</button>
                 <p style="margin-top:20px; text-align:center; font-size:0.8rem; color:var(--text-dim)">Üye misin? <span style="color:var(--primary); cursor:pointer" onclick="toggleAuth(true)">Giriş Yap</span></p>
             </div>
         </div>
@@ -265,18 +221,13 @@
                 <div style="font-weight: 800; font-size: 1.1rem;">NOVATECH <span style="color:var(--primary)">V4</span></div>
             </div>
             <div style="display:flex; align-items:center; gap:12px;">
-                <button class="btn btn-secondary" onclick="dailyCheckIn()"><i class="fas fa-calendar-check" style="color:var(--xp)"></i> <span class="desktop-only">Yoklama</span></button>
+                <button class="btn btn-secondary" onclick="dailyCheckIn()"><i class="fas fa-calendar-check" style="color:var(--xp)"></i> Yoklama</button>
                 <img id="nav-avatar" src="" class="avatar" style="width:35px; height:35px;">
             </div>
         </header>
 
         <div class="app-container">
             <aside class="sidebar" id="sidebar">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;" class="menu-toggle">
-                    <span style="font-weight:800; font-size: 1rem;">MENÜ</span>
-                    <button onclick="toggleSidebar(false)" style="background:none; border:none; color:white; font-size: 1.2rem;"><i class="fas fa-times"></i></button>
-                </div>
-
                 <div class="user-info card" style="background: rgba(255,255,255,0.02); padding: 15px; border-style: dashed;">
                     <div style="display:flex; align-items:center; gap:12px;">
                         <img id="side-avatar" src="" class="avatar">
@@ -285,93 +236,60 @@
                             <div id="user-rank-name" style="color:var(--xp); font-size:0.65rem; font-weight:900; text-transform:uppercase;">ACEMİ</div>
                         </div>
                     </div>
-                    <div class="xp-container">
-                        <div class="xp-header">
-                            <span id="xp-text-cur">0 XP</span>
-                            <span id="xp-text-max">500 XP</span>
-                        </div>
-                        <div class="xp-bar"><div id="xp-inner-bar" class="xp-fill"></div></div>
-                    </div>
+                    <div class="xp-bar" style="margin-top:10px;"><div id="xp-inner-bar" class="xp-fill"></div></div>
                 </div>
 
                 <nav style="flex:1">
                     <div class="nav-link active" onclick="switchTab('study', this)"><i class="fas fa-book-open"></i> <span>Çalışma Paneli</span></div>
                     <div class="nav-link" onclick="switchTab('forum', this)"><i class="fas fa-globe"></i> <span>Topluluk</span></div>
                     <div class="nav-link" onclick="switchTab('ranks', this)"><i class="fas fa-crown"></i> <span>Sıralama</span></div>
-                    <div class="nav-link" onclick="switchTab('profile', this)"><i class="fas fa-user"></i> <span>Profil Ayarları</span></div>
+                    <div class="nav-link" onclick="switchTab('profile', this)"><i class="fas fa-user"></i> <span>Profil</span></div>
                 </nav>
 
-                <div class="nav-link" onclick="logout()" style="color:var(--danger); margin-top: auto; border: 1px solid rgba(239,68,68,0.1)">
+                <div class="nav-link" onclick="logout()" style="color:var(--danger); border: 1px solid rgba(239,68,68,0.1)">
                     <i class="fas fa-sign-out-alt"></i> <span>Çıkış Yap</span>
                 </div>
             </aside>
 
             <main class="main-content">
-                <!-- STUDY -->
                 <div id="tab-study" class="tab-content active">
                     <div class="card">
-                        <h3 style="margin-bottom:15px;"><i class="fas fa-plus-circle" style="color:var(--primary)"></i> Yeni Kayıt</h3>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                            <div>
-                                <label style="font-size:0.7rem; color:var(--text-dim); font-weight:800;">DERS</label>
-                                <select id="study-lesson" onchange="loadTopics()"></select>
-                            </div>
-                            <div>
-                                <label style="font-size:0.7rem; color:var(--text-dim); font-weight:800;">KONU</label>
-                                <select id="study-topic"></select>
-                            </div>
+                        <h3><i class="fas fa-plus-circle"></i> Yeni Kayıt</h3>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:15px;">
+                            <select id="study-lesson" onchange="loadTopics()"></select>
+                            <select id="study-topic"></select>
                         </div>
                         <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:10px;">
                             <input type="number" id="val-d" placeholder="D">
                             <input type="number" id="val-y" placeholder="Y">
                             <input type="number" id="val-b" placeholder="B">
                         </div>
-                        <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="saveStudy()">Verileri Kaydet</button>
+                        <button class="btn btn-primary" style="width:100%" onclick="saveStudy()">Kaydet</button>
                     </div>
-
-                    <h4 style="margin-bottom:15px; color:var(--text-dim)">Son Çalışmaların</h4>
                     <div id="history-list"></div>
                 </div>
 
-                <!-- FORUM -->
                 <div id="tab-forum" class="tab-content">
-                    <div class="card" style="padding: 15px;">
-                        <textarea id="forum-input" rows="2" placeholder="Neler öğrendin? Sorun mu var?" style="margin-bottom:10px;"></textarea>
-                        <div id="img-preview-box" style="display:none; margin-bottom:15px;">
-                            <img id="img-preview" style="max-height:180px; border-radius:12px; border:1px solid var(--border)">
-                        </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <button class="btn btn-secondary" style="padding: 8px 15px;" onclick="document.getElementById('file-post').click()"><i class="fas fa-image"></i> Görsel</button>
-                            <input type="file" id="file-post" hidden accept="image/*" onchange="previewImage(event)">
-                            <button class="btn btn-primary" style="padding: 8px 25px;" onclick="createPost()">Paylaş</button>
-                        </div>
+                    <div class="card">
+                        <textarea id="forum-input" rows="2" placeholder="Paylaşmak istediğin bir şey mi var?"></textarea>
+                        <button class="btn btn-primary" style="width:100%" onclick="createPost()">Paylaş</button>
                     </div>
                     <div id="forum-feed"></div>
                 </div>
 
-                <!-- RANKS -->
                 <div id="tab-ranks" class="tab-content">
                     <div class="card">
-                        <h2 style="text-align:center; margin-bottom:20px;"><i class="fas fa-trophy" style="color:var(--xp)"></i> Global Liderler</h2>
+                        <h2 style="text-align:center; margin-bottom:20px;">Liderler</h2>
                         <div id="leaderboard"></div>
                     </div>
                 </div>
 
-                <!-- PROFILE -->
                 <div id="tab-profile" class="tab-content">
                     <div class="card" style="text-align:center;">
-                        <div style="position:relative; display:inline-block; margin-bottom:20px;">
-                            <img id="prof-avatar" src="" class="avatar" style="width:100px; height:100px; border-width:4px;">
-                            <button class="btn btn-primary" style="position:absolute; bottom:0; right:0; padding:8px; border-radius:50%; width:35px; height:35px;" onclick="document.getElementById('file-avatar').click()"><i class="fas fa-camera"></i></button>
-                            <input type="file" id="file-avatar" hidden accept="image/*" onchange="updateAvatar(event)">
-                        </div>
-                        <div style="margin-bottom:20px;">
-                            <label style="font-size:0.75rem; color:var(--text-dim); display:block; text-align:left; margin-bottom:5px;">KULLANICI ADI</label>
-                            <input type="text" id="prof-username">
-                        </div>
-                        <button class="btn btn-primary" style="width:100%" onclick="updateProfile()">Değişiklikleri Kaydet</button>
+                        <img id="prof-avatar" src="" class="avatar" style="width:100px; height:100px; margin-bottom:15px;">
+                        <input type="text" id="prof-username" placeholder="Kullanıcı Adı">
+                        <button class="btn btn-primary" style="width:100%" onclick="updateProfile()">Güncelle</button>
                     </div>
-                    <button class="btn btn-danger" style="width:100%" onclick="deleteAccount()"><i class="fas fa-trash"></i> Hesabımı Sil</button>
                 </div>
             </main>
         </div>
@@ -379,14 +297,10 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, set, push, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Global Variables
-        const rawAppId = typeof __app_id !== 'undefined' ? __app_id : 'novatech-v4-ultra';
-        const appId = rawAppId.replace(/[.#$\[\]]/g, '_'); 
-
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+        const firebaseConfig = {
             apiKey: "AIzaSyBGFyQsqe32hGgskY5yRfrbXlH8MuHKaLE",
             authDomain: "novatech-e7507.firebaseapp.com",
             databaseURL: "https://novatech-e7507-default-rtdb.europe-west1.firebasedatabase.app",
@@ -396,346 +310,184 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
+        const appId = "novatech_v4_ultra";
 
         let currentUser = null;
         let userData = null;
-        let tempImage = null;
 
         const LESSONS = {
-            "Matematik": ["Sayılar", "Denklemler", "Fonksiyonlar", "Trigonometri", "Limit", "Türev", "İntegral", "Logaritma", "Olasılık", "Diziler"],
-            "Fizik": ["Kuvvet", "Vektörler", "Elektrik", "Manyetizma", "Optik", "Modern Fizik", "Dalgalar", "Basınç", "Sıvıların Kaldırma Kuvveti", "Enerji"],
-            "Kimya": ["Atom Teorisi", "Gazlar", "Çözeltiler", "Hız", "Denge", "Asit-Baz", "Elektrokimya", "Organik Giriş", "Alkanlar", "Polimerler"],
-            "Biyoloji": ["Hücre", "DNA-RNA", "Protein Sentezi", "Fotosentez", "Bitki Biyolojisi", "Sistemler", "Kalıtım", "Ekoloji", "Canlılar", "Solunum"],
-            "Türkçe": ["Sözcük Anlamı", "Cümle Anlamı", "Paragraf", "Yazım Kuralları", "Noktalama", "Sözcük Türleri", "Ögeler", "Anlatım", "Fiilimsiler", "Edebiyat"],
-            "Tarih": ["İslam Öncesi", "İlk Türk Devletleri", "Osmanlı Kuruluş", "Osmanlı Yükselme", "Kurtuluş Savaşı", "Cumhuriyet Tarihi", "Atatürk İlkeleri", "Dünya Tarihi", "Soğuk Savaş", "Çağdaş Türk Tarihi"],
-            "Coğrafya": ["Dünyanın Şekli", "Harita", "İklim", "Yer Şekilleri", "Beşeri Sistemler", "Bölgeler", "Çevre", "Nüfus", "Ekonomi", "Ulaşım"],
-            "İngilizce": ["Present Tense", "Past Tense", "Future Tense", "Relative Clauses", "Conditionals", "Passive Voice", "Modals", "Vocabulary", "Reading", "Phrasal Verbs"],
-            "Felsefe": ["Bilgi Felsefesi", "Varlık Felsefesi", "Ahlak Felsefesi", "Siyaset Felsefesi", "Sanat Felsefesi", "Bilim Felsefesi", "Din Felsefesi", "Antik Çağ", "Modern Felsefe", "Mantık"],
-            "Geometri": ["Açılar", "Üçgenler", "Dörtgenler", "Çokgenler", "Çember", "Analitik", "Katı Cisimler", "Dönüşümler", "Vektörler", "Benzerlik"]
+            "Matematik": ["Sayılar", "Denklemler", "Türev", "İntegral"],
+            "Fizik": ["Kuvvet", "Optik", "Elektrik"],
+            "Kimya": ["Atom", "Gazlar", "Denge"],
+            "Biyoloji": ["Hücre", "Sistemler"]
         };
 
-        const RANKS = ["Acemi", "Çaylak", "Gezgin", "Gözcü", "Araştırmacı", "Bilgin", "Usta", "Dahi", "Efsane", "Yüce", "Mistik", "Nova"];
-
-        // --- AUTH LISTENER ---
-        onAuthStateChanged(auth, user => {
+        // --- AUTH LOGIC ---
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
+                // Force UI switch
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                
+                // Fetch Profile
                 const profileRef = ref(db, `artifacts/${appId}/users/${user.uid}/profile`);
-                onValue(profileRef, snap => {
+                onValue(profileRef, (snap) => {
                     userData = snap.val();
-                    if (userData) {
-                        renderUI();
-                        document.getElementById('app').style.display = 'block';
-                        document.getElementById('auth-overlay').style.display = 'none';
-                        initApp();
+                    if (!userData) {
+                        createInitialProfile(user);
                     } else {
-                        // Profile doesn't exist yet (first time login/register)
-                        handleFirstTimeUser(user);
+                        renderUI();
+                        initAppOnce();
                     }
-                }, { onlyOnce: false });
+                });
             } else {
                 currentUser = null;
-                userData = null;
-                document.getElementById('app').style.display = 'none';
                 document.getElementById('auth-overlay').style.display = 'flex';
+                document.getElementById('app').style.display = 'none';
             }
         });
 
-        async function handleFirstTimeUser(user) {
-            const initialData = {
+        async function createInitialProfile(user) {
+            const data = {
                 uid: user.uid,
-                username: user.email ? user.email.split('@')[0] : "Kullanıcı",
+                username: user.email.split('@')[0],
                 xp: 0,
-                avatar: ""
+                ts: Date.now()
             };
-            await set(ref(db, `artifacts/${appId}/users/${user.uid}/profile`), initialData);
+            await set(ref(db, `artifacts/${appId}/users/${user.uid}/profile`), data);
         }
 
-        // --- UI RENDER ---
-        function renderUI() {
-            if (!userData) return;
-            let lvl = 1, req = 500, tempXp = userData.xp || 0;
-            while(tempXp >= req) { tempXp -= req; lvl++; req = Math.floor(req * 1.5); }
-            const perc = (tempXp / req) * 100;
-            const rank = RANKS[Math.min(lvl - 1, RANKS.length - 1)];
-
-            document.getElementById('user-display-name').innerText = userData.username || "Kullanıcı";
-            document.getElementById('user-rank-name').innerText = `${rank} • LVL ${lvl}`;
-            document.getElementById('xp-text-cur').innerText = `${Math.floor(tempXp)} XP`;
-            document.getElementById('xp-text-max').innerText = `${req} XP`;
-            document.getElementById('xp-inner-bar').style.width = perc + "%";
-            
-            const av = userData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${currentUser.uid}`;
-            document.getElementById('side-avatar').src = av;
-            document.getElementById('nav-avatar').src = av;
-            document.getElementById('prof-avatar').src = av;
-            document.getElementById('prof-username').value = userData.username || "";
-        }
-
-        function initApp() {
-            const ls = document.getElementById('study-lesson');
-            if (ls && ls.innerHTML === "") {
-                ls.innerHTML = Object.keys(LESSONS).map(l => `<option value="${l}">${l}</option>`).join('');
-                loadTopics();
-            }
-            syncForum();
-            syncLeaderboard();
-            syncHistory();
-        }
-
-        // --- HANDLERS ---
-        window.handleAuth = async (type) => {
-            const email = document.getElementById(type === 'login' ? 'auth-email' : 'reg-email').value;
-            const pass = document.getElementById(type === 'login' ? 'auth-pass' : 'reg-pass').value;
-            
-            if(!email || !pass) return toast("E-posta ve şifre zorunludur.", "error");
-
+        document.getElementById('btn-login').onclick = async () => {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
             try {
-                if (type === 'login') {
-                    await signInWithEmailAndPassword(auth, email, pass);
-                    toast("Giriş yapıldı!");
-                } else {
-                    const nick = document.getElementById('reg-name').value;
-                    if (nick.length < 2) throw new Error("İsim çok kısa.");
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-                    // Profile creation is handled by onAuthStateChanged -> handleFirstTimeUser
-                    // But we can update the nickname here
-                    await update(ref(db, `artifacts/${appId}/users/${userCredential.user.uid}/profile`), { username: nick });
-                    toast("Hesap oluşturuldu!");
-                }
-            } catch (e) { 
-                let msg = "Giriş hatası oluştu.";
-                if (e.code === 'auth/email-already-in-use') msg = "Bu e-posta adresi zaten kullanımda!";
-                else if (e.code === 'auth/weak-password') msg = "Şifre en az 6 karakter olmalı!";
-                else if (e.code === 'auth/invalid-email') msg = "Geçersiz e-posta formatı!";
-                else if (e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') msg = "E-posta veya şifre hatalı!";
-                toast(msg, "error"); 
-            }
+                await signInWithEmailAndPassword(auth, email, pass);
+                toast("Giriş başarılı, yönlendiriliyorsun...");
+            } catch (e) { toast("Hata: " + e.message, "error"); }
         };
 
-        window.toggleAuth = (isLogin) => {
-            document.getElementById('login-box').style.display = isLogin ? 'block' : 'none';
-            document.getElementById('register-box').style.display = isLogin ? 'none' : 'block';
+        document.getElementById('btn-register').onclick = async () => {
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const name = document.getElementById('reg-name').value;
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                await set(ref(db, `artifacts/${appId}/users/${cred.user.uid}/profile`), {
+                    uid: cred.user.uid,
+                    username: name || email.split('@')[0],
+                    xp: 0
+                });
+                toast("Hesap açıldı!");
+            } catch (e) { toast("Hata: " + e.message, "error"); }
         };
 
         window.logout = () => signOut(auth);
 
-        window.toggleSidebar = (show) => {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            if(show) {
-                sidebar.classList.add('open');
-                overlay.classList.add('active');
-            } else {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('active');
-            }
-        };
+        // --- APP LOGIC ---
+        function renderUI() {
+            if (!userData) return;
+            document.getElementById('user-display-name').innerText = userData.username;
+            const av = `https://api.dicebear.com/7.x/bottts/svg?seed=${userData.uid}`;
+            document.getElementById('side-avatar').src = av;
+            document.getElementById('nav-avatar').src = av;
+            document.getElementById('prof-avatar').src = av;
+            
+            // Simple XP Rank
+            const lvl = Math.floor(userData.xp / 500) + 1;
+            document.getElementById('user-rank-name').innerText = `SEVİYE ${lvl}`;
+            document.getElementById('xp-inner-bar').style.width = `${(userData.xp % 500) / 5}%`;
+        }
 
-        window.switchTab = (id, btn) => {
-            toggleSidebar(false);
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById(`tab-${id}`).classList.add('active');
-            btn.classList.add('active');
-        };
+        let initialized = false;
+        function initAppOnce() {
+            if (initialized) return;
+            initialized = true;
+            const ls = document.getElementById('study-lesson');
+            ls.innerHTML = Object.keys(LESSONS).map(l => `<option value="${l}">${l}</option>`).join('');
+            loadTopics();
+            syncForum();
+            syncLeaderboard();
+        }
 
         window.loadTopics = () => {
             const lesson = document.getElementById('study-lesson').value;
-            const ts = document.getElementById('study-topic');
-            if (ts && lesson) ts.innerHTML = LESSONS[lesson].map(t => `<option value="${t}">${t}</option>`).join('');
+            document.getElementById('study-topic').innerHTML = LESSONS[lesson].map(t => `<option value="${t}">${t}</option>`).join('');
         };
 
         window.saveStudy = async () => {
-            if (!currentUser) return;
             const d = parseInt(document.getElementById('val-d').value) || 0;
-            const y = parseInt(document.getElementById('val-y').value) || 0;
-            const b = parseInt(document.getElementById('val-b').value) || 0;
-            if (d === 0 && y === 0 && b === 0) return toast("Lütfen veri girin!", "error");
-            const lesson = document.getElementById('study-lesson').value;
-            const topic = document.getElementById('study-topic').value;
-
-            try {
-                const studiesRef = ref(db, `artifacts/${appId}/users/${currentUser.uid}/studies`);
-                await push(studiesRef, { lesson, topic, d, y, b, ts: Date.now() });
-                const xpGain = (d * 5) + 10;
-                await update(ref(db, `artifacts/${appId}/users/${currentUser.uid}/profile`), { xp: (userData.xp || 0) + xpGain });
-                toast(`+${xpGain} XP Kazandın!`);
-                ['val-d','val-y','val-b'].forEach(i => document.getElementById(i).value = "");
-            } catch (err) { toast("Veri kaydedilemedi.", "error"); }
-        };
-
-        window.dailyCheckIn = async () => {
-            if (!currentUser || !userData) return;
-            const today = new Date().toDateString();
-            if (userData.lastCheck === today) return toast("Zaten ödülünü aldın!", "error");
-            await update(ref(db, `artifacts/${appId}/users/${currentUser.uid}/profile`), {
-                xp: (userData.xp || 0) + 150,
-                lastCheck: today
-            });
-            toast("+150 XP Günlük Ödül!");
+            const gain = d * 10 + 5;
+            await update(ref(db, `artifacts/${appId}/users/${currentUser.uid}/profile`), { xp: (userData.xp || 0) + gain });
+            toast(`+${gain} XP Kazanıldı!`);
         };
 
         function syncForum() {
             onValue(ref(db, `artifacts/${appId}/public/data/forum`), snap => {
                 const feed = document.getElementById('forum-feed');
-                if(!feed) return;
                 feed.innerHTML = "";
                 const data = snap.val();
                 if (!data) return;
-                Object.keys(data).reverse().forEach(id => {
-                    const p = data[id];
-                    const likes = p.likes ? Object.keys(p.likes).length : 0;
-                    const liked = p.likes && p.likes[currentUser.uid];
-                    feed.innerHTML += `
-                        <div class="post">
-                            <div class="post-header">
-                                <img src="${p.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed='+p.uid}" class="avatar">
-                                <div style="flex:1">
-                                    <div style="font-weight:800; font-size:0.85rem;">${p.author}</div>
-                                    <div style="font-size:0.6rem; color:var(--text-dim)">${new Date(p.ts).toLocaleString()}</div>
-                                </div>
-                                ${p.uid === currentUser.uid ? `<i class="fas fa-trash" style="color:var(--danger); cursor:pointer" onclick="deletePost('${id}')"></i>` : ''}
-                            </div>
-                            <div style="font-size:0.9rem;">${p.text}</div>
-                            ${p.img ? `<img src="${p.img}" class="post-img">` : ''}
-                            <div class="post-actions">
-                                <div class="action-item ${liked?'liked':''}" onclick="likePost('${id}')"><i class="${liked?'fas':'far'} fa-heart"></i> ${likes}</div>
-                                <div class="action-item"><i class="far fa-comment"></i> Yorum</div>
-                            </div>
-                        </div>
-                    `;
+                Object.values(data).reverse().forEach(p => {
+                    feed.innerHTML += `<div class="post"><b>${p.author}:</b> ${p.text}</div>`;
                 });
             });
         }
 
         window.createPost = async () => {
-            if (!currentUser || !userData) return;
             const text = document.getElementById('forum-input').value;
-            if (!text && !tempImage) return;
+            if(!text) return;
             await push(ref(db, `artifacts/${appId}/public/data/forum`), {
-                uid: currentUser.uid,
                 author: userData.username,
-                avatar: userData.avatar || "",
                 text,
-                img: tempImage,
                 ts: Date.now()
             });
             document.getElementById('forum-input').value = "";
-            tempImage = null;
-            document.getElementById('img-preview-box').style.display = 'none';
-            toast("Paylaşıldı!");
-        };
-
-        window.likePost = async id => {
-            const path = `artifacts/${appId}/public/data/forum/${id}/likes/${currentUser.uid}`;
-            const s = await get(ref(db, path));
-            if (s.exists()) await remove(ref(db, path));
-            else await set(ref(db, path), true);
-        };
-
-        window.deletePost = async id => {
-            if (confirm("Silmek istiyor musun?")) await remove(ref(db, `artifacts/${appId}/public/data/forum/${id}`));
         };
 
         function syncLeaderboard() {
-            const leaderboardRef = ref(db, `artifacts/${appId}/public/data/leaderboard`);
-            onValue(leaderboardRef, snap => {
-                const list = document.getElementById('leaderboard');
-                if(!list) return;
-                list.innerHTML = "";
+            onValue(ref(db, `artifacts/${appId}/public/data/leaderboard`), snap => {
+                const div = document.getElementById('leaderboard');
+                div.innerHTML = "";
                 const data = snap.val();
-                if (!data) return;
-                const users = Object.values(data).sort((a,b) => (b.xp||0) - (a.xp||0));
-                users.forEach((u, i) => {
-                    list.innerHTML += `
-                        <div style="display:flex; align-items:center; gap:12px; padding:12px; border-bottom:1px solid var(--border); ${u.uid===currentUser.uid?'background:rgba(99,102,241,0.05);':''}">
-                            <div style="font-weight:900; color:var(--xp); width:25px;">${i+1}</div>
-                            <img src="${u.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed='+u.uid}" style="width:35px; height:35px; border-radius:50%">
-                            <div style="flex:1; font-weight:700; font-size:0.85rem; overflow:hidden; text-overflow:ellipsis;">${u.username}</div>
-                            <div style="font-weight:800; color:var(--primary)">${u.xp || 0} XP</div>
-                        </div>
-                    `;
+                if(!data) return;
+                Object.values(data).sort((a,b)=>b.xp-a.xp).forEach(u => {
+                    div.innerHTML += `<div style="padding:10px; border-bottom:1px solid #1e2532">${u.username} - ${u.xp} XP</div>`;
                 });
             });
-            
-            // Periodically update current user in leaderboard
-            if (currentUser && userData) {
+            // Update self in leaderboard
+            if(currentUser && userData) {
                 set(ref(db, `artifacts/${appId}/public/data/leaderboard/${currentUser.uid}`), {
-                    uid: currentUser.uid,
                     username: userData.username,
-                    xp: userData.xp,
-                    avatar: userData.avatar || ""
+                    xp: userData.xp
                 });
             }
         }
 
-        function syncHistory() {
-            onValue(ref(db, `artifacts/${appId}/users/${currentUser.uid}/studies`), snap => {
-                const list = document.getElementById('history-list');
-                if(!list) return;
-                list.innerHTML = "";
-                const data = snap.val();
-                if (!data) return;
-                Object.values(data).reverse().slice(0, 10).forEach(h => {
-                    list.innerHTML += `
-                        <div class="card" style="padding:15px; margin-bottom:10px;">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                                <span style="font-weight:800; font-size:0.8rem;">${h.lesson}</span>
-                                <span style="color:var(--accent); font-weight:900; font-size:0.8rem;">${h.d}D / ${h.y}Y</span>
-                            </div>
-                            <div style="font-size:0.65rem; color:var(--text-dim)">${h.topic} • ${new Date(h.ts).toLocaleDateString()}</div>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        window.previewImage = e => {
-            const f = e.target.files[0];
-            const r = new FileReader();
-            r.onload = ev => {
-                tempImage = ev.target.result;
-                document.getElementById('img-preview-box').style.display = 'block';
-                document.getElementById('img-preview').src = tempImage;
-            };
-            r.readAsDataURL(f);
+        window.switchTab = (id, btn) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.getElementById(`tab-${id}`).classList.add('active');
+            btn.classList.add('active');
+            toggleSidebar(false);
         };
 
-        window.updateAvatar = e => {
-            const f = e.target.files[0];
-            const r = new FileReader();
-            r.onload = async ev => {
-                await update(ref(db, `artifacts/${appId}/users/${currentUser.uid}/profile`), { avatar: ev.target.result });
-                toast("Profil resmi güncellendi.");
-            };
-            r.readAsDataURL(f);
+        window.toggleSidebar = (s) => {
+            document.getElementById('sidebar').classList.toggle('open', s);
         };
 
-        window.updateProfile = async () => {
-            const nick = document.getElementById('prof-username').value;
-            if (nick.length < 3) return toast("Çok kısa!", "error");
-            await update(ref(db, `artifacts/${appId}/users/${currentUser.uid}/profile`), { username: nick });
-            toast("Profil güncellendi.");
+        window.toggleAuth = (login) => {
+            document.getElementById('login-box').style.display = login ? 'block' : 'none';
+            document.getElementById('register-box').style.display = login ? 'none' : 'block';
         };
 
-        window.deleteAccount = async () => {
-            if (confirm("Hesabını silmek istediğine emin misin?")) {
-                const uid = currentUser.uid;
-                await remove(ref(db, `artifacts/${appId}/users/${uid}`));
-                await remove(ref(db, `artifacts/${appId}/public/data/leaderboard/${uid}`));
-                await deleteUser(currentUser).catch(() => toast("Güvenlik için tekrar giriş yapın.", "error"));
-            }
-        };
-
-        window.toast = (msg, type = "success") => {
-            const c = document.getElementById('notification-container');
+        window.toast = (msg, type="success") => {
             const t = document.createElement('div');
             t.className = 'toast';
-            t.style.borderLeft = `4px solid ${type==='error'?'var(--danger)':'var(--accent)'}`;
-            t.innerHTML = `<span>${msg}</span>`;
-            c.appendChild(t);
-            setTimeout(() => t.remove(), 4000);
+            t.innerText = msg;
+            t.style.borderLeft = `4px solid ${type==='error'?'red':'green'}`;
+            document.getElementById('notification-container').appendChild(t);
+            setTimeout(()=>t.remove(), 3000);
         };
 
     </script>
