@@ -22,7 +22,6 @@
             --sidebar-w: 260px;
         }
 
-        /* Açık Tema Değişkenleri */
         body.light-mode {
             --bg: #f6f8fa;
             --card-bg: #ffffff;
@@ -35,21 +34,11 @@
         * { box-sizing: border-box; transition: background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text-main); margin: 0; min-height: 100vh; overflow-x: hidden; }
 
-        /* --- BİLDİRİM SİSTEMİ --- */
-        #notify-box {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 10000; pointer-events: none; width: 90%; max-width: 400px;
-        }
-        .toast {
-            background: var(--card-bg); border-left: 4px solid var(--primary);
-            padding: 12px 20px; border-radius: 8px; margin-bottom: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center;
-            gap: 12px; animation: toastIn 0.3s ease forwards; border: 1px solid var(--border);
-        }
+        #notify-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; pointer-events: none; width: 90%; max-width: 400px; }
+        .toast { background: var(--card-bg); border-left: 4px solid var(--primary); padding: 12px 20px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; animation: toastIn 0.3s ease forwards; border: 1px solid var(--border); }
         @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- BUTONLAR VE INPUTLAR --- */
-        .btn { cursor: pointer; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; }
+        .btn { cursor: pointer; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-size: 0.9rem; }
         .btn-primary { background: var(--primary); color: #fff; }
         .btn-success { background: var(--accent); color: white; }
         .btn-danger { background: var(--danger); color: white; }
@@ -59,52 +48,34 @@
 
         input, textarea, select { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: var(--text-main); margin-bottom: 8px; font-family: inherit; outline: none; }
         input:focus { border-color: var(--primary); }
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 16px; position: relative; }
 
-        /* --- HEADER & NAVIGATION --- */
-        header { 
-            height: 65px; background: var(--card-bg); border-bottom: 1px solid var(--border); 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 20px; position: sticky; top: 0; z-index: 1000; 
-        }
-
+        header { height: 65px; background: var(--card-bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 1000; }
         .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); }
 
-        /* --- SIDEBARS --- */
-        .sidebar-left { 
-            position: fixed; left: 0; top: 65px; bottom: 0; width: var(--sidebar-w); 
-            background: var(--card-bg); border-right: 1px solid var(--border); 
-            padding: 20px; overflow-y: auto; z-index: 900; transition: transform 0.3s ease;
-        }
-
+        .sidebar-left { position: fixed; left: 0; top: 65px; bottom: 0; width: var(--sidebar-w); background: var(--card-bg); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; z-index: 900; transition: transform 0.3s ease; }
         .main-content { margin-left: var(--sidebar-w); margin-right: 300px; padding: 20px; min-height: calc(100vh - 65px); }
         .sidebar-right { position: fixed; right: 0; top: 65px; bottom: 0; width: 300px; padding: 20px; border-left: 1px solid var(--border); background: var(--bg); overflow-y: auto; }
 
-        /* --- MOBİL UYUMLULUK --- */
-        @media (max-width: 1100px) {
-            .sidebar-right { display: none; }
-            .main-content { margin-right: 0; }
-        }
+        @media (max-width: 1100px) { .sidebar-right { display: none; } .main-content { margin-right: 0; } }
+        @media (max-width: 768px) { .menu-toggle { display: block; } .sidebar-left { transform: translateX(-100%); width: 280px; } .sidebar-left.open { transform: translateX(0); } .main-content { margin-left: 0; padding: 15px; } .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 850; } .sidebar-overlay.open { display: block; } }
 
-        @media (max-width: 768px) {
-            .menu-toggle { display: block; }
-            .sidebar-left { transform: translateX(-100%); width: 280px; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
-            .sidebar-left.open { transform: translateX(0); }
-            .main-content { margin-left: 0; padding: 15px; }
-            .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 850; }
-            .sidebar-overlay.open { display: block; }
-        }
+        /* Forum & Comment Styles */
+        .forum-item { background: var(--card-bg); border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        .forum-post-img { width: 100%; border-radius: 8px; margin-top: 10px; cursor: zoom-in; max-height: 300px; object-fit: cover; }
+        .comment-section { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+        .comment-item { font-size: 0.8rem; margin-bottom: 5px; color: var(--text-muted); }
+        .comment-item b { color: var(--text-main); }
 
-        /* --- FORUM --- */
-        .forum-item { background: var(--card-bg); border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 15px; position: relative; }
-        .forum-post-img { width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border); max-height: 400px; object-fit: contain; background: #000; }
+        /* Lightbox */
+        #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 20px; cursor: zoom-out; }
+        #lightbox img { max-width: 100%; max-height: 100%; border-radius: 8px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
 
-        /* --- PROGRESS --- */
+        /* Progress & Ranks */
         .xp-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin: 10px 0; }
         .xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.5s ease; }
         .rank-badge { background: rgba(241, 196, 15, 0.1); color: var(--xp-bar); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; border: 1px solid var(--xp-bar); }
 
-        /* --- AUTH --- */
         #auth-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-box { background: var(--card-bg); padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; border: 1px solid var(--border); text-align: center; }
 
@@ -112,31 +83,34 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .timer-display { font-size: 3rem; font-weight: 800; text-align: center; color: var(--primary); margin: 10px 0; font-variant-numeric: tabular-nums; }
-        
-        /* Admin Badge */
-        .admin-badge { position: fixed; bottom: 10px; right: 10px; opacity: 0.3; cursor: pointer; font-size: 0.7rem; z-index: 2000; }
-        .admin-badge:hover { opacity: 1; }
+        .timer-display { font-size: 3rem; font-weight: 800; text-align: center; color: var(--primary); margin: 10px 0; }
+        .history-list { font-size: 0.85rem; max-height: 300px; overflow-y: auto; }
+        .history-item { padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+
+        /* txAdmin Panel */
+        #txadmin-panel { display: none; background: #2d1b1b; border: 1px solid var(--danger); padding: 15px; border-radius: 12px; margin-top: 15px; }
     </style>
 </head>
-<body>
+<body onkeydown="handleGlobalKey(event)">
 
     <div id="notify-box"></div>
     <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleMenu()"></div>
+    
+    <div id="lightbox" onclick="this.style.display='none'">
+        <img id="lightbox-img" src="">
+    </div>
 
-    <!-- GİRİŞ EKRANI -->
+    <!-- AUTH SCREEN -->
     <div id="auth-overlay">
         <div class="auth-box">
             <h1 style="color: var(--primary); margin:0;"><i class="fas fa-bolt"></i> NovaTech</h1>
             <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 25px;">Eğitimde Yeni Nesil Sosyal Panel</p>
-            
             <div id="login-form">
                 <input type="email" id="l-email" placeholder="E-posta">
                 <input type="password" id="l-pass" placeholder="Şifre">
                 <button class="btn btn-primary" style="width:100%" onclick="handleLogin()">Giriş Yap</button>
                 <p onclick="toggleAuth('signup')" style="cursor:pointer; font-size:0.8rem; margin-top:15px; color: var(--primary);">Yeni Hesap Oluştur</p>
             </div>
-
             <div id="signup-form" style="display:none;">
                 <input type="text" id="s-user" placeholder="Kullanıcı Adı">
                 <input type="email" id="s-email" placeholder="E-posta">
@@ -147,7 +121,7 @@
         </div>
     </div>
 
-    <!-- ANA UYGULAMA -->
+    <!-- MAIN APP -->
     <div id="app-container" style="display:none;">
         <header>
             <div style="display:flex; align-items:center; gap:15px;">
@@ -155,76 +129,64 @@
                 <div style="font-weight:800; font-size:1.2rem; letter-spacing: -1px;">NOVA<span style="color:var(--primary)">TECH</span></div>
             </div>
             <div style="display:flex; align-items:center; gap:12px;">
-                <div style="text-align:right" class="hide-mobile">
+                <div style="text-align:right">
                     <div id="h-xp" style="font-weight:800; color:var(--xp-bar); font-size:0.85rem;">0 XP</div>
-                    <div id="h-user" style="font-size:0.75rem; color:var(--text-muted)">Yükleniyor...</div>
+                    <div id="h-user" style="font-size:0.75rem; color:var(--text-muted)">-</div>
                 </div>
-                <img id="h-avatar" style="width:38px; height:38px; border-radius:50%; background:var(--border); border: 2px solid var(--border);">
+                <img id="h-avatar" style="width:38px; height:38px; border-radius:50%; background:var(--border);">
             </div>
         </header>
 
-        <!-- Yan Menü (Hamburger) -->
         <aside class="sidebar-left" id="sidebar-left">
-            <div class="card" style="text-align:center; padding: 15px 10px;">
+            <div class="card" style="text-align:center;">
                 <img id="p-avatar" style="width:70px; height:70px; border-radius:50%; border:2px solid var(--primary); margin-bottom: 8px;">
                 <h3 id="p-user" style="margin:0; font-size:1rem;">-</h3>
                 <div id="p-rank" class="rank-badge">-</div>
                 <div class="xp-track"><div id="p-xp-fill" class="xp-fill"></div></div>
-                <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:700;">
-                    <span id="p-xp-text">0 XP</span>
-                    <span id="p-next-text" style="color:var(--text-muted)">-</span>
-                </div>
             </div>
-
             <nav style="display:flex; flex-direction:column; gap:5px;">
-                <button class="btn btn-ghost active" onclick="switchTab('dash', this)"><i class="fas fa-chart-line" style="width:20px"></i> Panel</button>
-                <button class="btn btn-ghost" onclick="switchTab('forum', this)"><i class="fas fa-users" style="width:20px"></i> Forum</button>
-                <button class="btn btn-ghost" onclick="switchTab('leader', this)"><i class="fas fa-trophy" style="width:20px"></i> Sıralama</button>
-                <button class="btn btn-ghost" onclick="switchTab('settings', this)"><i class="fas fa-cog" style="width:20px"></i> Ayarlar</button>
-                <hr style="border:0; border-top: 1px solid var(--border); margin: 10px 0;">
-                <button class="btn btn-ghost" style="color:var(--danger)" onclick="handleLogout()"><i class="fas fa-sign-out-alt" style="width:20px"></i> Çıkış</button>
+                <button class="btn btn-ghost active" onclick="switchTab('dash', this)"><i class="fas fa-chart-line"></i> Panel</button>
+                <button class="btn btn-ghost" onclick="switchTab('forum', this)"><i class="fas fa-users"></i> Forum</button>
+                <button class="btn btn-ghost" onclick="switchTab('leader', this)"><i class="fas fa-trophy"></i> Sıralama</button>
+                <button class="btn btn-ghost" onclick="switchTab('settings', this)"><i class="fas fa-cog"></i> Ayarlar</button>
+                <hr style="border:0; border-top:1px solid var(--border); margin: 10px 0;">
+                <button class="btn btn-ghost" style="color:var(--danger)" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
             </nav>
         </aside>
 
         <main class="main-content">
-            <!-- PANEL SEKMESİ -->
+            <!-- DASHBOARD -->
             <div id="tab-dash" class="tab-content active">
                 <div class="card">
-                    <h4 style="margin: 0 0 15px 0"><i class="fas fa-edit"></i> Yeni Çalışma Kaydı</h4>
+                    <h4><i class="fas fa-edit"></i> Yeni Çalışma Kaydı</h4>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <select id="l-sel" onchange="loadTopics()"></select>
                         <select id="t-sel"></select>
                     </div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
-                        <input type="number" id="inp-c" placeholder="Doğru" min="0">
-                        <input type="number" id="inp-w" placeholder="Yanlış" min="0">
-                        <input type="number" id="inp-e" placeholder="Boş" min="0">
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:10px;">
+                        <input type="number" id="inp-c" placeholder="D">
+                        <input type="number" id="inp-w" placeholder="Y">
+                        <input type="number" id="inp-e" placeholder="B">
                     </div>
-                    <button class="btn btn-success" style="width:100%; margin-top:10px;" onclick="saveWork()">Kaydet (+10 XP)</button>
+                    <button class="btn btn-success" style="width:100%" onclick="saveWork()">Kaydet (+10 XP)</button>
                 </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                    <div class="card" style="text-align:center;">
-                        <h2 id="st-total" style="margin:0; color:var(--primary);">0</h2>
-                        <small style="color:var(--text-muted)">Toplam Soru</small>
-                    </div>
-                    <div class="card" style="text-align:center;">
-                        <h2 id="st-acc" style="margin:0; color:var(--accent);">%0</h2>
-                        <small style="color:var(--text-muted)">Doğruluk Oranı</small>
-                    </div>
+                
+                <div class="card">
+                    <h4><i class="fas fa-history"></i> Çalışma Geçmişi</h4>
+                    <div id="history-list" class="history-list"></div>
                 </div>
             </div>
 
-            <!-- FORUM SEKMESİ -->
+            <!-- FORUM -->
             <div id="tab-forum" class="tab-content">
                 <div class="card">
-                    <textarea id="f-msg" placeholder="Bir soru paylaş veya topluluğa seslen..." rows="3"></textarea>
+                    <textarea id="f-msg" placeholder="Bir soru paylaş veya topluluğa seslen..." rows="2"></textarea>
                     <div id="f-prev-box" style="display:none; margin-bottom:10px; position:relative">
-                        <img id="f-prev-img" style="width:100%; border-radius:8px;">
-                        <button onclick="clearImg()" style="position:absolute; top:5px; right:5px;" class="btn btn-danger">×</button>
+                        <img id="f-prev-img" style="width:100px; border-radius:8px;">
+                        <button onclick="clearImg()" class="btn btn-danger" style="position:absolute; top:0; left:110px;">Sil</button>
                     </div>
                     <div style="display:flex; gap:10px;">
-                        <input type="file" id="f-file" style="display:none" accept="image/*" onchange="previewImg(event)">
+                        <input type="file" id="f-file" style="display:none" onchange="previewImg(event)">
                         <button class="btn btn-ghost" onclick="document.getElementById('f-file').click()"><i class="fas fa-image"></i></button>
                         <button class="btn btn-primary" style="flex:1" onclick="sendPost()">Paylaş</button>
                     </div>
@@ -232,49 +194,58 @@
                 <div id="forum-list"></div>
             </div>
 
-            <!-- SIRALAMA SEKMESİ -->
+            <!-- LEADERBOARD -->
             <div id="tab-leader" class="tab-content">
                 <div class="card">
-                    <h3 style="margin:0 0 15px 0"><i class="fas fa-crown" style="color:var(--xp-bar)"></i> Haftalık Liderler</h3>
+                    <h3><i class="fas fa-crown" style="color:var(--xp-bar)"></i> Liderler</h3>
                     <div id="leader-list"></div>
                 </div>
             </div>
 
-            <!-- AYARLAR SEKMESİ -->
+            <!-- SETTINGS -->
             <div id="tab-settings" class="tab-content">
                 <div class="card">
                     <h4><i class="fas fa-palette"></i> Görünüm</h4>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>Karanlık Mod</span>
-                        <button class="btn btn-ghost" id="theme-toggle" onclick="toggleTheme()">Açık / Koyu</button>
+                    <button class="btn btn-ghost" style="width:100%" onclick="toggleTheme()">Açık / Koyu Mod</button>
+                </div>
+                <div class="card">
+                    <h4><i class="fas fa-shield-alt"></i> txAdmin Girişi</h4>
+                    <input type="password" id="tx-pass" placeholder="Admin Şifresi">
+                    <button class="btn btn-primary" style="width:100%" onclick="loginAdmin()">Giriş Yap</button>
+                    
+                    <div id="txadmin-panel">
+                        <h5 style="color:var(--danger); margin:0 0 10px 0;">YÖNETİCİ PANELİ</h5>
+                        <input type="text" id="tx-uid" placeholder="Kullanıcı ID (Boşsa Kendin)">
+                        <input type="number" id="tx-xp" placeholder="Eklenecek XP Miktarı">
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn btn-success" style="flex:1" onclick="txAddXP()">XP Ekle</button>
+                            <button class="btn btn-danger" style="flex:1" onclick="txBanUser()">Banla</button>
+                        </div>
                     </div>
                 </div>
                 <div class="card">
-                    <h4 style="color:var(--danger)"><i class="fas fa-exclamation-triangle"></i> Tehlikeli Bölge</h4>
-                    <p style="font-size:0.8rem; color:var(--text-muted)">Hesabınızı sildiğinizde tüm XP ve çalışma verileriniz kalıcı olarak silinir.</p>
-                    <button class="btn btn-danger" onclick="deleteAccount()" style="width:100%">Hesabımı Kalıcı Olarak Sil</button>
+                    <h4 style="color:var(--danger)">Hesabı Sil</h4>
+                    <button class="btn btn-danger" style="width:100%" onclick="deleteAccount()">Kalıcı Olarak Sil</button>
                 </div>
             </div>
         </main>
 
-        <!-- Sağ Taraf (Odak & İlham) -->
         <aside class="sidebar-right">
             <div class="card">
-                <h4 style="margin:0"><i class="fas fa-stopwatch"></i> Pomodoro</h4>
+                <h4><i class="fas fa-stopwatch"></i> Pomodoro</h4>
+                <div style="display:flex; gap:5px; margin-bottom:10px;">
+                    <input type="number" id="pomo-min" placeholder="Dakika" value="25" style="margin:0;">
+                </div>
                 <div class="timer-display" id="timer-text">25:00</div>
                 <div style="display:flex; gap:8px;">
                     <button class="btn btn-primary" style="flex:1" id="timer-btn" onclick="toggleTimer()">Başlat</button>
                     <button class="btn btn-ghost" onclick="resetTimer()"><i class="fas fa-redo"></i></button>
                 </div>
             </div>
-            <div class="card" style="border-left: 4px solid var(--primary);">
-                <small style="color:var(--primary); font-weight:800;">GÜNLÜK MOTİVASYON</small>
-                <p id="quote" style="margin:8px 0 0 0; font-size:0.85rem; font-style:italic;">"Başarı, her gün tekrarlanan küçük çabaların toplamıdır."</p>
+            <div class="card">
+                <p id="quote" style="font-size:0.85rem; font-style:italic;">"Yarın bugünkü çalışmalarının meyvesini verecek."</p>
             </div>
         </aside>
-
-        <!-- TESTLER İÇİN ADMİN PANELİ (GİZLİ) -->
-        <div class="admin-badge" onclick="showAdmin()">[Admin Dev Mode]</div>
     </div>
 
     <script type="module">
@@ -293,154 +264,25 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        let currentUser = null;
-        let userData = null;
-        let selectedImg = "";
-        let timer = null;
-        let timeLeft = 1500;
-
-        const RANKS = ["Başlangıç", "Çaylak", "Öğrenci", "Asistan", "Uzman", "Doktor", "Doçent", "Profesör", "Master", "Legend"];
+        let currentUser = null, userData = null, selectedImg = "", timer = null, timeLeft = 1500, isAdmin = false;
 
         const CURRICULUM = {
-            "Matematik": [
-                "Doğal sayılar, tam sayılar, rasyonel–irrasyonel sayılar",
-                "Üslü sayılar, köklü sayılar",
-                "Denklem ve eşitsizlikler",
-                "Oran–orantı",
-                "Fonksiyonlar",
-                "Polinomlar",
-                "Permütasyon, kombinasyon, olasılık",
-                "Trigonometri",
-                "Limit, türev, integral",
-                "Matrisler, determinant"
-            ],
-            "Fizik": [
-                "Hareket (konum, hız, ivme)",
-                "Newton’un hareket yasaları",
-                "İş, güç, enerji",
-                "Momentum, çarpışmalar",
-                "Basınç, kaldırma kuvveti",
-                "Isı ve sıcaklık",
-                "Termodinamik",
-                "Elektrik akımı",
-                "Manyetizma",
-                "Dalgalar, ses, ışık",
-                "Modern fizik (atom, kuantum)"
-            ],
-            "Kimya": [
-                "Atom modelleri",
-                "Periyodik tablo",
-                "Kimyasal bağlar",
-                "Mol kavramı",
-                "Tepkime türleri",
-                "Asit–baz–tuz",
-                "Redoks tepkimeleri",
-                "Çözeltiler",
-                "Organik kimya (alkoller, asitler vs.)",
-                "Polimerler",
-                "Kimya ve çevre"
-            ],
-            "Biyoloji": [
-                "Hücre yapısı",
-                "DNA, RNA, protein",
-                "Enzimler",
-                "Fotosentez",
-                "Solunum",
-                "Sindirim sistemi",
-                "Dolaşım sistemi",
-                "Sinir sistemi",
-                "Genetik",
-                "Evrim",
-                "Ekosistem, besin zinciri"
-            ],
-            "Türkçe / Dil Bilgisi": [
-                "Sözcük türleri",
-                "İsim, fiil, sıfat, zarf",
-                "Cümle türleri",
-                "Anlatım bozuklukları",
-                "Noktalama işaretleri",
-                "Yazım kuralları",
-                "Paragraf analizi",
-                "Anlam bilgisi",
-                "Metin türleri"
-            ],
-            "Edebiyat": [
-                "Şiir türleri",
-                "Roman türleri",
-                "Hikâye türleri",
-                "Tiyatro",
-                "Edebî akımlar",
-                "Tanzimat dönemi",
-                "Servet-i Fünun",
-                "Milli Edebiyat",
-                "Cumhuriyet dönemi",
-                "Dünya edebiyatı",
-                "Şair ve yazarlar"
-            ],
-            "Coğrafya": [
-                "Harita bilgisi",
-                "İklim türleri",
-                "Yer şekilleri",
-                "Nüfus ve göç",
-                "Ekonomik faaliyetler",
-                "Türkiye coğrafyası",
-                "Doğal afetler",
-                "Toprak türleri",
-                "Su kaynakları",
-                "Çevre sorunları"
-            ],
-            "Felsefe": [
-                "Bilgi felsefesi",
-                "Varlık felsefesi",
-                "Ahlak felsefesi",
-                "Siyaset felsefesi",
-                "Sanat felsefesi",
-                "Mantık",
-                "Platon, Aristoteles",
-                "Descartes, Kant",
-                "Varoluşçuluk",
-                "Nihilizm"
-            ],
-            "Diğer": ["Genel Deneme", "Kitap Okuma", "Rehberlik", "Diğer Çalışmalar"]
+            "Matematik": ["Doğal sayılar", "Üslü sayılar", "Fonksiyonlar", "Trigonometri", "Türev-İntegral"],
+            "Fizik": ["Hareket", "Newton Yasaları", "Elektrik", "Modern Fizik"],
+            "Kimya": ["Atom", "Mol Kavramı", "Organik Kimya"],
+            "Biyoloji": ["Hücre", "Genetik", "Sistemler"],
+            "Diğer": ["Deneme", "Kitap Okuma"]
         };
 
-        // UI Helpers
-        window.toast = (msg, type = 'info') => {
-            const box = document.getElementById('notify-box');
-            const t = document.createElement('div');
-            t.className = 'toast';
-            if(type === 'error') t.style.borderLeftColor = 'var(--danger)';
-            t.innerHTML = `<i class="fas ${type==='error'?'fa-exclamation-circle':'fa-check-circle'}"></i> <span>${msg}</span>`;
-            box.appendChild(t);
-            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
-        };
-
-        window.toggleMenu = () => {
-            document.getElementById('sidebar-left').classList.toggle('open');
-            document.getElementById('sidebar-overlay').classList.toggle('open');
-        };
-
-        window.switchTab = (t, el) => {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById('tab-'+t).classList.add('active');
-            document.querySelectorAll('.btn-ghost').forEach(b => b.classList.remove('active'));
-            if(el) el.classList.add('active');
-            if(window.innerWidth <= 768) toggleMenu();
-            window.scrollTo(0,0);
-        };
-
-        window.toggleTheme = () => {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            localStorage.setItem('nova-theme', isLight ? 'light' : 'dark');
-        };
-
-        // Load Theme
-        if(localStorage.getItem('nova-theme') === 'light') document.body.classList.add('light-mode');
-
-        // Auth Logic
-        onAuthStateChanged(auth, (user) => {
+        // --- AUTH ---
+        onAuthStateChanged(auth, async (user) => {
             if(user) {
+                const s = await get(ref(db, 'users/' + user.uid));
+                if(s.exists() && s.val().isBanned) {
+                    signOut(auth);
+                    toast("Hesabınız banlanmıştır!", "error");
+                    return;
+                }
                 currentUser = user;
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('app-container').style.display = 'block';
@@ -453,65 +295,68 @@
 
         window.handleLogin = async () => {
             const e = document.getElementById('l-email').value, p = document.getElementById('l-pass').value;
-            try { await signInWithEmailAndPassword(auth, e, p); } catch(e) { toast("Hatalı giriş!", "error"); }
+            try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { toast("Giriş başarısız!", "error"); }
         };
 
         window.handleSignup = async () => {
             const u = document.getElementById('s-user').value, e = document.getElementById('s-email').value, p = document.getElementById('s-pass').value;
-            if(u.length < 3) return toast("İsim çok kısa!", "error");
             try {
                 const res = await createUserWithEmailAndPassword(auth, e, p);
                 await set(ref(db, 'users/' + res.user.uid), {
                     username: u, xp: 0, avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${u}`,
-                    stats: { total: 0, correct: 0 }
+                    isBanned: false
                 });
-            } catch(e) { toast("Kayıt hatası!", "error"); }
+            } catch(err) { toast("Kayıt başarısız!", "error"); }
         };
 
         window.handleLogout = () => signOut(auth);
 
-        window.deleteAccount = async () => {
-            if(confirm("DİKKAT: Hesabınızı silmek üzeresiniz. Bu işlem geri alınamaz. Onaylıyor musunuz?")) {
-                try {
-                    const uid = currentUser.uid;
-                    await remove(ref(db, 'users/' + uid));
-                    await deleteUser(auth.currentUser);
-                    toast("Hesabınız silindi.");
-                } catch(e) {
-                    toast("Güvenlik nedeniyle tekrar giriş yapıp deneyin.", "error");
-                }
-            }
-        };
-
-        // App Logic
+        // --- CORE APP ---
         function initApp(uid) {
-            const lSel = document.getElementById('l-sel');
-            lSel.innerHTML = Object.keys(CURRICULUM).map(x => `<option value="${x}">${x}</option>`).join('');
-            loadTopics();
-
             onValue(ref(db, 'users/' + uid), (s) => {
                 userData = s.val(); if(!userData) return;
-                updateProfileUI();
+                updateUI();
             });
 
-            // Forum Listener
+            // Work History
+            onValue(ref(db, 'history/' + uid), (s) => {
+                const list = document.getElementById('history-list');
+                list.innerHTML = "";
+                const data = s.val(); if(!data) return;
+                Object.keys(data).reverse().forEach(id => {
+                    const h = data[id];
+                    list.innerHTML += `
+                        <div class="history-item">
+                            <span><b>${h.topic}</b> (${h.c}D ${h.w}Y)</span>
+                            ${isAdmin ? `<button onclick="txDeleteHistory('${id}')" class="btn btn-danger" style="padding:4px 8px; font-size:0.6rem">Sil</button>` : ''}
+                        </div>`;
+                });
+            });
+
+            // Forum
             onValue(ref(db, 'forum'), (s) => {
                 const list = document.getElementById('forum-list');
                 list.innerHTML = "";
                 const data = s.val(); if(!data) return;
                 Object.keys(data).reverse().forEach(id => {
                     const p = data[id];
+                    let commentsHTML = (p.comments ? Object.values(p.comments).map(c => `<div class="comment-item"><b>${c.user}:</b> ${c.msg}</div>`).join('') : '');
+                    
                     list.innerHTML += `
                         <div class="forum-item">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                <div style="display:flex; align-items:center; gap:8px;">
-                                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=${p.user}" style="width:24px; border-radius:50%; background:var(--border)">
-                                    <b style="font-size:0.8rem">${p.user}</b>
-                                </div>
-                                <small style="font-size:0.6rem; color:var(--text-muted)">${new Date(p.ts).toLocaleTimeString()}</small>
+                            <div style="display:flex; justify-content:space-between;">
+                                <b>${p.user}</b>
+                                ${ (isAdmin || p.uid === uid) ? `<button onclick="deletePost('${id}')" class="btn btn-danger" style="padding:2px 6px; font-size:0.6rem">Sil</button>` : ''}
                             </div>
-                            <div style="font-size:0.9rem">${p.msg}</div>
-                            ${p.img ? `<img src="${p.img}" class="forum-post-img">` : ''}
+                            <div style="margin:8px 0;">${p.msg}</div>
+                            ${p.img ? `<img src="${p.img}" class="forum-post-img" onclick="openLightbox('${p.img}')">` : ''}
+                            <div class="comment-section">
+                                ${commentsHTML}
+                                <div style="display:flex; gap:5px; margin-top:5px;">
+                                    <input type="text" id="cm-${id}" placeholder="Yorum yaz..." style="margin:0; padding:5px; font-size:0.7rem;">
+                                    <button class="btn btn-primary" style="padding:5px 10px;" onclick="sendComment('${id}')">></button>
+                                </div>
+                            </div>
                         </div>`;
                 });
             });
@@ -519,35 +364,28 @@
             // Leaderboard
             onValue(ref(db, 'users'), (s) => {
                 const list = document.getElementById('leader-list');
-                const users = Object.values(s.val() || {}).sort((a,b) => b.xp - a.xp).slice(0,10);
+                const users = Object.entries(s.val() || {}).map(([id, u]) => ({...u, id})).sort((a,b) => b.xp - a.xp).slice(0,10);
                 list.innerHTML = users.map((u, i) => `
-                    <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--border); border-radius:8px; ${u.username === userData.username ? 'background:rgba(88,166,255,0.1)' : ''}">
-                        <span><b>${i+1}.</b> ${u.username}</span>
-                        <b style="color:var(--xp-bar)">${u.xp} XP</b>
+                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border)">
+                        <span>${i+1}. ${u.username} ${isAdmin ? `<small style="font-size:0.5rem">(${u.id})</small>` : ''}</span>
+                        <b>${u.xp} XP</b>
                     </div>`).join('');
             });
+
+            const lSel = document.getElementById('l-sel');
+            lSel.innerHTML = Object.keys(CURRICULUM).map(x => `<option value="${x}">${x}</option>`).join('');
+            loadTopics();
         }
 
-        function updateProfileUI() {
-            const xp = userData.xp || 0;
-            const lv = Math.floor(xp / 1000);
-            const rank = RANKS[lv] || "Legend";
-            const currentXp = xp % 1000;
-
-            document.getElementById('h-xp').innerText = xp + " XP";
+        window.updateUI = () => {
+            document.getElementById('h-xp').innerText = userData.xp + " XP";
             document.getElementById('h-user').innerText = userData.username;
             document.getElementById('h-avatar').src = userData.avatar;
             document.getElementById('p-avatar').src = userData.avatar;
             document.getElementById('p-user').innerText = userData.username;
-            document.getElementById('p-rank').innerText = rank;
-            document.getElementById('p-xp-text').innerText = `${currentXp} / 1000`;
-            document.getElementById('p-next-text').innerText = `Toplam: ${xp}`;
-            document.getElementById('p-xp-fill').style.width = (currentXp / 10) + "%";
-
-            document.getElementById('st-total').innerText = userData.stats?.total || 0;
-            const acc = userData.stats?.total > 0 ? Math.round((userData.stats.correct / userData.stats.total)*100) : 0;
-            document.getElementById('st-acc').innerText = "%" + acc;
-        }
+            document.getElementById('p-rank').innerText = userData.xp > 5000 ? "Profesör" : "Öğrenci";
+            document.getElementById('p-xp-fill').style.width = (userData.xp % 1000 / 10) + "%";
+        };
 
         window.loadTopics = () => {
             const l = document.getElementById('l-sel').value;
@@ -557,82 +395,105 @@
         window.saveWork = () => {
             const c = parseInt(document.getElementById('inp-c').value) || 0;
             const w = parseInt(document.getElementById('inp-w').value) || 0;
-            const e = parseInt(document.getElementById('inp-e').value) || 0;
-            if(c+w+e === 0) return toast("Soru giriniz!", "error");
-
-            update(ref(db, 'users/' + currentUser.uid), {
-                xp: (userData.xp || 0) + 10,
-                'stats/total': (userData.stats?.total || 0) + (c+w+e),
-                'stats/correct': (userData.stats?.correct || 0) + c
-            });
-            ['inp-c','inp-w','inp-e'].forEach(id => document.getElementById(id).value = "");
-            toast("Veri kaydedildi! +10 XP");
+            const t = document.getElementById('t-sel').value;
+            
+            push(ref(db, 'history/' + currentUser.uid), { topic: t, c, w, ts: Date.now() });
+            update(ref(db, 'users/' + currentUser.uid), { xp: (userData.xp || 0) + 10 });
+            toast("Kaydedildi!");
         };
 
-        window.previewImg = (e) => {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                selectedImg = ev.target.result;
-                document.getElementById('f-prev-img').src = selectedImg;
-                document.getElementById('f-prev-box').style.display = "block";
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        };
-
-        window.clearImg = () => { selectedImg = ""; document.getElementById('f-prev-box').style.display = "none"; };
-
+        // --- FORUM ACTIONS ---
         window.sendPost = () => {
             const m = document.getElementById('f-msg').value;
             if(!m && !selectedImg) return;
             push(ref(db, 'forum'), { uid: currentUser.uid, user: userData.username, msg: m, img: selectedImg, ts: Date.now() });
-            update(ref(db, 'users/' + currentUser.uid), { xp: (userData.xp || 0) + 5 });
             document.getElementById('f-msg').value = ""; clearImg();
-            toast("Paylaşıldı! +5 XP");
         };
 
-        // Pomodoro
+        window.deletePost = (id) => { if(confirm("Silinsin mi?")) remove(ref(db, 'forum/' + id)); };
+        
+        window.sendComment = (pid) => {
+            const val = document.getElementById('cm-' + pid).value;
+            if(!val) return;
+            push(ref(db, 'forum/' + pid + '/comments'), { user: userData.username, msg: val });
+            document.getElementById('cm-' + pid).value = "";
+        };
+
+        window.previewImg = (e) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => { selectedImg = ev.target.result; document.getElementById('f-prev-img').src = selectedImg; document.getElementById('f-prev-box').style.display = "block"; };
+            reader.readAsDataURL(e.target.files[0]);
+        };
+        window.clearImg = () => { selectedImg = ""; document.getElementById('f-prev-box').style.display = "none"; };
+        window.openLightbox = (src) => { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').style.display = 'flex'; };
+
+        // --- POMODORO ---
         window.toggleTimer = () => {
-            const btn = document.getElementById('timer-btn');
-            if(timer) { clearInterval(timer); timer = null; btn.innerText = "Devam Et"; }
+            if(timer) { clearInterval(timer); timer = null; document.getElementById('timer-btn').innerText = "Devam Et"; }
             else {
+                if(timeLeft === 1500) { // Sadece ilk başlatmada al
+                    const m = parseInt(document.getElementById('pomo-min').value) || 25;
+                    timeLeft = m * 60;
+                }
                 timer = setInterval(() => {
                     timeLeft--;
                     const m = Math.floor(timeLeft/60), s = timeLeft%60;
                     document.getElementById('timer-text').innerText = `${m}:${s<10?'0':''}${s}`;
-                    if(timeLeft <= 0) {
-                        clearInterval(timer); timer = null;
-                        update(ref(db, 'users/'+currentUser.uid), { xp: (userData.xp || 0) + 25 });
-                        toast("Pomodoro Bitti! +25 XP");
-                        resetTimer();
-                    }
+                    if(timeLeft <= 0) { clearInterval(timer); toast("Süre doldu! +25 XP"); update(ref(db, 'users/'+currentUser.uid), {xp: userData.xp+25}); resetTimer(); }
                 }, 1000);
-                btn.innerText = "Durdur";
+                document.getElementById('timer-btn').innerText = "Durdur";
+            }
+        };
+        window.resetTimer = () => { clearInterval(timer); timer = null; timeLeft = 1500; document.getElementById('timer-text').innerText = "25:00"; document.getElementById('timer-btn').innerText = "Başlat"; };
+
+        // --- txADMIN ---
+        window.loginAdmin = () => {
+            const p = document.getElementById('tx-pass').value;
+            if(p === "admin123") { // Sabit şifre
+                isAdmin = true;
+                document.getElementById('txadmin-panel').style.display = 'block';
+                toast("txAdmin Yetkisi Aktif!", "success");
+                initApp(currentUser.uid); // UI Yenile (Sil butonları için)
+            } else { toast("Hatalı Şifre!", "error"); }
+        };
+
+        window.txAddXP = async () => {
+            const target = document.getElementById('tx-uid').value || currentUser.uid;
+            const amount = parseInt(document.getElementById('tx-xp').value) || 0;
+            const s = await get(ref(db, 'users/' + target));
+            if(s.exists()) {
+                update(ref(db, 'users/' + target), { xp: (s.val().xp || 0) + amount });
+                toast(`${amount} XP eklendi.`);
             }
         };
 
-        window.resetTimer = () => {
-            clearInterval(timer); timer = null;
-            timeLeft = 1500;
-            document.getElementById('timer-text').innerText = "25:00";
-            document.getElementById('timer-btn').innerText = "Başlat";
+        window.txBanUser = () => {
+            const target = document.getElementById('tx-uid').value;
+            if(!target) return toast("ID Gerekli!", "error");
+            update(ref(db, 'users/' + target), { isBanned: true });
+            toast("Kullanıcı banlandı.");
         };
 
-        // ADMIN TEST MODE
-        window.showAdmin = () => {
-            const cmd = prompt("Admin Komutu (xp_ekle / sifirla):");
-            if(cmd === "xp_ekle") {
-                update(ref(db, 'users/'+currentUser.uid), { xp: (userData.xp || 0) + 1000 });
-                toast("1000 XP Eklendi.");
-            } else if(cmd === "sifirla") {
-                update(ref(db, 'users/'+currentUser.uid), { xp: 0, stats: {total:0, correct:0} });
-                toast("Veriler sıfırlandı.");
-            }
-        };
+        window.txDeleteHistory = (hid) => { remove(ref(db, 'history/' + currentUser.uid + '/' + hid)); };
 
-        window.toggleAuth = (m) => {
-            document.getElementById('login-form').style.display = m === 'login' ? 'block' : 'none';
-            document.getElementById('signup-form').style.display = m === 'signup' ? 'block' : 'none';
+        // UI Helpers
+        window.toggleTheme = () => document.body.classList.toggle('light-mode');
+        window.toggleMenu = () => { document.getElementById('sidebar-left').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('open'); };
+        window.switchTab = (t, el) => {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-'+t).classList.add('active');
+            document.querySelectorAll('.btn-ghost').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            if(window.innerWidth <= 768) toggleMenu();
         };
+        window.toast = (m, t='info') => {
+            const b = document.getElementById('notify-box'), d = document.createElement('div');
+            d.className = 'toast'; if(t==='error') d.style.borderLeftColor='var(--danger)';
+            d.innerHTML = `<span>${m}</span>`; b.appendChild(d);
+            setTimeout(() => d.remove(), 3000);
+        };
+        window.toggleAuth = (m) => { document.getElementById('login-form').style.display = m==='login'?'block':'none'; document.getElementById('signup-form').style.display = m==='signup'?'block':'none'; };
+        window.deleteAccount = async () => { if(confirm("Hesap silinsin mi?")) { await remove(ref(db, 'users/'+currentUser.uid)); await deleteUser(auth.currentUser); } };
     </script>
 </body>
 </html>
