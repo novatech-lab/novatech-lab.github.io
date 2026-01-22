@@ -1,1 +1,325 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ders Komuta Merkezi | Odaklan & Başar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        :root {
+            --bg: #0f172a; --card: #1e293b; --accent: #38bdf8;
+            --text: #f1f5f9; --success: #22c55e; --danger: #ef4444;
+            --xp-bar: #f59e0b;
+        }
+        body.light-mode {
+            --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --accent: #0284c7;
+        }
+        * { box-sizing: border-box; transition: all 0.3s ease; }
+        body {
+            font-family: 'Poppins', sans-serif; background-color: var(--bg);
+            color: var(--text); margin: 0; display: flex; flex-direction: column; min-height: 100vh;
+        }
+        
+        /* Layout */
+        .container { display: grid; grid-template-columns: 250px 1fr 300px; gap: 20px; padding: 20px; max-width: 1600px; margin: auto; width: 100%; }
+        header { padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card); }
+        
+        .card { background: var(--card); border-radius: 15px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        
+        /* Butonlar */
+        .btn { border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        
+        /* Pomodoro & Sayaç */
+        .timer-display { font-size: 3.5rem; font-weight: bold; color: var(--accent); margin: 15px 0; }
+        
+        /* XP Bar */
+        .xp-container { width: 100%; background: #334155; height: 10px; border-radius: 5px; margin-top: 10px; overflow: hidden; }
+        .xp-fill { height: 100%; background: var(--xp-bar); width: 0%; transition: width 0.5s; }
 
+        /* Hidden Sections */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Sanal Arkadaş Animasyon */
+        .companion { font-size: 40px; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* Mobil Uyumluluk */
+        @media (max-width: 1000px) { .container { grid-template-columns: 1fr; } .sidebar { order: 2; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div><h2><i class="fas fa-rocket"></i> Komuta Merkezi</h2></div>
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <span id="rank-display">Rütbe: Çaylak</span>
+        <button onclick="toggleDarkMode()" class="btn"><i class="fas fa-moon"></i></button>
+        <button onclick="showTab('settings')" class="btn"><i class="fas fa-cog"></i></button>
+    </div>
+</header>
+
+<div class="container">
+    <div class="sidebar">
+        <div class="card">
+            <h3>Profil</h3>
+            <div class="companion" id="buddy">👨‍💻</div>
+            <p id="buddy-msg">Hadi başlayalım!</p>
+            <div class="xp-container"><div id="xp-fill" class="xp-fill"></div></div>
+            <p><small id="xp-text">0 / 100 XP</small></p>
+        </div>
+        
+        <div class="card">
+            <h3>Alışkanlık Zinciri</h3>
+            <div id="habit-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px;">
+                </div>
+            <p><small id="habit-stats">%0 Tamamlandı</small></p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="home-tab" class="tab-content active">
+            <div class="card" style="text-align: center;">
+                <h3>Pomodoro Sayacı</h3>
+                <div class="timer-display" id="timer">25:00</div>
+                <div style="display: flex; justify-content: center; gap: 10px;">
+                    <button id="start-btn" onclick="toggleTimer()" class="btn btn-primary">Başlat</button>
+                    <button onclick="resetTimer()" class="btn" style="background: #64748b; color:white;">Sıfırla</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Ders Kaydı</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <input type="text" id="lesson-name" placeholder="Ders Adı (örn: Mat)" class="card" style="background: #334155; color: white; border: none; margin:0; padding:10px;">
+                    <input type="text" id="subject-name" placeholder="Konu" class="card" style="background: #334155; color: white; border: none; margin:0; padding:10px;">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px;">
+                    <input type="number" id="q-correct" placeholder="Doğru" class="btn" style="background: #064e3b; color: white;">
+                    <input type="number" id="q-wrong" placeholder="Yanlış" class="btn" style="background: #7f1d1d; color: white;">
+                    <button onclick="saveSession()" class="btn btn-success">Dersi Bitir & Kaydet</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Günlük Hasat (Özet)</h3>
+                <div id="daily-summary">Henüz bir kayıt yok.</div>
+            </div>
+        </div>
+
+        <div id="settings-tab" class="tab-content">
+            <div class="card">
+                <h3>Ayarlar</h3>
+                <label>Gemini API Anahtarı:</label>
+                <input type="password" id="api-key" class="card" style="width:100%; background:#334155; color:white; border:none; padding:10px;" placeholder="AIzaSy...">
+                <button onclick="saveSettings()" class="btn btn-primary" style="margin-top: 10px;">Kaydet</button>
+                <hr>
+                <button onclick="clearAllData()" class="btn" style="background: var(--danger); color:white;">Tüm Verileri Sıfırla</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="card">
+            <h3>Hızlı Notlar</h3>
+            <textarea id="quick-notes" rows="8" style="width:100%; background:#334155; color:white; border:none; border-radius:8px; padding:10px;" placeholder="Notlarını buraya yaz..."></textarea>
+        </div>
+        <div class="card">
+            <h3>AI Soru Üretici (Gemini)</h3>
+            <button onclick="generateQuestion()" class="btn btn-primary" style="width:100%">
+                <i class="fas fa-brain"></i> Rastgele Soru Üret
+            </button>
+            <div id="ai-response" style="margin-top:10px; font-size:0.9rem; max-height: 200px; overflow-y: auto;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- DEĞİŞKENLER VE LOCAL STORAGE ---
+    let userData = JSON.parse(localStorage.getItem('studyData')) || {
+        xp: 0,
+        logs: [],
+        habits: new Array(30).fill(false),
+        notes: "",
+        apiKey: ""
+    };
+
+    let timerInterval;
+    let timeLeft = 25 * 60;
+    let isRunning = false;
+
+    // --- BAŞLANGIÇ ---
+    window.onload = () => {
+        updateXPUI();
+        renderHabits();
+        document.getElementById('quick-notes').value = userData.notes;
+        document.getElementById('api-key').value = userData.apiKey;
+        loadDailySummary();
+    };
+
+    // --- FONKSİYONLAR ---
+    function toggleTimer() {
+        if (isRunning) {
+            clearInterval(timerInterval);
+            document.getElementById('start-btn').innerText = "Devam Et";
+        } else {
+            timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateTimerUI();
+                } else {
+                    completePomodoro();
+                }
+            }, 1000);
+            document.getElementById('start-btn').innerText = "Durdur";
+        }
+        isRunning = !isRunning;
+    }
+
+    function updateTimerUI() {
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function completePomodoro() {
+        clearInterval(timerInterval);
+        alert("Harika! Bir seans bitti.");
+        addXP(20);
+        resetTimer();
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 25 * 60;
+        isRunning = false;
+        updateTimerUI();
+        document.getElementById('start-btn').innerText = "Başlat";
+    }
+
+    function addXP(amount) {
+        userData.xp += amount;
+        saveData();
+        updateXPUI();
+    }
+
+    function updateXPUI() {
+        const level = Math.floor(userData.xp / 100);
+        const currentXP = userData.xp % 100;
+        document.getElementById('xp-fill').style.width = currentXP + "%";
+        document.getElementById('xp-text').innerText = `${currentXP} / 100 XP (Seviye ${level})`;
+        
+        const ranks = ["Çaylak", "Asistan", "Uzman", "Profesör", "Efsane"];
+        const rank = ranks[Math.min(level, ranks.length - 1)];
+        document.getElementById('rank-display').innerText = `Rütbe: ${rank}`;
+        
+        // Buddy emoji change based on level
+        const buddies = ["👨‍💻", "🎓", "🚀", "🧙‍♂️", "👑"];
+        document.getElementById('buddy').innerText = buddies[Math.min(level, buddies.length - 1)];
+    }
+
+    function saveSession() {
+        const lesson = document.getElementById('lesson-name').value;
+        const sub = document.getElementById('subject-name').value;
+        const c = parseInt(document.getElementById('q-correct').value) || 0;
+        const w = parseInt(document.getElementById('q-wrong').value) || 0;
+
+        if(!lesson) { alert("Ders adı gir!"); return; }
+
+        const log = { date: new Date().toLocaleDateString(), lesson, sub, c, w };
+        userData.logs.push(log);
+        addXP(50 + (c * 2)); // Her soru 2 XP bonus
+        saveData();
+        loadDailySummary();
+        alert("Başarıyla kaydedildi!");
+    }
+
+    function renderHabits() {
+        const grid = document.getElementById('habit-grid');
+        grid.innerHTML = "";
+        userData.habits.forEach((status, index) => {
+            const div = document.createElement('div');
+            div.style.height = "20px";
+            div.style.background = status ? "var(--success)" : "#334155";
+            div.style.borderRadius = "4px";
+            div.style.cursor = "pointer";
+            div.onclick = () => {
+                userData.habits[index] = !userData.habits[index];
+                saveData();
+                renderHabits();
+            };
+            grid.appendChild(div);
+        });
+        const done = userData.habits.filter(h => h).length;
+        document.getElementById('habit-stats').innerText = `%${Math.round((done/30)*100)} Tamamlandı`;
+    }
+
+    function loadDailySummary() {
+        const summary = document.getElementById('daily-summary');
+        if (userData.logs.length === 0) return;
+        
+        const last = userData.logs[userData.logs.length - 1];
+        summary.innerHTML = `<b>Son Çalışma:</b> ${last.lesson} - ${last.sub} <br> 
+                             ✅ ${last.c} Doğru | ❌ ${last.w} Yanlış`;
+    }
+
+    // --- AI ENTEGRASYONU ---
+    async function generateQuestion() {
+        const key = userData.apiKey;
+        if(!key) { alert("Önce ayarlardan API anahtarını gir!"); return; }
+        
+        const display = document.getElementById('ai-response');
+        display.innerText = "Yapay zeka düşünüyor...";
+
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: "Bana rastgele bir ders konusu hakkında (Matematik, Tarih veya Fen) tek bir çoktan seçmeli soru sor ve cevabını en sona ekle." }] }]
+                })
+            });
+            const data = await response.json();
+            display.innerText = data.candidates[0].content.parts[0].text;
+        } catch (err) {
+            display.innerText = "Hata: API anahtarı geçersiz veya kota doldu.";
+        }
+    }
+
+    // --- SİSTEM ---
+    function showTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById(tab + '-tab').classList.add('active');
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('light-mode');
+    }
+
+    function saveSettings() {
+        userData.apiKey = document.getElementById('api-key').value;
+        saveData();
+        alert("Ayarlar kaydedildi.");
+    }
+
+    function saveData() {
+        userData.notes = document.getElementById('quick-notes').value;
+        localStorage.setItem('studyData', JSON.stringify(userData));
+    }
+
+    // Otomatik not kaydetme
+    setInterval(saveData, 5000);
+
+    function clearAllData() {
+        if(confirm("Tüm veriler silinecek! Emin misin?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+</script>
+
+</body>
+</html>
