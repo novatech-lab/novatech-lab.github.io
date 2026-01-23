@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaTech Social</title>
+    <title>NovaTech Social - Keşfet</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -94,7 +94,7 @@
                 return JSON.parse(__firebase_config);
             }
             return {
-                apiKey: "AIzaSyBGFyQsqe32hGgskY5yRfrbXlH8MuHKaLE",
+                apiKey: "",
                 authDomain: "novatech-e7507.firebaseapp.com",
                 projectId: "novatech-e7507",
             };
@@ -173,23 +173,23 @@
                         <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 mb-2 text-center">
                             NovaSocial
                         </h1>
-                        <p class="text-gray-500 dark:text-slate-400 text-center mb-8">Yeni Nesil Sosyal Deneyim</p>
+                        <p class="text-gray-500 dark:text-slate-400 text-center mb-8 font-medium">Topluluğa Katıl ve Keşfet</p>
                         
                         <form id="authForm" class="space-y-4">
                             <div id="usernameField" class="hidden relative">
-                                <i data-lucide="user" class="absolute left-3 top-3 text-gray-400 dark:text-slate-500 h-5 w-5"></i>
-                                <input type="text" id="username" placeholder="Kullanıcı Adı" class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white p-3 pl-10 rounded-lg focus:outline-none focus:border-cyan-500 transition">
+                                <i data-lucide="at-sign" class="absolute left-3 top-3 text-gray-400 dark:text-slate-500 h-5 w-5"></i>
+                                <input type="text" id="username" placeholder="Benzersiz Kullanıcı Adı" class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white p-3 pl-10 rounded-lg focus:outline-none focus:border-cyan-500 transition">
                             </div>
                             <div class="relative">
-                                <span class="absolute left-3 top-3 text-gray-400 dark:text-slate-500">@</span>
+                                <i data-lucide="mail" class="absolute left-3 top-3 text-gray-400 dark:text-slate-500 h-5 w-5"></i>
                                 <input type="email" id="email" placeholder="E-posta" required class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white p-3 pl-10 rounded-lg focus:outline-none focus:border-cyan-500 transition">
                             </div>
                             <div class="relative">
-                                <span class="absolute left-3 top-3 text-gray-400 dark:text-slate-500">***</span>
+                                <i data-lucide="lock" class="absolute left-3 top-3 text-gray-400 dark:text-slate-500 h-5 w-5"></i>
                                 <input type="password" id="password" placeholder="Şifre" required class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white p-3 pl-10 rounded-lg focus:outline-none focus:border-cyan-500 transition">
                             </div>
                             
-                            <p id="authError" class="text-red-500 text-sm text-center hidden"></p>
+                            <p id="authError" class="text-red-500 text-xs text-center hidden p-2 bg-red-50 dark:bg-red-900/10 rounded border border-red-200 dark:border-red-900/30 font-medium"></p>
                             
                             <button type="submit" id="authBtn" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold p-3 rounded-lg hover:opacity-90 transition shadow-lg shadow-cyan-500/30">
                                 Giriş Yap
@@ -197,8 +197,8 @@
                         </form>
                         
                         <div class="mt-6 text-center">
-                            <button id="toggleAuthMode" class="text-cyan-600 dark:text-cyan-400 text-sm hover:underline font-medium">
-                                Hesabın yok mu? Kayıt Ol
+                            <button id="toggleAuthMode" class="text-cyan-600 dark:text-cyan-400 text-sm hover:underline font-semibold">
+                                Hesabın yok mu? Hemen Kayıt Ol
                             </button>
                         </div>
                     </div>
@@ -215,16 +215,20 @@
             toggleBtn.addEventListener('click', () => {
                 isLogin = !isLogin;
                 usernameField.classList.toggle('hidden', isLogin);
-                authBtn.textContent = isLogin ? 'Giriş Yap' : 'Kayıt Ol';
-                toggleBtn.textContent = isLogin ? 'Hesabın yok mu? Kayıt Ol' : 'Zaten üye misin? Giriş Yap';
+                const usernameInput = document.getElementById('username');
+                usernameInput.required = !isLogin;
+                
+                authBtn.textContent = isLogin ? 'Giriş Yap' : 'Kayıt Ol ve Başla';
+                toggleBtn.textContent = isLogin ? 'Hesabın yok mu? Hemen Kayıt Ol' : 'Zaten üye misin? Giriş Yap';
                 errorText.classList.add('hidden');
+                lucide.createIcons();
             });
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
-                const username = document.getElementById('username').value;
+                const username = document.getElementById('username').value.trim().toLowerCase();
                 
                 authBtn.disabled = true;
                 authBtn.textContent = "İşleniyor...";
@@ -234,10 +238,12 @@
                     if (isLogin) {
                         await signInWithEmailAndPassword(auth, email, password);
                     } else {
-                        // Check username unique
+                        if (!username || username.length < 3) throw new Error("Kullanıcı adı en az 3 karakter olmalıdır.");
+                        
+                        // Kullanıcı adı benzersizlik kontrolü
                         const q = query(collection(db, getCollectionPath('users_meta')), where('username', '==', username));
                         const snapshot = await getDocs(q);
-                        if (!snapshot.empty) throw new Error("Bu kullanıcı adı alınmış.");
+                        if (!snapshot.empty) throw new Error("Bu kullanıcı adı başka biri tarafından kullanılıyor.");
 
                         const res = await createUserWithEmailAndPassword(auth, email, password);
                         await updateProfile(res.user, { displayName: username });
@@ -251,26 +257,31 @@
                     }
                 } catch (err) {
                     let msg = err.message;
-                    if (msg.includes('email-already-in-use')) msg = "E-posta kullanımda.";
-                    if (msg.includes('wrong-password')) msg = "Hatalı şifre.";
-                    if (msg.includes('user-not-found')) msg = "Kullanıcı bulunamadı.";
+                    if (msg.includes('email-already-in-use')) msg = "Bu e-posta adresi zaten kullanımda.";
+                    if (msg.includes('wrong-password')) msg = "Hatalı şifre girdiniz.";
+                    if (msg.includes('user-not-found')) msg = "Bu bilgilere ait kullanıcı bulunamadı.";
+                    if (msg.includes('weak-password')) msg = "Şifre en az 6 karakterden oluşmalıdır.";
+                    
                     errorText.textContent = msg.replace('Firebase: ', '');
                     errorText.classList.remove('hidden');
                     authBtn.disabled = false;
-                    authBtn.textContent = isLogin ? 'Giriş Yap' : 'Kayıt Ol';
+                    authBtn.textContent = isLogin ? 'Giriş Yap' : 'Kayıt Ol ve Başla';
                 }
             });
+            lucide.createIcons();
         }
 
         // --- View: Main Layout ---
         function renderMainLayout() {
             // Setup Listeners if first load
             if (!state.unsubscribePosts) {
+                // Keşfet mantığı: Tüm gönderiler çekilir
                 const q = query(collection(db, getCollectionPath('posts')), orderBy('createdAt', 'desc'));
                 state.unsubscribePosts = onSnapshot(q, (snapshot) => {
                     state.posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    // Only re-render feed part if we are in home view
                     if (state.view === 'home') renderFeedContent(); 
+                }, (error) => {
+                    console.error("Post sync error:", error);
                 });
             }
 
@@ -282,8 +293,8 @@
                             <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg">
                                 <i data-lucide="menu"></i>
                             </button>
-                            <h1 id="logoBtn" class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600 cursor-pointer">
-                                NovaTech
+                            <h1 id="logoBtn" class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600 cursor-pointer select-none">
+                                NovaSocial
                             </h1>
                         </div>
                         <div class="flex items-center space-x-2 md:space-x-4">
@@ -323,7 +334,7 @@
                 <div class="fixed bottom-0 w-full z-30 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 pb-safe shadow-[0_-5px_10px_rgba(0,0,0,0.05)]">
                     <div class="max-w-lg mx-auto flex justify-around items-center h-16">
                         <button id="navHome" class="p-3 rounded-full transition ${state.view === 'home' ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-400 dark:text-slate-500'}">
-                            <i data-lucide="home" size="28"></i>
+                            <i data-lucide="compass" size="28"></i>
                         </button>
                         
                         <button id="navCreate" class="p-3 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl text-white shadow-lg shadow-cyan-500/30 transform -translate-y-4 hover:scale-105 transition active:scale-95">
@@ -379,69 +390,77 @@
             const container = document.getElementById('mainContent');
             if (!container) return;
 
-            if (state.posts.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-gray-500 mt-20 animate-fade-in">
-                        <p>Henüz gönderi yok.</p>
-                        <p class="text-sm mt-2">İlk paylaşımı sen yap!</p>
+            container.innerHTML = `
+                <div class="max-w-xl mx-auto px-4 pt-4 animate-fade-in">
+                    <div class="mb-6 flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center space-x-2">
+                             <i data-lucide="sparkles" class="text-cyan-500"></i>
+                             <span>Keşfet</span>
+                        </h2>
                     </div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <div class="max-w-xl mx-auto px-4 pt-4 animate-fade-in">
-                        ${state.posts.map(post => {
-                            const isLiked = post.likes?.includes(state.user.uid);
-                            return `
-                                <div class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl mb-6 overflow-hidden shadow-sm transition-colors duration-300">
-                                    <div class="p-4 flex justify-between items-center">
-                                        <div class="flex items-center space-x-3">
-                                            <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold uppercase shadow-md">
-                                                ${post.username?.[0] || 'A'}
-                                            </div>
-                                            <div>
-                                                <p class="text-gray-900 dark:text-white font-semibold">${post.username}</p>
-                                                <p class="text-gray-500 dark:text-slate-500 text-xs">
-                                                    ${post.createdAt?.seconds ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() : 'Az önce'}
-                                                </p>
-                                            </div>
+                    ${state.posts.length === 0 ? `
+                        <div class="text-center text-gray-500 mt-20 p-8 border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-3xl">
+                            <i data-lucide="camera" size="48" class="mx-auto mb-4 opacity-20"></i>
+                            <p class="font-medium">Henüz hiçbir şey paylaşılmamış.</p>
+                            <p class="text-sm mt-2">İlk adımı sen at ve toplulukla paylaş!</p>
+                        </div>
+                    ` : state.posts.map(post => {
+                        const isLiked = post.likes?.includes(state.user.uid);
+                        return `
+                            <div class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl mb-6 overflow-hidden shadow-sm transition-all hover:shadow-md">
+                                <div class="p-4 flex justify-between items-center">
+                                    <div class="flex items-center space-x-3 cursor-pointer" onclick="openChatWithUser('${post.userId}', '${post.username}')">
+                                        <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold uppercase shadow-md">
+                                            ${post.username?.[0] || 'A'}
                                         </div>
-                                        ${post.userId === state.user.uid ? `
-                                            <button onclick="deletePost('${post.id}')" class="text-gray-400 hover:text-red-500 p-2 transition">
-                                                <i data-lucide="trash-2" size="18"></i>
-                                            </button>
-                                        ` : ''}
-                                    </div>
-
-                                    ${post.image ? `
-                                        <div class="w-full bg-gray-100 dark:bg-black flex justify-center cursor-zoom-in" onclick="openLightbox('${post.image}')">
-                                            <img src="${post.image}" alt="Post content" class="max-h-[500px] object-contain w-full" />
-                                        </div>
-                                    ` : ''}
-
-                                    <div class="p-4">
-                                        <div class="flex space-x-4 mb-3">
-                                            <button onclick="likePost('${post.id}', ${isLiked})" class="flex items-center space-x-1 transition ${isLiked ? 'text-red-500' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'}">
-                                                <i data-lucide="heart" class="${isLiked ? 'fill-current' : ''}"></i>
-                                                ${post.likes?.length > 0 ? `<span class="font-semibold">${post.likes.length}</span>` : ''}
-                                            </button>
-                                            <button class="text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition">
-                                                <i data-lucide="message-circle"></i>
-                                            </button>
-                                        </div>
-                                        
-                                        ${post.text ? `
-                                            <p class="text-gray-700 dark:text-slate-300 leading-relaxed">
-                                                <span class="font-semibold text-gray-900 dark:text-white mr-2">${post.username}</span>
-                                                ${post.text}
+                                        <div>
+                                            <p class="text-gray-900 dark:text-white font-semibold hover:text-cyan-500 transition">@${post.username}</p>
+                                            <p class="text-gray-500 dark:text-slate-500 text-xs">
+                                                ${post.createdAt?.seconds ? new Date(post.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + ' - ' + new Date(post.createdAt.seconds * 1000).toLocaleDateString() : 'Az önce'}
                                             </p>
-                                        ` : ''}
+                                        </div>
                                     </div>
+                                    ${post.userId === state.user.uid ? `
+                                        <button onclick="deletePost('${post.id}')" class="text-gray-400 hover:text-red-500 p-2 transition">
+                                            <i data-lucide="trash-2" size="18"></i>
+                                        </button>
+                                    ` : `
+                                        <button onclick="openChatWithUser('${post.userId}', '${post.username}')" class="text-gray-400 hover:text-cyan-500 p-2 transition">
+                                            <i data-lucide="send" size="18"></i>
+                                        </button>
+                                    `}
                                 </div>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-            }
+
+                                ${post.image ? `
+                                    <div class="w-full bg-gray-100 dark:bg-black flex justify-center cursor-zoom-in" onclick="openLightbox('${post.image}')">
+                                        <img src="${post.image}" alt="Paylaşım içeriği" class="max-h-[500px] object-contain w-full" />
+                                    </div>
+                                ` : ''}
+
+                                <div class="p-4">
+                                    <div class="flex space-x-4 mb-3">
+                                        <button onclick="likePost('${post.id}', ${isLiked})" class="flex items-center space-x-2 transition ${isLiked ? 'text-red-500' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'}">
+                                            <i data-lucide="heart" class="${isLiked ? 'fill-current' : ''}"></i>
+                                            <span class="font-bold text-sm">${post.likes?.length || 0}</span>
+                                        </button>
+                                        <button onclick="openChatWithUser('${post.userId}', '${post.username}')" class="text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition flex items-center space-x-2">
+                                            <i data-lucide="message-circle"></i>
+                                            <span class="text-sm font-bold">Mesaj At</span>
+                                        </button>
+                                    </div>
+                                    
+                                    ${post.text ? `
+                                        <p class="text-gray-700 dark:text-slate-300 leading-relaxed">
+                                            <span class="font-bold text-gray-900 dark:text-white mr-2">@${post.username}</span>
+                                            ${post.text}
+                                        </p>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
             lucide.createIcons();
         }
 
@@ -452,15 +471,28 @@
 
             container.innerHTML = `
                 <div class="max-w-xl mx-auto pt-10 px-4 text-center animate-fade-in">
-                    <div class="w-24 h-24 mx-auto bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-4xl font-bold mb-4 text-white shadow-lg">
-                        ${state.user.displayName?.[0].toUpperCase() || 'U'}
+                    <div class="relative w-28 h-28 mx-auto mb-6">
+                        <div class="w-full h-full bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-3xl flex items-center justify-center text-4xl font-bold text-white shadow-xl rotate-3">
+                            <span class="-rotate-3">${state.user.displayName?.[0].toUpperCase() || 'U'}</span>
+                        </div>
                     </div>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">${state.user.displayName}</h2>
-                    <p class="text-gray-500 dark:text-slate-400 mb-6">${state.user.email}</p>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">@${state.user.displayName}</h2>
+                    <p class="text-gray-500 dark:text-slate-400 mb-6 font-medium">${state.user.email}</p>
                     
+                    <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-8">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
+                            <p class="text-2xl font-bold text-cyan-600 dark:text-cyan-400">${state.posts.filter(p => p.userId === state.user.uid).length}</p>
+                            <p class="text-xs text-gray-400 uppercase font-bold">Paylaşım</p>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
+                            <p class="text-2xl font-bold text-pink-500">${state.posts.filter(p => p.likes?.includes(state.user.uid)).length}</p>
+                            <p class="text-xs text-gray-400 uppercase font-bold">Beğeni</p>
+                        </div>
+                    </div>
+
                     <div class="flex flex-col space-y-3 max-w-xs mx-auto">
-                        <button onclick="openModal('settings')" class="flex items-center justify-center space-x-2 bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-white px-6 py-2 rounded-full hover:opacity-90 transition">
-                            <i data-lucide="settings" size="18"></i>
+                        <button onclick="openModal('settings')" class="flex items-center justify-center space-x-2 bg-gray-200 dark:bg-slate-800 text-gray-900 dark:text-white px-6 py-3 rounded-2xl hover:bg-gray-300 dark:hover:bg-slate-700 transition font-bold">
+                            <i data-lucide="settings" size="20"></i>
                             <span>Ayarlar</span>
                         </button>
                     </div>
@@ -491,27 +523,27 @@
             if (modalName === 'createPost') {
                 modalsContainer.innerHTML = `
                     <div class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
-                        <div class="bg-white dark:bg-slate-800 w-full max-w-lg rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-2xl">
-                            <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
-                                <h2 class="text-gray-900 dark:text-white font-bold text-lg">Yeni Gönderi</h2>
-                                <button onclick="closeModal()" class="text-gray-500 dark:text-slate-400 hover:text-red-500"><i data-lucide="x"></i></button>
+                        <div class="bg-white dark:bg-slate-800 w-full max-w-lg rounded-3xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-2xl">
+                            <div class="p-5 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                                <h2 class="text-gray-900 dark:text-white font-bold text-lg">Topluluğa Bir Şeyler De</h2>
+                                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 transition"><i data-lucide="x"></i></button>
                             </div>
-                            <div class="p-4">
-                                <textarea id="postText" class="w-full bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white p-3 rounded-lg border border-gray-200 dark:border-slate-700 focus:border-cyan-500 outline-none resize-none h-32 transition-colors" placeholder="Ne düşünüyorsun?"></textarea>
+                            <div class="p-5">
+                                <textarea id="postText" class="w-full bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white p-4 rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-cyan-500 outline-none resize-none h-40 transition-all" placeholder="Şu an neler oluyor? Herkes senin paylaşımlarını Keşfet kısmında görebilir..."></textarea>
                                 
-                                <div id="postImagePreview" class="hidden mt-4 relative rounded-lg overflow-hidden max-h-60 border border-gray-200 dark:border-slate-700">
+                                <div id="postImagePreview" class="hidden mt-4 relative rounded-2xl overflow-hidden max-h-60 border border-gray-200 dark:border-slate-700">
                                     <img id="postImgEl" src="" class="w-full h-full object-cover" />
-                                    <button onclick="removePostImage()" class="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full hover:bg-red-500"><i data-lucide="x" size="16"></i></button>
+                                    <button onclick="removePostImage()" class="absolute top-2 right-2 bg-black/60 text-white p-2 rounded-full hover:bg-red-500 transition"><i data-lucide="x" size="18"></i></button>
                                 </div>
 
-                                <div class="mt-4 flex justify-between items-center">
-                                    <button onclick="document.getElementById('postFileInput').click()" class="flex items-center space-x-2 text-cyan-600 dark:text-cyan-400 hover:opacity-80">
-                                        <i data-lucide="image" size="20"></i>
-                                        <span>Resim Ekle</span>
+                                <div class="mt-5 flex justify-between items-center">
+                                    <button onclick="document.getElementById('postFileInput').click()" class="flex items-center space-x-2 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 p-2 rounded-xl transition font-bold">
+                                        <i data-lucide="image" size="24"></i>
+                                        <span>Görsel Ekle</span>
                                     </button>
                                     <input type="file" id="postFileInput" accept="image/*" class="hidden" onchange="handlePostImage(this)">
                                     
-                                    <button onclick="submitPost()" id="postSubmitBtn" class="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-2 rounded-full font-medium transition shadow-lg shadow-cyan-500/20">Paylaş</button>
+                                    <button onclick="submitPost()" id="postSubmitBtn" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:scale-105 text-white px-8 py-3 rounded-2xl font-bold transition shadow-lg shadow-cyan-500/20">Paylaş</button>
                                 </div>
                             </div>
                         </div>
@@ -522,34 +554,37 @@
                     <div class="fixed inset-0 z-50 bg-gray-50 dark:bg-slate-900 p-4 pt-20 animate-fade-in flex flex-col">
                         <div class="max-w-xl mx-auto w-full">
                             <div class="flex items-center mb-8">
-                                <button onclick="closeModal()" class="mr-4 text-gray-500 hover:text-gray-900 dark:hover:text-white"><i data-lucide="x"></i></button>
-                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Ayarlar</h2>
+                                <button onclick="closeModal()" class="mr-4 p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm text-gray-500 hover:text-cyan-500 transition"><i data-lucide="arrow-left"></i></button>
+                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Ayarlar & Deneyim</h2>
                             </div>
-                            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden mb-6">
-                                <div class="p-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
-                                    <div class="flex items-center space-x-3 text-gray-900 dark:text-white">
-                                        <i data-lucide="${state.theme === 'dark' ? 'moon' : 'sun'}" size="20"></i>
-                                        <span>Karanlık Mod</span>
-                                    </div>
-                                    <button onclick="toggleTheme()" class="w-12 h-6 rounded-full p-1 transition-colors duration-300 ${state.theme === 'dark' ? 'bg-cyan-600' : 'bg-gray-300'}">
-                                        <div class="w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 ${state.theme === 'dark' ? 'translate-x-6' : ''}"></div>
-                                    </button>
-                                </div>
-                                <div class="p-4">
-                                    <button onclick="signOut(auth)" class="w-full flex items-center space-x-3 text-red-500 p-2 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition">
-                                        <i data-lucide="log-out" size="20"></i>
-                                        <span>Çıkış Yap</span>
-                                    </button>
-                                </div>
-                            </div>
-                             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-red-200 dark:border-red-900/30 overflow-hidden">
-                                <div class="p-4">
-                                    <h3 class="text-sm font-semibold text-red-500 uppercase mb-4">Tehlikeli Bölge</h3>
-                                    <button onclick="deleteAccount()" class="w-full flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition">
-                                        <div class="flex items-center space-x-2">
-                                            <i data-lucide="alert-triangle" size="20"></i>
-                                            <span>Hesabı Sil</span>
+                            <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden mb-6">
+                                <div class="p-5 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                                    <div class="flex items-center space-x-4 text-gray-900 dark:text-white font-bold">
+                                        <div class="p-2 bg-slate-100 dark:bg-slate-900 rounded-xl">
+                                            <i data-lucide="${state.theme === 'dark' ? 'moon' : 'sun'}" size="20"></i>
                                         </div>
+                                        <span>Karanlık Tema</span>
+                                    </div>
+                                    <button onclick="toggleTheme()" class="w-14 h-8 rounded-full p-1 transition-colors duration-300 ${state.theme === 'dark' ? 'bg-cyan-600' : 'bg-gray-300'}">
+                                        <div class="w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-300 ${state.theme === 'dark' ? 'translate-x-6' : ''}"></div>
+                                    </button>
+                                </div>
+                                <div class="p-5">
+                                    <button onclick="signOut(auth)" class="w-full flex items-center space-x-3 text-red-500 p-3 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-2xl transition font-bold">
+                                        <i data-lucide="log-out" size="24"></i>
+                                        <span>Oturumu Kapat</span>
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-red-200 dark:border-red-900/30 overflow-hidden">
+                                <div class="p-5">
+                                    <h3 class="text-xs font-black text-red-500 uppercase tracking-widest mb-4">Tehlikeli Bölge</h3>
+                                    <button onclick="deleteAccount()" class="w-full flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/40 transition font-bold border border-red-100 dark:border-red-900/10">
+                                        <div class="flex items-center space-x-3">
+                                            <i data-lucide="user-x" size="24"></i>
+                                            <span>Hesabımı Kalıcı Olarak Sil</span>
+                                        </div>
+                                        <i data-lucide="chevron-right" size="20"></i>
                                     </button>
                                 </div>
                             </div>
@@ -559,14 +594,19 @@
             } else if (modalName === 'search') {
                 modalsContainer.innerHTML = `
                    <div class="fixed inset-0 z-40 bg-gray-50 dark:bg-slate-900 flex flex-col pt-16 animate-fade-in">
-                        <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex items-center space-x-2">
-                            <button onclick="closeModal()" class="p-2 text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-800 rounded-full"><i data-lucide="x"></i></button>
-                            <form onsubmit="performSearch(event)" class="flex-1 flex bg-white dark:bg-slate-800 rounded-full border border-gray-200 dark:border-slate-700 overflow-hidden">
-                                <input id="searchInput" class="flex-1 bg-transparent px-4 py-2 outline-none text-gray-900 dark:text-white" placeholder="Kullanıcı adı ara...">
-                                <button type="submit" class="px-4 text-cyan-500 hover:text-cyan-400"><i data-lucide="search"></i></button>
+                        <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex items-center space-x-2 bg-white dark:bg-slate-900">
+                            <button onclick="closeModal()" class="p-2 text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-800 rounded-full transition"><i data-lucide="arrow-left"></i></button>
+                            <form onsubmit="performSearch(event)" class="flex-1 flex bg-gray-100 dark:bg-slate-800 rounded-2xl overflow-hidden focus-within:ring-2 ring-cyan-500/30 transition">
+                                <input id="searchInput" class="flex-1 bg-transparent px-4 py-3 outline-none text-gray-900 dark:text-white font-medium" placeholder="Kullanıcı ara...">
+                                <button type="submit" class="px-5 text-cyan-600 hover:text-cyan-400 transition"><i data-lucide="search"></i></button>
                             </form>
                         </div>
-                        <div id="searchResults" class="flex-1 overflow-y-auto p-4"></div>
+                        <div id="searchResults" class="flex-1 overflow-y-auto p-4 space-y-3">
+                             <div class="text-center text-gray-400 mt-20">
+                                <i data-lucide="users" size="48" class="mx-auto mb-4 opacity-10"></i>
+                                <p>Yeni arkadaşlar edinmek için arama yapın.</p>
+                             </div>
+                        </div>
                     </div>
                 `;
             }
@@ -603,7 +643,7 @@
             
             const btn = document.getElementById('postSubmitBtn');
             btn.disabled = true;
-            btn.textContent = "...";
+            btn.textContent = "Paylaşılıyor...";
 
             try {
                 await addDoc(collection(db, getCollectionPath('posts')), {
@@ -619,43 +659,44 @@
                 currentPostImage = null;
             } catch (e) {
                 console.error(e);
-                alert("Hata oluştu.");
+                alert("Paylaşım yapılamadı, lütfen tekrar deneyin.");
                 btn.disabled = false;
+                btn.textContent = "Paylaş";
             }
         };
 
         // --- Logic: Search ---
         window.performSearch = async (e) => {
             e.preventDefault();
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            if (term.length < 3) return;
+            const term = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (term.length < 2) return;
             
             const container = document.getElementById('searchResults');
-            container.innerHTML = '<div class="text-center text-gray-500">Aranıyor...</div>';
+            container.innerHTML = '<div class="text-center text-gray-500 py-20"><div class="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-cyan-600 rounded-full" role="status" aria-label="loading"></div><p class="mt-2">Sonuçlar aranıyor...</p></div>';
 
             try {
                 const q = query(
                     collection(db, getCollectionPath('users_meta')),
                     where('username', '>=', term),
                     where('username', '<=', term + '\uf8ff'),
-                    limit(10)
+                    limit(15)
                 );
                 const snapshot = await getDocs(q);
                 const results = snapshot.docs.map(d => d.data()).filter(u => u.uid !== state.user.uid);
 
                 if (results.length === 0) {
-                    container.innerHTML = '<div class="text-center text-gray-500">Kullanıcı bulunamadı.</div>';
+                    container.innerHTML = '<div class="text-center text-gray-500 py-20"><p>Böyle bir kullanıcı yok.</p></div>';
                 } else {
                     container.innerHTML = results.map(u => `
-                        <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl mb-2 shadow-sm border border-gray-100 dark:border-slate-700">
+                        <div class="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 hover:scale-[1.02] transition-transform">
                             <div class="flex items-center space-x-3">
-                                <div class="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-gray-700 dark:text-white">
+                                <div class="h-12 w-12 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-gray-700 dark:text-white text-lg">
                                     ${u.username[0].toUpperCase()}
                                 </div>
-                                <span class="font-semibold text-gray-900 dark:text-white">${u.username}</span>
+                                <span class="font-bold text-gray-900 dark:text-white">@${u.username}</span>
                             </div>
-                            <button onclick="openChatWithUser('${u.uid}', '${u.username}')" class="bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 px-3 py-1 rounded-full text-sm font-medium hover:bg-cyan-500/20">
-                                Mesaj
+                            <button onclick="openChatWithUser('${u.uid}', '${u.username}')" class="bg-cyan-500 text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-cyan-600 transition shadow-md">
+                                Mesaj Gönder
                             </button>
                         </div>
                     `).join('');
@@ -674,27 +715,28 @@
 
         window.openChat = async (targetUser) => {
             const modalsContainer = document.getElementById('modalsContainer');
-            // Basic Layout
             modalsContainer.innerHTML = `
                  <div class="fixed inset-0 z-40 bg-gray-50 dark:bg-slate-900 flex flex-col md:flex-row h-full pt-16 md:pt-0 animate-fade-in">
                     <!-- Sidebar -->
                     <div id="chatSidebar" class="w-full md:w-80 border-r border-gray-200 dark:border-slate-700 flex flex-col bg-white dark:bg-slate-900 ${targetUser ? 'hidden md:flex' : 'flex'}">
-                        <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
-                             <h2 class="text-xl font-bold text-gray-900 dark:text-white">Sohbetler</h2>
-                             <button onclick="closeModal()" class="md:hidden text-gray-500"><i data-lucide="x"></i></button>
-                             <button onclick="closeModal()" class="hidden md:block text-gray-500 hover:text-red-500"><i data-lucide="x"></i></button>
+                        <div class="p-5 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                             <h2 class="text-2xl font-black text-gray-900 dark:text-white">Mesajlar</h2>
+                             <button onclick="closeModal()" class="p-2 text-gray-400 hover:text-red-500 transition"><i data-lucide="x"></i></button>
                         </div>
-                        <div id="chatList" class="flex-1 overflow-y-auto p-2">
-                             <p class="text-center text-gray-400 mt-4">Yükleniyor...</p>
+                        <div id="chatList" class="flex-1 overflow-y-auto p-2 space-y-1">
+                             <p class="text-center text-gray-400 mt-10">Sohbetler yükleniyor...</p>
                         </div>
                     </div>
 
                     <!-- Message Area -->
                     <div id="chatArea" class="flex-1 flex flex-col bg-gray-50 dark:bg-slate-950 ${!targetUser ? 'hidden md:flex' : 'flex'}">
                         ${targetUser ? getChatAreaHTML(targetUser) : `
-                             <div class="flex-1 flex items-center justify-center text-gray-400 flex-col">
-                                <i data-lucide="message-circle" size="64" class="mb-4 opacity-20"></i>
-                                <p>Sohbet seçin.</p>
+                             <div class="flex-1 flex items-center justify-center text-gray-400 flex-col p-8 text-center">
+                                <div class="bg-white dark:bg-slate-800 p-8 rounded-full mb-6 shadow-xl border border-gray-100 dark:border-slate-800">
+                                    <i data-lucide="messages-square" size="64" class="text-cyan-500 opacity-40"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Güvenli Sohbet</h3>
+                                <p class="max-w-xs">Soldan birini seçerek anlık olarak mesajlaşmaya başlayabilirsin.</p>
                             </div>
                         `}
                     </div>
@@ -702,8 +744,8 @@
             `;
             lucide.createIcons();
 
-            // Load Sidebar Users (Recent from posts for demo)
-            const q = query(collection(db, getCollectionPath('posts')), orderBy('createdAt', 'desc'), limit(50));
+            // Sohbet listesini oluştur
+            const q = query(collection(db, getCollectionPath('posts')), orderBy('createdAt', 'desc'), limit(100));
             getDocs(q).then(snapshot => {
                 const users = new Map();
                 if (targetUser) users.set(targetUser.uid, targetUser);
@@ -716,14 +758,14 @@
                 
                 const listEl = document.getElementById('chatList');
                 if (users.size === 0) {
-                     listEl.innerHTML = '<p class="text-center text-gray-400 mt-4">Kimse yok.</p>';
+                     listEl.innerHTML = '<div class="text-center p-8 text-gray-400"><p>Henüz kimseyle sohbet başlatılmadı.</p></div>';
                 } else {
                     listEl.innerHTML = Array.from(users.values()).map(u => `
-                        <div onclick="switchChat('${u.uid}', '${u.username}')" class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition hover:bg-gray-100 dark:hover:bg-slate-800 ${targetUser?.uid === u.uid ? 'bg-cyan-50 dark:bg-slate-800 border-l-4 border-cyan-500' : ''}">
+                        <div onclick="switchChat('${u.uid}', '${u.username}')" class="flex items-center space-x-3 p-4 rounded-2xl cursor-pointer transition hover:bg-gray-100 dark:hover:bg-slate-800 ${targetUser?.uid === u.uid ? 'bg-cyan-50 dark:bg-slate-800 border-r-4 border-cyan-500' : ''}">
                              <div class="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-gray-700 dark:text-white font-bold">
                                 ${u.username[0].toUpperCase()}
                             </div>
-                             <p class="text-gray-900 dark:text-white font-medium">${u.username}</p>
+                             <p class="text-gray-900 dark:text-white font-bold">@${u.username}</p>
                         </div>
                     `).join('');
                 }
@@ -739,17 +781,17 @@
 
         function getChatAreaHTML(user) {
             return `
-                <div class="p-4 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center space-x-3 md:pt-4 pt-0">
+                <div class="p-4 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center space-x-4 md:pt-4 pt-0">
                     <button onclick="document.getElementById('chatArea').classList.add('hidden'); document.getElementById('chatSidebar').classList.remove('hidden');" class="md:hidden text-gray-500"><i data-lucide="arrow-left"></i></button>
-                    <div class="h-8 w-8 rounded-full bg-cyan-600 flex items-center justify-center text-white text-sm font-bold">${user.username[0].toUpperCase()}</div>
-                    <h3 class="text-gray-900 dark:text-white font-bold">${user.username}</h3>
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-r from-cyan-600 to-blue-600 flex items-center justify-center text-white font-bold shadow-md">${user.username[0].toUpperCase()}</div>
+                    <h3 class="text-gray-900 dark:text-white font-black">@${user.username}</h3>
                 </div>
-                <div id="msgContainer" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-slate-900">
-                    <p class="text-center text-gray-400">Yükleniyor...</p>
+                <div id="msgContainer" class="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50 dark:bg-slate-900">
+                    <p class="text-center text-gray-400">Mesajlar yükleniyor...</p>
                 </div>
-                <form onsubmit="sendChatMsg(event)" class="p-3 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 flex space-x-2">
-                    <input id="msgInput" class="flex-1 bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-white rounded-full px-4 py-2 border border-transparent focus:border-cyan-500 focus:bg-white dark:focus:bg-black outline-none transition" placeholder="Mesaj yaz...">
-                    <button type="submit" class="bg-cyan-600 text-white p-2 rounded-full hover:bg-cyan-500 shadow-lg"><i data-lucide="send" size="20"></i></button>
+                <form onsubmit="sendChatMsg(event)" class="p-4 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 flex space-x-3">
+                    <input id="msgInput" class="flex-1 bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-white rounded-2xl px-5 py-3 border border-transparent focus:border-cyan-500 focus:bg-white dark:focus:bg-black outline-none transition font-medium" placeholder="Mesajını buraya yaz...">
+                    <button type="submit" class="bg-cyan-600 text-white p-3 rounded-2xl hover:bg-cyan-500 shadow-lg transition transform active:scale-95"><i data-lucide="send" size="24"></i></button>
                 </form>
             `;
         }
@@ -766,7 +808,7 @@
                 if(container) {
                     container.innerHTML = msgs.map(msg => `
                         <div class="flex ${msg.senderId === state.user.uid ? 'justify-end' : 'justify-start'}">
-                            <div class="max-w-[75%] p-3 rounded-2xl shadow-sm text-sm ${msg.senderId === state.user.uid ? 'bg-cyan-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 rounded-bl-none border border-gray-100 dark:border-slate-700'}">
+                            <div class="max-w-[80%] p-4 rounded-3xl shadow-sm text-sm font-medium ${msg.senderId === state.user.uid ? 'bg-gradient-to-br from-cyan-600 to-blue-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 rounded-bl-none border border-gray-100 dark:border-slate-700'}">
                                 ${msg.text}
                             </div>
                         </div>
@@ -797,11 +839,11 @@
             localStorage.setItem('theme', state.theme);
             if (state.theme === 'dark') document.documentElement.classList.add('dark');
             else document.documentElement.classList.remove('dark');
-            openModal('settings'); // Re-render modal to update toggle UI
+            openModal('settings');
         };
 
         window.deleteAccount = async () => {
-             const confirmName = prompt(`Onaylamak için kullanıcı adını ("${state.user.displayName}") yaz:`);
+             const confirmName = prompt(`Hesabını silmek istediğine emin misin? Onaylamak için kullanıcı adını ("${state.user.displayName}") tam olarak yaz:`);
              if (confirmName === state.user.displayName) {
                  await deleteUser(state.user);
                  closeModal();
@@ -811,9 +853,9 @@
         window.openLightbox = (src) => {
             const modalsContainer = document.getElementById('modalsContainer');
             modalsContainer.innerHTML = `
-                <div onclick="closeModal()" class="fixed inset-0 z-[60] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-                    <button onclick="closeModal()" class="absolute top-4 right-4 text-white p-2 hover:bg-white/20 rounded-full transition"><i data-lucide="x" size="32"></i></button>
-                    <img src="${src}" class="max-h-[90vh] max-w-[95vw] object-contain rounded-lg shadow-2xl" onclick="event.stopPropagation()">
+                <div onclick="closeModal()" class="fixed inset-0 z-[60] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+                    <button onclick="closeModal()" class="absolute top-6 right-6 text-white p-3 hover:bg-white/10 rounded-full transition"><i data-lucide="x" size="32"></i></button>
+                    <img src="${src}" class="max-h-[90vh] max-w-[95vw] object-contain rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
                 </div>
             `;
             lucide.createIcons();
