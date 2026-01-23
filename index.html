@@ -1,866 +1,325 @@
 <!DOCTYPE html>
-<html lang="tr" class="dark">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaTech Social - Keşfet</title>
-    
-    <!-- Tailwind CSS -->
+    <title>NOVA Social - Tam Sürüm</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        slate: {
-                            850: '#151f2e',
-                            950: '#020617',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-
     <style>
-        /* Custom Scrollbar for Chat */
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
-        /* Fade In Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-
-        body {
-            transition: background-color 0.3s, color 0.3s;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .chat-height { height: calc(100% - 110px); }
+        .glass-effect { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white font-sans min-h-screen">
+<body class="bg-slate-50 text-slate-900">
 
-    <!-- App Container -->
-    <div id="app"></div>
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 glass-effect border-b border-slate-200 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+            <h1 class="text-2xl font-extrabold text-cyan-600 tracking-tight cursor-pointer">NOVA</h1>
+            
+            <div class="relative flex-1 max-w-md">
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4"></i>
+                    <input id="search-input" type="text" placeholder="Arkadaşlarını ara..." 
+                           class="w-full bg-slate-100 border-none rounded-2xl py-2 pl-10 pr-4 focus:ring-2 focus:ring-cyan-500 transition text-sm outline-none">
+                </div>
+                <div id="search-results" class="absolute top-full mt-2 w-full bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden hidden z-50"></div>
+            </div>
 
-    <!-- Firebase SDKs -->
+            <div class="flex items-center gap-3">
+                <img id="nav-avatar" src="" class="w-10 h-10 rounded-full border-2 border-cyan-100 object-cover cursor-pointer bg-slate-200">
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 p-4 md:p-6">
+        
+        <!-- Sol Panel -->
+        <aside class="md:col-span-3 space-y-4">
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+                <h2 class="font-bold flex items-center gap-2 text-slate-800 mb-4">
+                    <i data-lucide="layout-grid" class="w-4 h-4 text-cyan-600"></i> Kanallar
+                </h2>
+                <div class="space-y-1 text-sm">
+                    <div class="bg-cyan-50 text-cyan-700 font-bold px-4 py-2.5 rounded-xl cursor-pointer">🌍 Genel Akış</div>
+                    <div class="hover:bg-slate-50 px-4 py-2.5 rounded-xl cursor-pointer text-slate-500 transition"># Teknoloji</div>
+                    <div class="hover:bg-slate-50 px-4 py-2.5 rounded-xl cursor-pointer text-slate-500 transition"># Tasarım</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Orta Panel -->
+        <section class="md:col-span-6 space-y-6">
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+                <div class="flex gap-4">
+                    <img id="composer-avatar" src="" class="w-12 h-12 rounded-full shrink-0 object-cover bg-slate-200">
+                    <textarea id="post-content" placeholder="Neler oluyor?" 
+                              class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-cyan-500 resize-none text-sm outline-none min-h-[100px]"></textarea>
+                </div>
+                <div class="flex justify-end mt-3">
+                    <button onclick="createPost()" class="bg-cyan-600 text-white px-8 py-2 rounded-full font-bold hover:bg-cyan-700 transition shadow-lg shadow-cyan-100">Paylaş</button>
+                </div>
+            </div>
+
+            <div id="posts-container" class="space-y-4">
+                <div class="text-center py-10 text-slate-400">Yükleniyor...</div>
+            </div>
+        </section>
+
+        <!-- Sağ Panel -->
+        <aside class="hidden md:block md:col-span-3">
+            <div class="bg-white p-5 rounded-3xl border border-slate-200">
+                <h3 class="font-bold text-sm mb-4 text-slate-800">Aktif Kullanıcılar</h3>
+                <div id="online-users" class="space-y-3">
+                    <!-- JS ile dolacak -->
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Chat Window -->
+    <div id="chat-window" class="fixed bottom-0 right-4 w-80 md:w-96 z-[100] bg-white rounded-t-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[480px] hidden">
+        <div class="bg-cyan-600 p-4 text-white flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img id="chat-avatar" src="" class="w-9 h-9 rounded-full border border-white/20 object-cover">
+                <div>
+                    <p id="chat-title" class="font-bold text-sm">Chat</p>
+                    <p class="text-[10px] opacity-80 uppercase tracking-wider">Şimdi Aktif</p>
+                </div>
+            </div>
+            <button onclick="closeChat()" class="hover:bg-cyan-700 p-1 rounded-full"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50 chat-height"></div>
+        <div class="p-4 bg-white border-t flex gap-2">
+            <input id="chat-input" type="text" placeholder="Mesaj yaz..." 
+                   class="flex-1 bg-slate-100 border-none rounded-full px-5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-cyan-500">
+            <button onclick="sendMessage()" class="bg-cyan-600 text-white p-2.5 rounded-full hover:bg-cyan-700 transition shadow-md">
+                <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { 
-            getAuth, 
-            signInWithEmailAndPassword, 
-            createUserWithEmailAndPassword, 
-            signOut, 
-            onAuthStateChanged,
-            updateProfile,
-            signInWithCustomToken,
-            deleteUser
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { 
-            getFirestore, 
-            collection, 
-            addDoc, 
-            query, 
-            orderBy, 
-            onSnapshot, 
-            serverTimestamp, 
-            doc, 
-            deleteDoc, 
-            updateDoc, 
-            arrayUnion, 
-            arrayRemove,
-            where,
-            limit,
-            getDocs,
-            setDoc,
-            getDoc
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, addDoc, updateDoc, onSnapshot, query, where, serverTimestamp, getDoc, setDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Configuration ---
-        const getFirebaseConfig = () => {
-            if (typeof __firebase_config !== 'undefined') {
-                return JSON.parse(__firebase_config);
-            }
-            return {
-                apiKey: "",
-                authDomain: "novatech-e7507.firebaseapp.com",
-                projectId: "novatech-e7507",
-            };
-        };
-
-        const app = initializeApp(getFirebaseConfig());
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app';
-        
-        // Helper to get paths
-        const getCollectionPath = (colName) => `artifacts/${appId}/public/data/${colName}`;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nova-social-final';
 
-        // --- State Management ---
-        const state = {
-            user: null,
-            view: 'home', // home, profile
-            theme: localStorage.getItem('theme') || 'dark',
-            modals: {
-                createPost: false,
-                chat: false,
-                search: false,
-                settings: false,
-                lightbox: null,
-                mobileMenu: false
-            },
-            chatUser: null,
-            posts: [],
-            messages: [],
-            unsubscribePosts: null,
-            unsubscribeChat: null
-        };
+        let currentUser = null;
+        let userData = null;
+        let activeChat = null;
+        let allUsers = [];
+        let unsubMsgs = null;
 
-        // --- DOM Elements ---
-        const appContainer = document.getElementById('app');
-
-        // --- Theme Init ---
-        if (state.theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-
-        // --- Authentication Logic ---
-        const initAuth = async () => {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                try {
+        // --- AUTH & USER SYNC ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await syncProfile(user);
+                initData();
+            } else {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
-                } catch (e) {
-                    console.error("Token Auth Error", e);
+                } else {
+                    await signInAnonymously(auth);
                 }
             }
-        };
-        initAuth();
-
-        onAuthStateChanged(auth, (user) => {
-            state.user = user;
-            renderApp();
         });
 
-        // --- Core Render Function ---
-        function renderApp() {
-            if (!state.user) {
-                renderAuth();
-            } else {
-                renderMainLayout();
-            }
-            lucide.createIcons();
-        }
-
-        // --- View: Auth ---
-        function renderAuth() {
-            appContainer.innerHTML = `
-                <div class="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center p-4 transition-colors duration-300">
-                    <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-200 dark:border-slate-700">
-                        <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 mb-2 text-center">
-                            NovaSocial
-                        </h1>
-                        <p class="text-gray-500 dark:text-slate-400 text-center mb-8 font-medium">Topluluğa Katıl ve Keşfet</p>
-                        
-                        <form id="authForm" class="space-y-4">
-                            <div id="usernameField" class="hidden relative">
-                                <i data-lucide="at-sign" class="absolute left-3 top-3 text-gray-400 dark:text-slate-500 h-5 w-5"></i>
-                                <input type="text" id="username" placeholder="Benzersiz Kullanıcı Adı" class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white p-3 pl-10 rounded-lg focus:outline-none focus:border-cyan-500 transition">
-                            </div>
-                            <div class="relative">
-                                <i data-lucide="mail" class="absolute left-3 top-3 text-gray-400 dark:text-slate-500 h-5 w-5"></i>
-                                <input type="email" id="email" placeholder="E-posta" required class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white p-3 pl-10 rounded-lg focus:outline-none focus:border-cyan-500 transition">
-                            </div>
-                            <div class="relative">
-                                <i data-lucide="lock" class="absolute left-3 top-3 text-gray-400 dark:text-slate-500 h-5 w-5"></i>
-                                <input type="password" id="password" placeholder="Şifre" required class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white p-3 pl-10 rounded-lg focus:outline-none focus:border-cyan-500 transition">
-                            </div>
-                            
-                            <p id="authError" class="text-red-500 text-xs text-center hidden p-2 bg-red-50 dark:bg-red-900/10 rounded border border-red-200 dark:border-red-900/30 font-medium"></p>
-                            
-                            <button type="submit" id="authBtn" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold p-3 rounded-lg hover:opacity-90 transition shadow-lg shadow-cyan-500/30">
-                                Giriş Yap
-                            </button>
-                        </form>
-                        
-                        <div class="mt-6 text-center">
-                            <button id="toggleAuthMode" class="text-cyan-600 dark:text-cyan-400 text-sm hover:underline font-semibold">
-                                Hesabın yok mu? Hemen Kayıt Ol
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            let isLogin = true;
-            const form = document.getElementById('authForm');
-            const toggleBtn = document.getElementById('toggleAuthMode');
-            const usernameField = document.getElementById('usernameField');
-            const authBtn = document.getElementById('authBtn');
-            const errorText = document.getElementById('authError');
-
-            toggleBtn.addEventListener('click', () => {
-                isLogin = !isLogin;
-                usernameField.classList.toggle('hidden', isLogin);
-                const usernameInput = document.getElementById('username');
-                usernameInput.required = !isLogin;
-                
-                authBtn.textContent = isLogin ? 'Giriş Yap' : 'Kayıt Ol ve Başla';
-                toggleBtn.textContent = isLogin ? 'Hesabın yok mu? Hemen Kayıt Ol' : 'Zaten üye misin? Giriş Yap';
-                errorText.classList.add('hidden');
-                lucide.createIcons();
-            });
-
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const username = document.getElementById('username').value.trim().toLowerCase();
-                
-                authBtn.disabled = true;
-                authBtn.textContent = "İşleniyor...";
-                errorText.classList.add('hidden');
-
-                try {
-                    if (isLogin) {
-                        await signInWithEmailAndPassword(auth, email, password);
-                    } else {
-                        if (!username || username.length < 3) throw new Error("Kullanıcı adı en az 3 karakter olmalıdır.");
-                        
-                        // Kullanıcı adı benzersizlik kontrolü
-                        const q = query(collection(db, getCollectionPath('users_meta')), where('username', '==', username));
-                        const snapshot = await getDocs(q);
-                        if (!snapshot.empty) throw new Error("Bu kullanıcı adı başka biri tarafından kullanılıyor.");
-
-                        const res = await createUserWithEmailAndPassword(auth, email, password);
-                        await updateProfile(res.user, { displayName: username });
-                        
-                        await setDoc(doc(db, getCollectionPath('users_meta'), res.user.uid), {
-                            username: username,
-                            uid: res.user.uid,
-                            email: email,
-                            createdAt: serverTimestamp()
-                        });
-                    }
-                } catch (err) {
-                    let msg = err.message;
-                    if (msg.includes('email-already-in-use')) msg = "Bu e-posta adresi zaten kullanımda.";
-                    if (msg.includes('wrong-password')) msg = "Hatalı şifre girdiniz.";
-                    if (msg.includes('user-not-found')) msg = "Bu bilgilere ait kullanıcı bulunamadı.";
-                    if (msg.includes('weak-password')) msg = "Şifre en az 6 karakterden oluşmalıdır.";
-                    
-                    errorText.textContent = msg.replace('Firebase: ', '');
-                    errorText.classList.remove('hidden');
-                    authBtn.disabled = false;
-                    authBtn.textContent = isLogin ? 'Giriş Yap' : 'Kayıt Ol ve Başla';
-                }
-            });
-            lucide.createIcons();
-        }
-
-        // --- View: Main Layout ---
-        function renderMainLayout() {
-            // Setup Listeners if first load
-            if (!state.unsubscribePosts) {
-                // Keşfet mantığı: Tüm gönderiler çekilir
-                const q = query(collection(db, getCollectionPath('posts')), orderBy('createdAt', 'desc'));
-                state.unsubscribePosts = onSnapshot(q, (snapshot) => {
-                    state.posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    if (state.view === 'home') renderFeedContent(); 
-                }, (error) => {
-                    console.error("Post sync error:", error);
-                });
-            }
-
-            appContainer.innerHTML = `
-                <!-- Navbar -->
-                <nav class="fixed top-0 w-full z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200 dark:border-slate-800 transition-colors duration-300">
-                    <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg">
-                                <i data-lucide="menu"></i>
-                            </button>
-                            <h1 id="logoBtn" class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600 cursor-pointer select-none">
-                                NovaSocial
-                            </h1>
-                        </div>
-                        <div class="flex items-center space-x-2 md:space-x-4">
-                            <button id="searchBtn" class="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition">
-                                <i data-lucide="search"></i>
-                            </button>
-                            <button id="chatBtn" class="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition">
-                                <i data-lucide="message-circle"></i>
-                            </button>
-                            <button id="settingsBtn" class="hidden md:block p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition">
-                                <i data-lucide="settings"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Mobile Menu -->
-                    <div id="mobileMenu" class="md:hidden hidden bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 shadow-xl">
-                        <div class="p-4 space-y-2">
-                            <button id="mobSettingsBtn" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700">
-                                <i data-lucide="settings" size="20"></i>
-                                <span>Ayarlar & Tema</span>
-                            </button>
-                            <button id="mobLogoutBtn" class="w-full flex items-center space-x-3 p-3 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
-                                <i data-lucide="log-out" size="20"></i>
-                                <span>Çıkış Yap</span>
-                            </button>
-                        </div>
-                    </div>
-                </nav>
-
-                <!-- Main Content -->
-                <main id="mainContent" class="pt-16 min-h-screen pb-24">
-                    <!-- Dynamic Content -->
-                </main>
-
-                <!-- Bottom Bar -->
-                <div class="fixed bottom-0 w-full z-30 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 pb-safe shadow-[0_-5px_10px_rgba(0,0,0,0.05)]">
-                    <div class="max-w-lg mx-auto flex justify-around items-center h-16">
-                        <button id="navHome" class="p-3 rounded-full transition ${state.view === 'home' ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-400 dark:text-slate-500'}">
-                            <i data-lucide="compass" size="28"></i>
-                        </button>
-                        
-                        <button id="navCreate" class="p-3 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl text-white shadow-lg shadow-cyan-500/30 transform -translate-y-4 hover:scale-105 transition active:scale-95">
-                            <i data-lucide="plus-square" size="28"></i>
-                        </button>
-                        
-                        <button id="navProfile" class="p-3 rounded-full transition ${state.view === 'profile' ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-400 dark:text-slate-500'}">
-                            <i data-lucide="user" size="28"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Modals Placeholder -->
-                <div id="modalsContainer"></div>
-            `;
-
-            // Attach Global Events
-            document.getElementById('mobileMenuBtn').onclick = () => {
-                document.getElementById('mobileMenu').classList.toggle('hidden');
-                lucide.createIcons();
-            };
-            document.getElementById('mobLogoutBtn').onclick = () => signOut(auth);
+        async function syncProfile(user) {
+            const userRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'data');
+            const snap = await getDoc(userRef);
             
-            // Nav Events
-            document.getElementById('logoBtn').onclick = () => switchView('home');
-            document.getElementById('navHome').onclick = () => switchView('home');
-            document.getElementById('navProfile').onclick = () => switchView('profile');
-            
-            // Modal Events
-            document.getElementById('navCreate').onclick = () => openModal('createPost');
-            document.getElementById('searchBtn').onclick = () => openModal('search');
-            document.getElementById('chatBtn').onclick = () => openChat(null);
-            document.getElementById('settingsBtn').onclick = () => openModal('settings');
-            document.getElementById('mobSettingsBtn').onclick = () => openModal('settings');
-
-            // Render Initial View
-            if (state.view === 'home') renderFeedContent();
-            else renderProfileContent();
-        }
-
-        function switchView(viewName) {
-            state.view = viewName;
-            document.getElementById('navHome').className = `p-3 rounded-full transition ${viewName === 'home' ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-400 dark:text-slate-500'}`;
-            document.getElementById('navProfile').className = `p-3 rounded-full transition ${viewName === 'profile' ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-400 dark:text-slate-500'}`;
-            
-            if (viewName === 'home') renderFeedContent();
-            else renderProfileContent();
-            lucide.createIcons();
-        }
-
-        // --- Render: Feed ---
-        function renderFeedContent() {
-            const container = document.getElementById('mainContent');
-            if (!container) return;
-
-            container.innerHTML = `
-                <div class="max-w-xl mx-auto px-4 pt-4 animate-fade-in">
-                    <div class="mb-6 flex items-center justify-between">
-                        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center space-x-2">
-                             <i data-lucide="sparkles" class="text-cyan-500"></i>
-                             <span>Keşfet</span>
-                        </h2>
-                    </div>
-                    ${state.posts.length === 0 ? `
-                        <div class="text-center text-gray-500 mt-20 p-8 border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-3xl">
-                            <i data-lucide="camera" size="48" class="mx-auto mb-4 opacity-20"></i>
-                            <p class="font-medium">Henüz hiçbir şey paylaşılmamış.</p>
-                            <p class="text-sm mt-2">İlk adımı sen at ve toplulukla paylaş!</p>
-                        </div>
-                    ` : state.posts.map(post => {
-                        const isLiked = post.likes?.includes(state.user.uid);
-                        return `
-                            <div class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl mb-6 overflow-hidden shadow-sm transition-all hover:shadow-md">
-                                <div class="p-4 flex justify-between items-center">
-                                    <div class="flex items-center space-x-3 cursor-pointer" onclick="openChatWithUser('${post.userId}', '${post.username}')">
-                                        <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold uppercase shadow-md">
-                                            ${post.username?.[0] || 'A'}
-                                        </div>
-                                        <div>
-                                            <p class="text-gray-900 dark:text-white font-semibold hover:text-cyan-500 transition">@${post.username}</p>
-                                            <p class="text-gray-500 dark:text-slate-500 text-xs">
-                                                ${post.createdAt?.seconds ? new Date(post.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + ' - ' + new Date(post.createdAt.seconds * 1000).toLocaleDateString() : 'Az önce'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    ${post.userId === state.user.uid ? `
-                                        <button onclick="deletePost('${post.id}')" class="text-gray-400 hover:text-red-500 p-2 transition">
-                                            <i data-lucide="trash-2" size="18"></i>
-                                        </button>
-                                    ` : `
-                                        <button onclick="openChatWithUser('${post.userId}', '${post.username}')" class="text-gray-400 hover:text-cyan-500 p-2 transition">
-                                            <i data-lucide="send" size="18"></i>
-                                        </button>
-                                    `}
-                                </div>
-
-                                ${post.image ? `
-                                    <div class="w-full bg-gray-100 dark:bg-black flex justify-center cursor-zoom-in" onclick="openLightbox('${post.image}')">
-                                        <img src="${post.image}" alt="Paylaşım içeriği" class="max-h-[500px] object-contain w-full" />
-                                    </div>
-                                ` : ''}
-
-                                <div class="p-4">
-                                    <div class="flex space-x-4 mb-3">
-                                        <button onclick="likePost('${post.id}', ${isLiked})" class="flex items-center space-x-2 transition ${isLiked ? 'text-red-500' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'}">
-                                            <i data-lucide="heart" class="${isLiked ? 'fill-current' : ''}"></i>
-                                            <span class="font-bold text-sm">${post.likes?.length || 0}</span>
-                                        </button>
-                                        <button onclick="openChatWithUser('${post.userId}', '${post.username}')" class="text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition flex items-center space-x-2">
-                                            <i data-lucide="message-circle"></i>
-                                            <span class="text-sm font-bold">Mesaj At</span>
-                                        </button>
-                                    </div>
-                                    
-                                    ${post.text ? `
-                                        <p class="text-gray-700 dark:text-slate-300 leading-relaxed">
-                                            <span class="font-bold text-gray-900 dark:text-white mr-2">@${post.username}</span>
-                                            ${post.text}
-                                        </p>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            `;
-            lucide.createIcons();
-        }
-
-        // --- Render: Profile ---
-        function renderProfileContent() {
-            const container = document.getElementById('mainContent');
-            if (!container) return;
-
-            container.innerHTML = `
-                <div class="max-w-xl mx-auto pt-10 px-4 text-center animate-fade-in">
-                    <div class="relative w-28 h-28 mx-auto mb-6">
-                        <div class="w-full h-full bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-3xl flex items-center justify-center text-4xl font-bold text-white shadow-xl rotate-3">
-                            <span class="-rotate-3">${state.user.displayName?.[0].toUpperCase() || 'U'}</span>
-                        </div>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">@${state.user.displayName}</h2>
-                    <p class="text-gray-500 dark:text-slate-400 mb-6 font-medium">${state.user.email}</p>
-                    
-                    <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-8">
-                        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
-                            <p class="text-2xl font-bold text-cyan-600 dark:text-cyan-400">${state.posts.filter(p => p.userId === state.user.uid).length}</p>
-                            <p class="text-xs text-gray-400 uppercase font-bold">Paylaşım</p>
-                        </div>
-                        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
-                            <p class="text-2xl font-bold text-pink-500">${state.posts.filter(p => p.likes?.includes(state.user.uid)).length}</p>
-                            <p class="text-xs text-gray-400 uppercase font-bold">Beğeni</p>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col space-y-3 max-w-xs mx-auto">
-                        <button onclick="openModal('settings')" class="flex items-center justify-center space-x-2 bg-gray-200 dark:bg-slate-800 text-gray-900 dark:text-white px-6 py-3 rounded-2xl hover:bg-gray-300 dark:hover:bg-slate-700 transition font-bold">
-                            <i data-lucide="settings" size="20"></i>
-                            <span>Ayarlar</span>
-                        </button>
-                    </div>
-                </div>
-            `;
-            lucide.createIcons();
-        }
-
-        // --- Logic: Posts ---
-        window.deletePost = async (postId) => {
-            if (confirm("Bu gönderiyi silmek istediğine emin misin?")) {
-                await deleteDoc(doc(db, getCollectionPath('posts'), postId));
-            }
-        };
-
-        window.likePost = async (postId, isLiked) => {
-            const postRef = doc(db, getCollectionPath('posts'), postId);
-            if (isLiked) {
-                await updateDoc(postRef, { likes: arrayRemove(state.user.uid) });
-            } else {
-                await updateDoc(postRef, { likes: arrayUnion(state.user.uid) });
-            }
-        };
-
-        // --- Modal System ---
-        window.openModal = (modalName) => {
-            const modalsContainer = document.getElementById('modalsContainer');
-            if (modalName === 'createPost') {
-                modalsContainer.innerHTML = `
-                    <div class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
-                        <div class="bg-white dark:bg-slate-800 w-full max-w-lg rounded-3xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-2xl">
-                            <div class="p-5 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
-                                <h2 class="text-gray-900 dark:text-white font-bold text-lg">Topluluğa Bir Şeyler De</h2>
-                                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 transition"><i data-lucide="x"></i></button>
-                            </div>
-                            <div class="p-5">
-                                <textarea id="postText" class="w-full bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white p-4 rounded-2xl border border-gray-200 dark:border-slate-700 focus:border-cyan-500 outline-none resize-none h-40 transition-all" placeholder="Şu an neler oluyor? Herkes senin paylaşımlarını Keşfet kısmında görebilir..."></textarea>
-                                
-                                <div id="postImagePreview" class="hidden mt-4 relative rounded-2xl overflow-hidden max-h-60 border border-gray-200 dark:border-slate-700">
-                                    <img id="postImgEl" src="" class="w-full h-full object-cover" />
-                                    <button onclick="removePostImage()" class="absolute top-2 right-2 bg-black/60 text-white p-2 rounded-full hover:bg-red-500 transition"><i data-lucide="x" size="18"></i></button>
-                                </div>
-
-                                <div class="mt-5 flex justify-between items-center">
-                                    <button onclick="document.getElementById('postFileInput').click()" class="flex items-center space-x-2 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 p-2 rounded-xl transition font-bold">
-                                        <i data-lucide="image" size="24"></i>
-                                        <span>Görsel Ekle</span>
-                                    </button>
-                                    <input type="file" id="postFileInput" accept="image/*" class="hidden" onchange="handlePostImage(this)">
-                                    
-                                    <button onclick="submitPost()" id="postSubmitBtn" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:scale-105 text-white px-8 py-3 rounded-2xl font-bold transition shadow-lg shadow-cyan-500/20">Paylaş</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else if (modalName === 'settings') {
-                modalsContainer.innerHTML = `
-                    <div class="fixed inset-0 z-50 bg-gray-50 dark:bg-slate-900 p-4 pt-20 animate-fade-in flex flex-col">
-                        <div class="max-w-xl mx-auto w-full">
-                            <div class="flex items-center mb-8">
-                                <button onclick="closeModal()" class="mr-4 p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm text-gray-500 hover:text-cyan-500 transition"><i data-lucide="arrow-left"></i></button>
-                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Ayarlar & Deneyim</h2>
-                            </div>
-                            <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden mb-6">
-                                <div class="p-5 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
-                                    <div class="flex items-center space-x-4 text-gray-900 dark:text-white font-bold">
-                                        <div class="p-2 bg-slate-100 dark:bg-slate-900 rounded-xl">
-                                            <i data-lucide="${state.theme === 'dark' ? 'moon' : 'sun'}" size="20"></i>
-                                        </div>
-                                        <span>Karanlık Tema</span>
-                                    </div>
-                                    <button onclick="toggleTheme()" class="w-14 h-8 rounded-full p-1 transition-colors duration-300 ${state.theme === 'dark' ? 'bg-cyan-600' : 'bg-gray-300'}">
-                                        <div class="w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-300 ${state.theme === 'dark' ? 'translate-x-6' : ''}"></div>
-                                    </button>
-                                </div>
-                                <div class="p-5">
-                                    <button onclick="signOut(auth)" class="w-full flex items-center space-x-3 text-red-500 p-3 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-2xl transition font-bold">
-                                        <i data-lucide="log-out" size="24"></i>
-                                        <span>Oturumu Kapat</span>
-                                    </button>
-                                </div>
-                            </div>
-                             <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-red-200 dark:border-red-900/30 overflow-hidden">
-                                <div class="p-5">
-                                    <h3 class="text-xs font-black text-red-500 uppercase tracking-widest mb-4">Tehlikeli Bölge</h3>
-                                    <button onclick="deleteAccount()" class="w-full flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/40 transition font-bold border border-red-100 dark:border-red-900/10">
-                                        <div class="flex items-center space-x-3">
-                                            <i data-lucide="user-x" size="24"></i>
-                                            <span>Hesabımı Kalıcı Olarak Sil</span>
-                                        </div>
-                                        <i data-lucide="chevron-right" size="20"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else if (modalName === 'search') {
-                modalsContainer.innerHTML = `
-                   <div class="fixed inset-0 z-40 bg-gray-50 dark:bg-slate-900 flex flex-col pt-16 animate-fade-in">
-                        <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex items-center space-x-2 bg-white dark:bg-slate-900">
-                            <button onclick="closeModal()" class="p-2 text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-800 rounded-full transition"><i data-lucide="arrow-left"></i></button>
-                            <form onsubmit="performSearch(event)" class="flex-1 flex bg-gray-100 dark:bg-slate-800 rounded-2xl overflow-hidden focus-within:ring-2 ring-cyan-500/30 transition">
-                                <input id="searchInput" class="flex-1 bg-transparent px-4 py-3 outline-none text-gray-900 dark:text-white font-medium" placeholder="Kullanıcı ara...">
-                                <button type="submit" class="px-5 text-cyan-600 hover:text-cyan-400 transition"><i data-lucide="search"></i></button>
-                            </form>
-                        </div>
-                        <div id="searchResults" class="flex-1 overflow-y-auto p-4 space-y-3">
-                             <div class="text-center text-gray-400 mt-20">
-                                <i data-lucide="users" size="48" class="mx-auto mb-4 opacity-10"></i>
-                                <p>Yeni arkadaşlar edinmek için arama yapın.</p>
-                             </div>
-                        </div>
-                    </div>
-                `;
-            }
-            lucide.createIcons();
-        }
-
-        window.closeModal = () => {
-            document.getElementById('modalsContainer').innerHTML = '';
-        };
-
-        // --- Logic: Create Post ---
-        let currentPostImage = null;
-        window.handlePostImage = (input) => {
-            const file = input.files[0];
-            if (file) {
-                if (file.size > 2097152) { alert("Resim 2MB'dan büyük olamaz."); return; }
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    currentPostImage = reader.result;
-                    document.getElementById('postImgEl').src = currentPostImage;
-                    document.getElementById('postImagePreview').classList.remove('hidden');
+            if (!snap.exists()) {
+                userData = {
+                    uid: user.uid,
+                    displayName: `Nova_${user.uid.slice(0, 5)}`,
+                    photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`,
+                    createdAt: new Date().toISOString()
                 };
-                reader.readAsDataURL(file);
+                await setDoc(userRef, userData);
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users_index', user.uid), userData);
+            } else {
+                userData = snap.data();
             }
-        };
-        window.removePostImage = () => {
-            currentPostImage = null;
-            document.getElementById('postImagePreview').classList.add('hidden');
-            document.getElementById('postFileInput').value = '';
-        };
-        window.submitPost = async () => {
-            const text = document.getElementById('postText').value;
-            if (!text && !currentPostImage) return;
-            
-            const btn = document.getElementById('postSubmitBtn');
-            btn.disabled = true;
-            btn.textContent = "Paylaşılıyor...";
+            document.getElementById('nav-avatar').src = userData.photoURL;
+            document.getElementById('composer-avatar').src = userData.photoURL;
+        }
 
-            try {
-                await addDoc(collection(db, getCollectionPath('posts')), {
-                    text,
-                    image: currentPostImage,
-                    userId: state.user.uid,
-                    username: state.user.displayName,
-                    userPhoto: state.user.photoURL,
-                    likes: [],
-                    createdAt: serverTimestamp()
-                });
-                closeModal();
-                currentPostImage = null;
-            } catch (e) {
-                console.error(e);
-                alert("Paylaşım yapılamadı, lütfen tekrar deneyin.");
-                btn.disabled = false;
-                btn.textContent = "Paylaş";
+        // --- REALTIME DATA ---
+        function initData() {
+            // Posts
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), (snapshot) => {
+                const posts = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+                renderPosts(posts.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)));
+            });
+
+            // Users index
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users_index'), (snapshot) => {
+                allUsers = snapshot.docs.map(d => d.data());
+                renderOnlineUsers(allUsers);
+            });
+        }
+
+        // --- UI RENDERING ---
+        function renderPosts(posts) {
+            const container = document.getElementById('posts-container');
+            if (posts.length === 0) {
+                container.innerHTML = '<div class="text-center py-10 text-slate-400 italic">Henüz bir paylaşım yok.</div>';
+                return;
             }
-        };
-
-        // --- Logic: Search ---
-        window.performSearch = async (e) => {
-            e.preventDefault();
-            const term = document.getElementById('searchInput').value.toLowerCase().trim();
-            if (term.length < 2) return;
-            
-            const container = document.getElementById('searchResults');
-            container.innerHTML = '<div class="text-center text-gray-500 py-20"><div class="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-cyan-600 rounded-full" role="status" aria-label="loading"></div><p class="mt-2">Sonuçlar aranıyor...</p></div>';
-
-            try {
-                const q = query(
-                    collection(db, getCollectionPath('users_meta')),
-                    where('username', '>=', term),
-                    where('username', '<=', term + '\uf8ff'),
-                    limit(15)
-                );
-                const snapshot = await getDocs(q);
-                const results = snapshot.docs.map(d => d.data()).filter(u => u.uid !== state.user.uid);
-
-                if (results.length === 0) {
-                    container.innerHTML = '<div class="text-center text-gray-500 py-20"><p>Böyle bir kullanıcı yok.</p></div>';
-                } else {
-                    container.innerHTML = results.map(u => `
-                        <div class="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 hover:scale-[1.02] transition-transform">
-                            <div class="flex items-center space-x-3">
-                                <div class="h-12 w-12 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-gray-700 dark:text-white text-lg">
-                                    ${u.username[0].toUpperCase()}
-                                </div>
-                                <span class="font-bold text-gray-900 dark:text-white">@${u.username}</span>
-                            </div>
-                            <button onclick="openChatWithUser('${u.uid}', '${u.username}')" class="bg-cyan-500 text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-cyan-600 transition shadow-md">
-                                Mesaj Gönder
-                            </button>
+            container.innerHTML = posts.map(post => `
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 group transition hover:shadow-md">
+                    <div class="flex items-center gap-3 mb-4">
+                        <img src="${post.authorPhoto}" class="w-10 h-10 rounded-full object-cover">
+                        <div class="flex-1">
+                            <p class="font-bold text-sm text-slate-800">${post.authorName}</p>
+                            <p class="text-[10px] text-slate-400">Nova Platform</p>
                         </div>
-                    `).join('');
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        };
-        
-        // --- Logic: Chat ---
-        window.openChatWithUser = (uid, username) => {
-            state.chatUser = { uid, username };
-            closeModal();
-            openChat(state.chatUser);
-        };
-
-        window.openChat = async (targetUser) => {
-            const modalsContainer = document.getElementById('modalsContainer');
-            modalsContainer.innerHTML = `
-                 <div class="fixed inset-0 z-40 bg-gray-50 dark:bg-slate-900 flex flex-col md:flex-row h-full pt-16 md:pt-0 animate-fade-in">
-                    <!-- Sidebar -->
-                    <div id="chatSidebar" class="w-full md:w-80 border-r border-gray-200 dark:border-slate-700 flex flex-col bg-white dark:bg-slate-900 ${targetUser ? 'hidden md:flex' : 'flex'}">
-                        <div class="p-5 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
-                             <h2 class="text-2xl font-black text-gray-900 dark:text-white">Mesajlar</h2>
-                             <button onclick="closeModal()" class="p-2 text-gray-400 hover:text-red-500 transition"><i data-lucide="x"></i></button>
-                        </div>
-                        <div id="chatList" class="flex-1 overflow-y-auto p-2 space-y-1">
-                             <p class="text-center text-gray-400 mt-10">Sohbetler yükleniyor...</p>
-                        </div>
+                        <button onclick="window.initiateDM('${post.authorId}', '${post.authorName}', '${post.authorPhoto}')" 
+                                class="opacity-0 group-hover:opacity-100 transition text-cyan-600 hover:bg-cyan-50 p-2 rounded-full">
+                            <i data-lucide="message-square" class="w-4 h-4"></i>
+                        </button>
                     </div>
-
-                    <!-- Message Area -->
-                    <div id="chatArea" class="flex-1 flex flex-col bg-gray-50 dark:bg-slate-950 ${!targetUser ? 'hidden md:flex' : 'flex'}">
-                        ${targetUser ? getChatAreaHTML(targetUser) : `
-                             <div class="flex-1 flex items-center justify-center text-gray-400 flex-col p-8 text-center">
-                                <div class="bg-white dark:bg-slate-800 p-8 rounded-full mb-6 shadow-xl border border-gray-100 dark:border-slate-800">
-                                    <i data-lucide="messages-square" size="64" class="text-cyan-500 opacity-40"></i>
-                                </div>
-                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Güvenli Sohbet</h3>
-                                <p class="max-w-xs">Soldan birini seçerek anlık olarak mesajlaşmaya başlayabilirsin.</p>
-                            </div>
-                        `}
+                    <p class="text-slate-700 text-[15px] leading-relaxed mb-4">${post.content}</p>
+                    <div class="flex gap-4 border-t pt-3">
+                        <button onclick="window.likePost('${post.id}')" class="flex items-center gap-1.5 text-xs ${post.likes?.includes(currentUser.uid) ? 'text-rose-500 font-bold' : 'text-slate-400'}">
+                            <i data-lucide="heart" class="w-4 h-4 ${post.likes?.includes(currentUser.uid) ? 'fill-current' : ''}"></i> ${post.likes?.length || 0}
+                        </button>
                     </div>
-                 </div>
-            `;
+                </div>
+            `).join('');
             lucide.createIcons();
-
-            // Sohbet listesini oluştur
-            const q = query(collection(db, getCollectionPath('posts')), orderBy('createdAt', 'desc'), limit(100));
-            getDocs(q).then(snapshot => {
-                const users = new Map();
-                if (targetUser) users.set(targetUser.uid, targetUser);
-                snapshot.docs.forEach(doc => {
-                    const data = doc.data();
-                    if (data.userId !== state.user.uid) {
-                        users.set(data.userId, { uid: data.userId, username: data.username });
-                    }
-                });
-                
-                const listEl = document.getElementById('chatList');
-                if (users.size === 0) {
-                     listEl.innerHTML = '<div class="text-center p-8 text-gray-400"><p>Henüz kimseyle sohbet başlatılmadı.</p></div>';
-                } else {
-                    listEl.innerHTML = Array.from(users.values()).map(u => `
-                        <div onclick="switchChat('${u.uid}', '${u.username}')" class="flex items-center space-x-3 p-4 rounded-2xl cursor-pointer transition hover:bg-gray-100 dark:hover:bg-slate-800 ${targetUser?.uid === u.uid ? 'bg-cyan-50 dark:bg-slate-800 border-r-4 border-cyan-500' : ''}">
-                             <div class="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-gray-700 dark:text-white font-bold">
-                                ${u.username[0].toUpperCase()}
-                            </div>
-                             <p class="text-gray-900 dark:text-white font-bold">@${u.username}</p>
-                        </div>
-                    `).join('');
-                }
-            });
-
-            if (targetUser) loadMessages(targetUser);
-        };
-
-        window.switchChat = (uid, username) => {
-            state.chatUser = { uid, username };
-            openChat(state.chatUser);
-        };
-
-        function getChatAreaHTML(user) {
-            return `
-                <div class="p-4 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center space-x-4 md:pt-4 pt-0">
-                    <button onclick="document.getElementById('chatArea').classList.add('hidden'); document.getElementById('chatSidebar').classList.remove('hidden');" class="md:hidden text-gray-500"><i data-lucide="arrow-left"></i></button>
-                    <div class="h-10 w-10 rounded-full bg-gradient-to-r from-cyan-600 to-blue-600 flex items-center justify-center text-white font-bold shadow-md">${user.username[0].toUpperCase()}</div>
-                    <h3 class="text-gray-900 dark:text-white font-black">@${user.username}</h3>
-                </div>
-                <div id="msgContainer" class="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50 dark:bg-slate-900">
-                    <p class="text-center text-gray-400">Mesajlar yükleniyor...</p>
-                </div>
-                <form onsubmit="sendChatMsg(event)" class="p-4 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 flex space-x-3">
-                    <input id="msgInput" class="flex-1 bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-white rounded-2xl px-5 py-3 border border-transparent focus:border-cyan-500 focus:bg-white dark:focus:bg-black outline-none transition font-medium" placeholder="Mesajını buraya yaz...">
-                    <button type="submit" class="bg-cyan-600 text-white p-3 rounded-2xl hover:bg-cyan-500 shadow-lg transition transform active:scale-95"><i data-lucide="send" size="24"></i></button>
-                </form>
-            `;
         }
 
-        function loadMessages(targetUser) {
-            if (state.unsubscribeChat) state.unsubscribeChat();
-            
-            const chatId = [state.user.uid, targetUser.uid].sort().join('_');
-            const q = query(collection(db, getCollectionPath(`chats/${chatId}/messages`)), orderBy('createdAt', 'asc'));
-            
-            state.unsubscribeChat = onSnapshot(q, (snapshot) => {
-                const msgs = snapshot.docs.map(d => d.data());
-                const container = document.getElementById('msgContainer');
-                if(container) {
-                    container.innerHTML = msgs.map(msg => `
-                        <div class="flex ${msg.senderId === state.user.uid ? 'justify-end' : 'justify-start'}">
-                            <div class="max-w-[80%] p-4 rounded-3xl shadow-sm text-sm font-medium ${msg.senderId === state.user.uid ? 'bg-gradient-to-br from-cyan-600 to-blue-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 rounded-bl-none border border-gray-100 dark:border-slate-700'}">
-                                ${msg.text}
-                            </div>
-                        </div>
-                    `).join('');
-                    container.scrollTop = container.scrollHeight;
-                }
-            });
+        function renderOnlineUsers(users) {
+            const container = document.getElementById('online-users');
+            container.innerHTML = users.slice(0, 10).map(u => `
+                <div onclick="window.initiateDM('${u.uid}', '${u.displayName}', '${u.photoURL}')" 
+                     class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-2xl cursor-pointer transition">
+                    <div class="relative">
+                        <img src="${u.photoURL}" class="w-8 h-8 rounded-full border border-slate-100 object-cover">
+                        <div class="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border border-white rounded-full"></div>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-700">${u.displayName}</span>
+                </div>
+            `).join('');
         }
 
-        window.sendChatMsg = async (e) => {
-            e.preventDefault();
-            const input = document.getElementById('msgInput');
-            const text = input.value.trim();
-            if (!text || !state.chatUser) return;
-            
-            input.value = '';
-            const chatId = [state.user.uid, state.chatUser.uid].sort().join('_');
-            await addDoc(collection(db, getCollectionPath(`chats/${chatId}/messages`)), {
-                text,
-                senderId: state.user.uid,
+        // --- GLOBAL ACTIONS ---
+        window.createPost = async () => {
+            const input = document.getElementById('post-content');
+            const content = input.value.trim();
+            if (!content) return;
+
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), {
+                content,
+                authorId: currentUser.uid,
+                authorName: userData.displayName,
+                authorPhoto: userData.photoURL,
+                likes: [],
                 createdAt: serverTimestamp()
             });
+            input.value = "";
         };
 
-        // --- Logic: Settings & Lightbox ---
-        window.toggleTheme = () => {
-            state.theme = state.theme === 'dark' ? 'light' : 'dark';
-            localStorage.setItem('theme', state.theme);
-            if (state.theme === 'dark') document.documentElement.classList.add('dark');
-            else document.documentElement.classList.remove('dark');
-            openModal('settings');
+        window.likePost = async (id) => {
+            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'posts', id);
+            const snap = await getDoc(ref);
+            const likes = snap.data().likes || [];
+            const isLiked = likes.includes(currentUser.uid);
+            await updateDoc(ref, {
+                likes: isLiked ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid)
+            });
         };
 
-        window.deleteAccount = async () => {
-             const confirmName = prompt(`Hesabını silmek istediğine emin misin? Onaylamak için kullanıcı adını ("${state.user.displayName}") tam olarak yaz:`);
-             if (confirmName === state.user.displayName) {
-                 await deleteUser(state.user);
-                 closeModal();
-             }
+        window.initiateDM = (uid, name, photo) => {
+            if (uid === currentUser.uid) return;
+            const roomId = [currentUser.uid, uid].sort().join("_");
+            activeChat = { roomId, uid, name, photo };
+            
+            document.getElementById('chat-window').classList.remove('hidden');
+            document.getElementById('chat-title').innerText = name;
+            document.getElementById('chat-avatar').src = photo;
+
+            if (unsubMsgs) unsubMsgs();
+            
+            const qMsgs = collection(db, 'artifacts', appId, 'public', 'data', 'chats', roomId, 'messages');
+            unsubMsgs = onSnapshot(qMsgs, (snapshot) => {
+                const msgs = snapshot.docs.map(d => d.data()).sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+                renderMessages(msgs);
+            });
         };
 
-        window.openLightbox = (src) => {
-            const modalsContainer = document.getElementById('modalsContainer');
-            modalsContainer.innerHTML = `
-                <div onclick="closeModal()" class="fixed inset-0 z-[60] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-                    <button onclick="closeModal()" class="absolute top-6 right-6 text-white p-3 hover:bg-white/10 rounded-full transition"><i data-lucide="x" size="32"></i></button>
-                    <img src="${src}" class="max-h-[90vh] max-w-[95vw] object-contain rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
+        function renderMessages(msgs) {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = msgs.map(m => `
+                <div class="flex ${m.senderId === currentUser.uid ? 'justify-end' : 'justify-start'}">
+                    <div class="max-w-[85%] px-4 py-2.5 rounded-[20px] text-xs shadow-sm 
+                        ${m.senderId === currentUser.uid ? 'bg-cyan-600 text-white rounded-tr-none' : 'bg-white text-slate-700 rounded-tl-none border border-slate-100'}">
+                        ${m.text}
+                    </div>
                 </div>
-            `;
-            lucide.createIcons();
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        window.sendMessage = async () => {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text || !activeChat) return;
+
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'chats', activeChat.roomId, 'messages'), {
+                text,
+                senderId: currentUser.uid,
+                createdAt: serverTimestamp()
+            });
+            input.value = "";
         };
 
+        window.closeChat = () => {
+            document.getElementById('chat-window').classList.add('hidden');
+            if (unsubMsgs) unsubMsgs();
+        };
+
+        // --- SEARCH SYSTEM ---
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const resultsDiv = document.getElementById('search-results');
+            if (!term) { resultsDiv.classList.add('hidden'); return; }
+
+            const filtered = allUsers.filter(u => u.displayName.toLowerCase().includes(term) && u.uid !== currentUser.uid);
+            if (filtered.length > 0) {
+                resultsDiv.innerHTML = filtered.map(u => `
+                    <div onclick="window.initiateDM('${u.uid}', '${u.displayName}', '${u.photoURL}')" 
+                         class="flex items-center gap-3 p-4 hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-none">
+                        <img src="${u.photoURL}" class="w-10 h-10 rounded-full object-cover">
+                        <div class="flex-1">
+                            <p class="font-bold text-sm">${u.displayName}</p>
+                            <p class="text-[10px] text-slate-400">Hemen mesaj at</p>
+                        </div>
+                        <i data-lucide="message-circle" class="w-4 h-4 text-cyan-500"></i>
+                    </div>
+                `).join('');
+                resultsDiv.classList.remove('hidden');
+                lucide.createIcons();
+            } else {
+                resultsDiv.classList.add('hidden');
+            }
+        });
+
+        lucide.createIcons();
     </script>
 </body>
 </html>
