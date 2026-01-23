@@ -1,583 +1,823 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaTech Social</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#151f2e',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        :root {
-            --bg: #0b0e14;
-            --card: #151921;
-            --border: #262c38;
-            --primary: #8b5cf6;
-            --primary-hover: #7c3aed;
-            --text: #ffffff;
-            --text-dim: #94a3b8;
-            --danger: #ef4444;
-            --success: #10b981;
-            --nav-h: 65px;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        
-        body {
-            background: var(--bg);
-            color: var(--text);
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Loading */
-        #loader {
-            position: fixed; inset: 0; background: var(--bg); z-index: 9999;
-            display: flex; align-items: center; justify-content: center;
-            flex-direction: column; gap: 15px;
-        }
-
-        /* Auth Screen */
-        #auth-screen {
-            position: fixed; inset: 0; background: var(--bg); z-index: 8000;
-            display: none; align-items: center; justify-content: center; padding: 20px;
-            background-image: radial-gradient(circle at 50% 50%, #1e1b4b 0%, var(--bg) 100%);
-        }
-
-        .auth-card {
-            width: 100%; max-width: 400px; padding: 30px;
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: 24px; text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-
-        /* Layout */
-        header {
-            position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
-            background: rgba(21, 25, 33, 0.85); backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border); display: flex;
-            align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000;
-        }
-
-        .main-container {
-            max-width: 600px; margin: var(--nav-h) auto 0; padding: 20px 15px;
-        }
-
-        /* Components */
-        .card {
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: 16px; padding: 16px; margin-bottom: 20px;
-        }
-
-        .btn {
-            padding: 12px 18px; border-radius: 12px; border: none;
-            font-weight: 600; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-size: 0.95rem;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        .btn-ghost { background: transparent; color: var(--text-dim); }
-        .btn-ghost:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-
-        input, textarea {
-            width: 100%; background: #0b0e14; border: 1px solid var(--border);
-            padding: 14px; border-radius: 12px; color: var(--text);
-            margin-bottom: 12px; outline: none; font-size: 0.95rem;
-            transition: border-color 0.2s;
-        }
-        input:focus { border-color: var(--primary); }
-
-        /* Social Feed */
-        .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-        .avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; background: #262c38; }
-        .post-img { width: 100%; border-radius: 12px; margin-top: 12px; display: block; border: 1px solid var(--border); }
-        
-        .post-actions {
-            display: flex; gap: 15px; margin-top: 15px; padding-top: 12px;
-            border-top: 1px solid var(--border);
-        }
-
-        .action-item {
-            display: flex; align-items: center; gap: 6px; color: var(--text-dim);
-            cursor: pointer; font-size: 0.9rem; transition: 0.2s;
-            padding: 5px 10px; border-radius: 8px;
-        }
-        .action-item:hover { color: var(--primary); background: rgba(139, 92, 246, 0.1); }
-        .liked { color: var(--danger) !important; }
-
-        /* Comments Section */
-        .comments-panel {
-            margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);
+        /* Custom Scrollbar for Chat */
+        .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
-        .comment { display: flex; gap: 10px; margin-bottom: 12px; font-size: 0.85rem; }
-        .comment-content {
-            background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 10px; flex: 1;
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Fade In Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
         }
 
-        /* Image Upload Preview */
-        .preview-box { position: relative; display: none; margin-bottom: 12px; text-align: center; }
-        .preview-box img { max-height: 250px; border-radius: 12px; border: 1px solid var(--border); }
-        .remove-preview {
-            position: absolute; top: 10px; right: 10px; background: var(--danger);
-            color: white; width: 28px; height: 28px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        body {
+            transition: background-color 0.3s, color 0.3s;
         }
-
-        /* Notifications */
-        #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; }
-        .toast {
-            background: var(--card); color: var(--text); padding: 12px 24px; border: 1px solid var(--border);
-            border-radius: 30px; margin-bottom: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: slideUp 0.3s ease; font-weight: 500;
-        }
-        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
     </style>
 </head>
-<body>
+<body class="bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white font-sans min-h-screen">
 
-    <!-- Loading State -->
-    <div id="loader">
-        <i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--primary)"></i>
-        <span style="color:var(--text-dim); font-size:0.9rem; font-weight:500;">Bağlanıyor...</span>
-    </div>
+    <!-- App Container -->
+    <div id="app"></div>
 
-    <!-- Auth Screen -->
-    <div id="auth-screen">
-        <div class="auth-card">
-            <h1 style="font-weight:900; font-size:2rem; margin-bottom:5px; letter-spacing:-1.5px;">NOVA<span style="color:var(--primary)">SOCIAL</span></h1>
-            <p style="color:var(--text-dim); margin-bottom:30px; font-size:0.95rem;">Paylaş, Etkileşim Kur, Sosyalleş.</p>
-            
-            <input type="email" id="auth-email" placeholder="E-posta Adresi">
-            <input type="password" id="auth-pass" placeholder="Şifre">
-            
-            <button class="btn btn-primary" style="width:100%; margin-top:10px;" id="auth-submit-btn" onclick="handleAuth()">
-                Giriş Yap / Kaydol
-            </button>
-            <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 20px;">
-                Yeni kullanıcı mısın? Bilgilerini girerek otomatik kaydolabilirsin.
-            </p>
-        </div>
-    </div>
-
-    <!-- Main App Content -->
-    <div id="app" style="display:none;">
-        <header>
-            <h2 style="font-weight:900; font-size:1.3rem; letter-spacing:-1px; cursor:pointer;" onclick="window.scrollTo({top:0, behavior:'smooth'})">NOVA<span style="color:var(--primary)">SOCIAL</span></h2>
-            <div style="display:flex; align-items:center; gap:12px;">
-                <img id="my-avatar" class="avatar" style="width:34px; height:34px; cursor:pointer; border:2px solid var(--border);" onclick="toggleSettings()">
-                <button class="btn btn-ghost" style="padding:8px;" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
-        </header>
-
-        <div class="main-container">
-            <!-- Create Post -->
-            <div class="card">
-                <textarea id="post-input" placeholder="Neler düşünüyorsun?" rows="3" style="resize:none; border:none; background:transparent; padding:0; margin-bottom:15px; font-size:1.1rem;"></textarea>
-                
-                <div id="image-preview-container" class="preview-box">
-                    <img id="image-preview-element" src="">
-                    <div class="remove-preview" onclick="clearImage()"><i class="fas fa-times"></i></div>
-                </div>
-
-                <div style="display:flex; justify-content:space-between; align-items:center; border-top: 1px solid var(--border); pt-15; padding-top:15px;">
-                    <label class="btn btn-ghost" style="cursor:pointer; padding:8px 12px; font-size:0.9rem;">
-                        <i class="fas fa-image" style="color:var(--primary)"></i> Görsel Ekle
-                        <input type="file" id="file-input" hidden accept="image/*" onchange="previewFile(this)">
-                    </label>
-                    <button class="btn btn-primary" id="publish-btn" onclick="publishPost()">Paylaş</button>
-                </div>
-            </div>
-
-            <!-- Feed Container -->
-            <div id="feed"></div>
-        </div>
-    </div>
-
-    <!-- Settings Modal -->
-    <div id="settings-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(5px);">
-        <div class="auth-card" style="max-width:360px;">
-            <h3 style="margin-bottom:20px;">Profili Düzenle</h3>
-            <div style="position:relative; display:inline-block; margin-bottom:20px;">
-                <img id="edit-avatar-preview" class="avatar" style="width:100px; height:100px; border:3px solid var(--primary);">
-                <label style="position:absolute; bottom:0; right:0; background:var(--primary); width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <i class="fas fa-camera" style="font-size:0.8rem;"></i>
-                    <input type="file" hidden accept="image/*" onchange="updateAvatarPreview(this)">
-                </label>
-            </div>
-            <input type="text" id="display-name" placeholder="Kullanıcı Adı">
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="btn btn-ghost" style="flex:1" onclick="toggleSettings()">İptal</button>
-                <button class="btn btn-primary" style="flex:1" id="save-profile-btn" onclick="saveProfile()">Kaydet</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="toast-container"></div>
-
+    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged,
+            updateProfile,
+            signInWithCustomToken,
+            deleteUser
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            query, 
+            orderBy, 
+            onSnapshot, 
+            serverTimestamp, 
+            doc, 
+            deleteDoc, 
+            updateDoc, 
+            arrayUnion, 
+            arrayRemove,
+            where,
+            limit,
+            getDocs,
+            setDoc,
+            getDoc
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global Variables
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
+        // --- Configuration ---
+        const getFirebaseConfig = () => {
+            if (typeof __firebase_config !== 'undefined') {
+                return JSON.parse(__firebase_config);
+            }
+            return {
+                apiKey: "AIzaSyBGFyQsqe32hGgskY5yRfrbXlH8MuHKaLE",
+                authDomain: "novatech-e7507.firebaseapp.com",
+                projectId: "novatech-e7507",
+            };
+        };
+
+        const app = initializeApp(getFirebaseConfig());
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nova-social-final-v1';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app';
+        
+        // Helper to get paths
+        const getCollectionPath = (colName) => `artifacts/${appId}/public/data/${colName}`;
 
-        let currentUser = null;
-        let selectedImageData = null;
-        let tempAvatarData = null;
+        // --- State Management ---
+        const state = {
+            user: null,
+            view: 'home', // home, profile
+            theme: localStorage.getItem('theme') || 'dark',
+            modals: {
+                createPost: false,
+                chat: false,
+                search: false,
+                settings: false,
+                lightbox: null,
+                mobileMenu: false
+            },
+            chatUser: null,
+            posts: [],
+            messages: [],
+            unsubscribePosts: null,
+            unsubscribeChat: null
+        };
 
-        // --- AUTH TRACKER ---
-        onAuthStateChanged(auth, async (user) => {
-            const loader = document.getElementById('loader');
-            const authScreen = document.getElementById('auth-screen');
-            const appScreen = document.getElementById('app');
+        // --- DOM Elements ---
+        const appContainer = document.getElementById('app');
 
-            if (user) {
-                currentUser = user;
-                await ensureUserProfile(user);
-                authScreen.style.display = 'none';
-                appScreen.style.display = 'block';
-                initFeed();
-                syncMyProfile(user.uid);
-            } else {
-                currentUser = null;
-                authScreen.style.display = 'flex';
-                appScreen.style.display = 'none';
+        // --- Theme Init ---
+        if (state.theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // --- Authentication Logic ---
+        const initAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                try {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } catch (e) {
+                    console.error("Token Auth Error", e);
+                }
             }
-            loader.style.display = 'none';
+        };
+        initAuth();
+
+        onAuthStateChanged(auth, (user) => {
+            state.user = user;
+            renderApp();
         });
 
-        // --- AUTH ACTIONS ---
-        window.handleAuth = async () => {
-            const email = document.getElementById('auth-email').value.trim();
-            const pass = document.getElementById('auth-pass').value.trim();
-            const btn = document.getElementById('auth-submit-btn');
-
-            if(!email || !pass) return showToast("Lütfen tüm alanları doldurun.");
-            if(pass.length < 6) return showToast("Şifre en az 6 karakter olmalıdır.");
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
-
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-            } catch (e) {
-                if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
-                    try {
-                        await createUserWithEmailAndPassword(auth, email, pass);
-                        showToast("Hoş geldin! Hesabın oluşturuldu.");
-                    } catch (err) {
-                        showToast("Hata: " + err.message);
-                    }
-                } else {
-                    showToast("Giriş başarısız: Bilgilerinizi kontrol edin.");
-                }
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = 'Giriş Yap / Kaydol';
+        // --- Core Render Function ---
+        function renderApp() {
+            if (!state.user) {
+                renderAuth();
+            } else {
+                renderMainLayout();
             }
-        };
-
-        // --- PROFILE SYSTEM ---
-        async function ensureUserProfile(user) {
-            const userRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'data');
-            const snap = await getDoc(userRef);
-            if(!snap.exists()) {
-                await setDoc(userRef, {
-                    name: user.email.split('@')[0],
-                    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`,
-                    uid: user.uid,
-                    createdAt: Date.now()
-                });
-            }
+            lucide.createIcons();
         }
 
-        function syncMyProfile(uid) {
-            const userRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'data');
-            onSnapshot(userRef, (snap) => {
-                if(snap.exists()) {
-                    const data = snap.data();
-                    document.getElementById('my-avatar').src = data.avatar;
-                    document.getElementById('edit-avatar-preview').src = data.avatar;
-                    document.getElementById('display-name').value = data.name;
-                }
-            });
-        }
-
-        window.toggleSettings = () => {
-            const modal = document.getElementById('settings-modal');
-            modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
-            tempAvatarData = null;
-        };
-
-        window.updateAvatarPreview = (input) => {
-            const file = input.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('edit-avatar-preview').src = e.target.result;
-                tempAvatarData = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        };
-
-        window.saveProfile = async () => {
-            const name = document.getElementById('display-name').value.trim();
-            if(!name) return showToast("İsim boş olamaz.");
-            
-            const btn = document.getElementById('save-profile-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-            const userRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'data');
-            const updates = { name: name };
-            if(tempAvatarData) updates.avatar = tempAvatarData;
-            
-            try {
-                await updateDoc(userRef, updates);
-                showToast("Profil güncellendi.");
-                toggleSettings();
-            } catch (e) {
-                showToast("Hata oluştu.");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = 'Kaydet';
-            }
-        };
-
-        // --- FEED & POSTS ---
-        function initFeed() {
-            const postsRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts');
-            const q = query(postsRef); // Simplified query per Rule 2
-            
-            onSnapshot(q, (snap) => {
-                const feed = document.getElementById('feed');
-                const posts = [];
-                snap.forEach(doc => posts.push({id: doc.id, ...doc.data()}));
-                
-                // Manual sort by timestamp (Descending)
-                posts.sort((a,b) => b.timestamp - a.timestamp);
-                
-                feed.innerHTML = "";
-                posts.forEach(post => {
-                    feed.appendChild(renderPost(post));
-                });
-            });
-        }
-
-        function renderPost(post) {
-            const div = document.createElement('div');
-            div.className = 'card';
-            const isLiked = post.likes && post.likes[currentUser.uid];
-            const likeCount = post.likeCount || 0;
-
-            div.innerHTML = `
-                <div class="post-header">
-                    <img src="${post.authorAvatar}" class="avatar">
-                    <div style="flex:1">
-                        <div style="font-weight:700; font-size:0.95rem;">${post.authorName}</div>
-                        <div style="font-size:0.7rem; color:var(--text-dim);">${timeSince(post.timestamp)}</div>
-                    </div>
-                    ${post.authorId === currentUser.uid ? `<i class="fas fa-ellipsis-h" style="cursor:pointer; color:var(--text-dim);" onclick="deletePost('${post.id}')"></i>` : ''}
-                </div>
-                <div style="margin-bottom:8px; white-space: pre-wrap;">${post.content}</div>
-                ${post.image ? `<img src="${post.image}" class="post-img">` : ''}
-                
-                <div class="post-actions">
-                    <div class="action-item ${isLiked ? 'liked' : ''}" onclick="handleLike('${post.id}', ${!!isLiked})">
-                        <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i>
-                        <span>${likeCount}</span>
-                    </div>
-                    <div class="action-item" onclick="toggleComments('${post.id}')">
-                        <i class="far fa-comment"></i>
-                        <span>Yorumlar</span>
-                    </div>
-                </div>
-
-                <div id="comments-box-${post.id}" class="comments-panel">
-                    <div id="comment-list-${post.id}"></div>
-                    <div style="display:flex; gap:10px; margin-top:12px;">
-                        <input type="text" id="comment-input-${post.id}" placeholder="Yorum ekle..." style="margin-bottom:0; padding:10px; border-radius:10px;">
-                        <button class="btn btn-primary" style="padding:0 15px;" onclick="postComment('${post.id}')"><i class="fas fa-paper-plane"></i></button>
+        // --- View: Auth ---
+        function renderAuth() {
+            appContainer.innerHTML = `
+                <div class="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center p-4 transition-colors duration-300">
+                    <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-200 dark:border-slate-700">
+                        <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 mb-2 text-center">
+                            NovaSocial
+                        </h1>
+                        <p class="text-gray-500 dark:text-slate-400 text-center mb-8">Yeni Nesil Sosyal Deneyim</p>
+                        
+                        <form id="authForm" class="space-y-4">
+                            <div id="usernameField" class="hidden relative">
+                                <i data-lucide="user" class="absolute left-3 top-3 text-gray-400 dark:text-slate-500 h-5 w-5"></i>
+                                <input type="text" id="username" placeholder="Kullanıcı Adı" class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white p-3 pl-10 rounded-lg focus:outline-none focus:border-cyan-500 transition">
+                            </div>
+                            <div class="relative">
+                                <span class="absolute left-3 top-3 text-gray-400 dark:text-slate-500">@</span>
+                                <input type="email" id="email" placeholder="E-posta" required class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white p-3 pl-10 rounded-lg focus:outline-none focus:border-cyan-500 transition">
+                            </div>
+                            <div class="relative">
+                                <span class="absolute left-3 top-3 text-gray-400 dark:text-slate-500">***</span>
+                                <input type="password" id="password" placeholder="Şifre" required class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white p-3 pl-10 rounded-lg focus:outline-none focus:border-cyan-500 transition">
+                            </div>
+                            
+                            <p id="authError" class="text-red-500 text-sm text-center hidden"></p>
+                            
+                            <button type="submit" id="authBtn" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold p-3 rounded-lg hover:opacity-90 transition shadow-lg shadow-cyan-500/30">
+                                Giriş Yap
+                            </button>
+                        </form>
+                        
+                        <div class="mt-6 text-center">
+                            <button id="toggleAuthMode" class="text-cyan-600 dark:text-cyan-400 text-sm hover:underline font-medium">
+                                Hesabın yok mu? Kayıt Ol
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
-            return div;
+
+            let isLogin = true;
+            const form = document.getElementById('authForm');
+            const toggleBtn = document.getElementById('toggleAuthMode');
+            const usernameField = document.getElementById('usernameField');
+            const authBtn = document.getElementById('authBtn');
+            const errorText = document.getElementById('authError');
+
+            toggleBtn.addEventListener('click', () => {
+                isLogin = !isLogin;
+                usernameField.classList.toggle('hidden', isLogin);
+                authBtn.textContent = isLogin ? 'Giriş Yap' : 'Kayıt Ol';
+                toggleBtn.textContent = isLogin ? 'Hesabın yok mu? Kayıt Ol' : 'Zaten üye misin? Giriş Yap';
+                errorText.classList.add('hidden');
+            });
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const username = document.getElementById('username').value;
+                
+                authBtn.disabled = true;
+                authBtn.textContent = "İşleniyor...";
+                errorText.classList.add('hidden');
+
+                try {
+                    if (isLogin) {
+                        await signInWithEmailAndPassword(auth, email, password);
+                    } else {
+                        // Check username unique
+                        const q = query(collection(db, getCollectionPath('users_meta')), where('username', '==', username));
+                        const snapshot = await getDocs(q);
+                        if (!snapshot.empty) throw new Error("Bu kullanıcı adı alınmış.");
+
+                        const res = await createUserWithEmailAndPassword(auth, email, password);
+                        await updateProfile(res.user, { displayName: username });
+                        
+                        await setDoc(doc(db, getCollectionPath('users_meta'), res.user.uid), {
+                            username: username,
+                            uid: res.user.uid,
+                            email: email,
+                            createdAt: serverTimestamp()
+                        });
+                    }
+                } catch (err) {
+                    let msg = err.message;
+                    if (msg.includes('email-already-in-use')) msg = "E-posta kullanımda.";
+                    if (msg.includes('wrong-password')) msg = "Hatalı şifre.";
+                    if (msg.includes('user-not-found')) msg = "Kullanıcı bulunamadı.";
+                    errorText.textContent = msg.replace('Firebase: ', '');
+                    errorText.classList.remove('hidden');
+                    authBtn.disabled = false;
+                    authBtn.textContent = isLogin ? 'Giriş Yap' : 'Kayıt Ol';
+                }
+            });
         }
 
-        window.previewFile = (input) => {
-            const file = input.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let w = img.width, h = img.height;
-                    if(w > 1000) { h *= 1000/w; w = 1000; }
-                    canvas.width = w; canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    selectedImageData = canvas.toDataURL('image/jpeg', 0.6);
-                    document.getElementById('image-preview-element').src = selectedImageData;
-                    document.getElementById('image-preview-container').style.display = 'block';
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        };
-
-        window.clearImage = () => {
-            selectedImageData = null;
-            document.getElementById('image-preview-container').style.display = 'none';
-            document.getElementById('file-input').value = "";
-        };
-
-        window.publishPost = async () => {
-            const content = document.getElementById('post-input').value.trim();
-            if(!content && !selectedImageData) return showToast("Bir şeyler yazmalısın.");
-
-            const btn = document.getElementById('publish-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-            try {
-                const profileSnap = await getDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'data'));
-                const p = profileSnap.data();
-
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), {
-                    authorId: currentUser.uid,
-                    authorName: p.name,
-                    authorAvatar: p.avatar,
-                    content: content,
-                    image: selectedImageData,
-                    timestamp: Date.now(),
-                    likeCount: 0,
-                    likes: {}
+        // --- View: Main Layout ---
+        function renderMainLayout() {
+            // Setup Listeners if first load
+            if (!state.unsubscribePosts) {
+                const q = query(collection(db, getCollectionPath('posts')), orderBy('createdAt', 'desc'));
+                state.unsubscribePosts = onSnapshot(q, (snapshot) => {
+                    state.posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    // Only re-render feed part if we are in home view
+                    if (state.view === 'home') renderFeedContent(); 
                 });
-
-                document.getElementById('post-input').value = "";
-                clearImage();
-                showToast("Paylaşıldı!");
-            } catch (e) {
-                showToast("Paylaşım başarısız.");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = 'Paylaş';
-            }
-        };
-
-        window.handleLike = async (postId, isLiked) => {
-            const postRef = doc(db, 'artifacts', appId, 'public', 'data', 'posts', postId);
-            const snap = await getDoc(postRef);
-            if(!snap.exists()) return;
-
-            const data = snap.data();
-            const likes = data.likes || {};
-            let count = data.likeCount || 0;
-
-            if(isLiked) {
-                delete likes[currentUser.uid];
-                count = Math.max(0, count - 1);
-            } else {
-                likes[currentUser.uid] = true;
-                count++;
-            }
-            await updateDoc(postRef, { likes, likeCount: count });
-        };
-
-        window.toggleComments = (postId) => {
-            const panel = document.getElementById(`comments-box-${postId}`);
-            const list = document.getElementById(`comment-list-${postId}`);
-            
-            if(panel.style.display === 'block') {
-                panel.style.display = 'none';
-                return;
             }
 
-            panel.style.display = 'block';
-            
-            const commentsRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts', postId, 'comments');
-            onSnapshot(commentsRef, (snap) => {
-                const comments = [];
-                snap.forEach(d => comments.push({id: d.id, ...d.data()}));
-                comments.sort((a,b) => a.ts - b.ts);
-                
-                list.innerHTML = comments.map(c => `
-                    <div class="comment">
-                        <img src="${c.avatar}" class="avatar" style="width:28px; height:28px;">
-                        <div class="comment-content">
-                            <div style="font-weight:700; font-size:0.75rem; color:var(--primary);">${c.author}</div>
-                            <div>${c.text}</div>
+            appContainer.innerHTML = `
+                <!-- Navbar -->
+                <nav class="fixed top-0 w-full z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200 dark:border-slate-800 transition-colors duration-300">
+                    <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg">
+                                <i data-lucide="menu"></i>
+                            </button>
+                            <h1 id="logoBtn" class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600 cursor-pointer">
+                                NovaTech
+                            </h1>
+                        </div>
+                        <div class="flex items-center space-x-2 md:space-x-4">
+                            <button id="searchBtn" class="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition">
+                                <i data-lucide="search"></i>
+                            </button>
+                            <button id="chatBtn" class="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition">
+                                <i data-lucide="message-circle"></i>
+                            </button>
+                            <button id="settingsBtn" class="hidden md:block p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition">
+                                <i data-lucide="settings"></i>
+                            </button>
                         </div>
                     </div>
-                `).join('');
-                if(comments.length === 0) list.innerHTML = '<div style="color:var(--text-dim); text-align:center; font-size:0.8rem; padding:10px;">Henüz yorum yok. İlk sen yaz!</div>';
-            });
-        };
+                    
+                    <!-- Mobile Menu -->
+                    <div id="mobileMenu" class="md:hidden hidden bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 shadow-xl">
+                        <div class="p-4 space-y-2">
+                            <button id="mobSettingsBtn" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700">
+                                <i data-lucide="settings" size="20"></i>
+                                <span>Ayarlar & Tema</span>
+                            </button>
+                            <button id="mobLogoutBtn" class="w-full flex items-center space-x-3 p-3 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
+                                <i data-lucide="log-out" size="20"></i>
+                                <span>Çıkış Yap</span>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
 
-        window.postComment = async (postId) => {
-            const input = document.getElementById(`comment-input-${postId}`);
-            const text = input.value.trim();
-            if(!text) return;
+                <!-- Main Content -->
+                <main id="mainContent" class="pt-16 min-h-screen pb-24">
+                    <!-- Dynamic Content -->
+                </main>
 
-            const profileSnap = await getDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'data'));
-            const p = profileSnap.data();
+                <!-- Bottom Bar -->
+                <div class="fixed bottom-0 w-full z-30 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 pb-safe shadow-[0_-5px_10px_rgba(0,0,0,0.05)]">
+                    <div class="max-w-lg mx-auto flex justify-around items-center h-16">
+                        <button id="navHome" class="p-3 rounded-full transition ${state.view === 'home' ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-400 dark:text-slate-500'}">
+                            <i data-lucide="home" size="28"></i>
+                        </button>
+                        
+                        <button id="navCreate" class="p-3 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl text-white shadow-lg shadow-cyan-500/30 transform -translate-y-4 hover:scale-105 transition active:scale-95">
+                            <i data-lucide="plus-square" size="28"></i>
+                        </button>
+                        
+                        <button id="navProfile" class="p-3 rounded-full transition ${state.view === 'profile' ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-400 dark:text-slate-500'}">
+                            <i data-lucide="user" size="28"></i>
+                        </button>
+                    </div>
+                </div>
 
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'posts', postId, 'comments'), {
-                author: p.name,
-                avatar: p.avatar,
-                authorId: currentUser.uid,
-                text: text,
-                ts: Date.now()
-            });
-            input.value = "";
-        };
+                <!-- Modals Placeholder -->
+                <div id="modalsContainer"></div>
+            `;
 
+            // Attach Global Events
+            document.getElementById('mobileMenuBtn').onclick = () => {
+                document.getElementById('mobileMenu').classList.toggle('hidden');
+                lucide.createIcons();
+            };
+            document.getElementById('mobLogoutBtn').onclick = () => signOut(auth);
+            
+            // Nav Events
+            document.getElementById('logoBtn').onclick = () => switchView('home');
+            document.getElementById('navHome').onclick = () => switchView('home');
+            document.getElementById('navProfile').onclick = () => switchView('profile');
+            
+            // Modal Events
+            document.getElementById('navCreate').onclick = () => openModal('createPost');
+            document.getElementById('searchBtn').onclick = () => openModal('search');
+            document.getElementById('chatBtn').onclick = () => openChat(null);
+            document.getElementById('settingsBtn').onclick = () => openModal('settings');
+            document.getElementById('mobSettingsBtn').onclick = () => openModal('settings');
+
+            // Render Initial View
+            if (state.view === 'home') renderFeedContent();
+            else renderProfileContent();
+        }
+
+        function switchView(viewName) {
+            state.view = viewName;
+            document.getElementById('navHome').className = `p-3 rounded-full transition ${viewName === 'home' ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-400 dark:text-slate-500'}`;
+            document.getElementById('navProfile').className = `p-3 rounded-full transition ${viewName === 'profile' ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-400 dark:text-slate-500'}`;
+            
+            if (viewName === 'home') renderFeedContent();
+            else renderProfileContent();
+            lucide.createIcons();
+        }
+
+        // --- Render: Feed ---
+        function renderFeedContent() {
+            const container = document.getElementById('mainContent');
+            if (!container) return;
+
+            if (state.posts.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 mt-20 animate-fade-in">
+                        <p>Henüz gönderi yok.</p>
+                        <p class="text-sm mt-2">İlk paylaşımı sen yap!</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="max-w-xl mx-auto px-4 pt-4 animate-fade-in">
+                        ${state.posts.map(post => {
+                            const isLiked = post.likes?.includes(state.user.uid);
+                            return `
+                                <div class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl mb-6 overflow-hidden shadow-sm transition-colors duration-300">
+                                    <div class="p-4 flex justify-between items-center">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold uppercase shadow-md">
+                                                ${post.username?.[0] || 'A'}
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-900 dark:text-white font-semibold">${post.username}</p>
+                                                <p class="text-gray-500 dark:text-slate-500 text-xs">
+                                                    ${post.createdAt?.seconds ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() : 'Az önce'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        ${post.userId === state.user.uid ? `
+                                            <button onclick="deletePost('${post.id}')" class="text-gray-400 hover:text-red-500 p-2 transition">
+                                                <i data-lucide="trash-2" size="18"></i>
+                                            </button>
+                                        ` : ''}
+                                    </div>
+
+                                    ${post.image ? `
+                                        <div class="w-full bg-gray-100 dark:bg-black flex justify-center cursor-zoom-in" onclick="openLightbox('${post.image}')">
+                                            <img src="${post.image}" alt="Post content" class="max-h-[500px] object-contain w-full" />
+                                        </div>
+                                    ` : ''}
+
+                                    <div class="p-4">
+                                        <div class="flex space-x-4 mb-3">
+                                            <button onclick="likePost('${post.id}', ${isLiked})" class="flex items-center space-x-1 transition ${isLiked ? 'text-red-500' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'}">
+                                                <i data-lucide="heart" class="${isLiked ? 'fill-current' : ''}"></i>
+                                                ${post.likes?.length > 0 ? `<span class="font-semibold">${post.likes.length}</span>` : ''}
+                                            </button>
+                                            <button class="text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition">
+                                                <i data-lucide="message-circle"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        ${post.text ? `
+                                            <p class="text-gray-700 dark:text-slate-300 leading-relaxed">
+                                                <span class="font-semibold text-gray-900 dark:text-white mr-2">${post.username}</span>
+                                                ${post.text}
+                                            </p>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+            lucide.createIcons();
+        }
+
+        // --- Render: Profile ---
+        function renderProfileContent() {
+            const container = document.getElementById('mainContent');
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="max-w-xl mx-auto pt-10 px-4 text-center animate-fade-in">
+                    <div class="w-24 h-24 mx-auto bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-4xl font-bold mb-4 text-white shadow-lg">
+                        ${state.user.displayName?.[0].toUpperCase() || 'U'}
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">${state.user.displayName}</h2>
+                    <p class="text-gray-500 dark:text-slate-400 mb-6">${state.user.email}</p>
+                    
+                    <div class="flex flex-col space-y-3 max-w-xs mx-auto">
+                        <button onclick="openModal('settings')" class="flex items-center justify-center space-x-2 bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-white px-6 py-2 rounded-full hover:opacity-90 transition">
+                            <i data-lucide="settings" size="18"></i>
+                            <span>Ayarlar</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // --- Logic: Posts ---
         window.deletePost = async (postId) => {
-            if(confirm("Bu gönderiyi silmek istediğine emin misin?")) {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'posts', postId));
-                showToast("Gönderi silindi.");
+            if (confirm("Bu gönderiyi silmek istediğine emin misin?")) {
+                await deleteDoc(doc(db, getCollectionPath('posts'), postId));
             }
         };
 
-        // --- UTILS ---
-        function showToast(msg) {
-            const container = document.getElementById('toast-container');
-            const t = document.createElement('div');
-            t.className = 'toast';
-            t.innerText = msg;
-            container.appendChild(t);
-            setTimeout(() => {
-                t.style.opacity = '0';
-                setTimeout(() => t.remove(), 500);
-            }, 3000);
+        window.likePost = async (postId, isLiked) => {
+            const postRef = doc(db, getCollectionPath('posts'), postId);
+            if (isLiked) {
+                await updateDoc(postRef, { likes: arrayRemove(state.user.uid) });
+            } else {
+                await updateDoc(postRef, { likes: arrayUnion(state.user.uid) });
+            }
+        };
+
+        // --- Modal System ---
+        window.openModal = (modalName) => {
+            const modalsContainer = document.getElementById('modalsContainer');
+            if (modalName === 'createPost') {
+                modalsContainer.innerHTML = `
+                    <div class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+                        <div class="bg-white dark:bg-slate-800 w-full max-w-lg rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-2xl">
+                            <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                                <h2 class="text-gray-900 dark:text-white font-bold text-lg">Yeni Gönderi</h2>
+                                <button onclick="closeModal()" class="text-gray-500 dark:text-slate-400 hover:text-red-500"><i data-lucide="x"></i></button>
+                            </div>
+                            <div class="p-4">
+                                <textarea id="postText" class="w-full bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white p-3 rounded-lg border border-gray-200 dark:border-slate-700 focus:border-cyan-500 outline-none resize-none h-32 transition-colors" placeholder="Ne düşünüyorsun?"></textarea>
+                                
+                                <div id="postImagePreview" class="hidden mt-4 relative rounded-lg overflow-hidden max-h-60 border border-gray-200 dark:border-slate-700">
+                                    <img id="postImgEl" src="" class="w-full h-full object-cover" />
+                                    <button onclick="removePostImage()" class="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full hover:bg-red-500"><i data-lucide="x" size="16"></i></button>
+                                </div>
+
+                                <div class="mt-4 flex justify-between items-center">
+                                    <button onclick="document.getElementById('postFileInput').click()" class="flex items-center space-x-2 text-cyan-600 dark:text-cyan-400 hover:opacity-80">
+                                        <i data-lucide="image" size="20"></i>
+                                        <span>Resim Ekle</span>
+                                    </button>
+                                    <input type="file" id="postFileInput" accept="image/*" class="hidden" onchange="handlePostImage(this)">
+                                    
+                                    <button onclick="submitPost()" id="postSubmitBtn" class="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-2 rounded-full font-medium transition shadow-lg shadow-cyan-500/20">Paylaş</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (modalName === 'settings') {
+                modalsContainer.innerHTML = `
+                    <div class="fixed inset-0 z-50 bg-gray-50 dark:bg-slate-900 p-4 pt-20 animate-fade-in flex flex-col">
+                        <div class="max-w-xl mx-auto w-full">
+                            <div class="flex items-center mb-8">
+                                <button onclick="closeModal()" class="mr-4 text-gray-500 hover:text-gray-900 dark:hover:text-white"><i data-lucide="x"></i></button>
+                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Ayarlar</h2>
+                            </div>
+                            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden mb-6">
+                                <div class="p-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                                    <div class="flex items-center space-x-3 text-gray-900 dark:text-white">
+                                        <i data-lucide="${state.theme === 'dark' ? 'moon' : 'sun'}" size="20"></i>
+                                        <span>Karanlık Mod</span>
+                                    </div>
+                                    <button onclick="toggleTheme()" class="w-12 h-6 rounded-full p-1 transition-colors duration-300 ${state.theme === 'dark' ? 'bg-cyan-600' : 'bg-gray-300'}">
+                                        <div class="w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 ${state.theme === 'dark' ? 'translate-x-6' : ''}"></div>
+                                    </button>
+                                </div>
+                                <div class="p-4">
+                                    <button onclick="signOut(auth)" class="w-full flex items-center space-x-3 text-red-500 p-2 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition">
+                                        <i data-lucide="log-out" size="20"></i>
+                                        <span>Çıkış Yap</span>
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-red-200 dark:border-red-900/30 overflow-hidden">
+                                <div class="p-4">
+                                    <h3 class="text-sm font-semibold text-red-500 uppercase mb-4">Tehlikeli Bölge</h3>
+                                    <button onclick="deleteAccount()" class="w-full flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition">
+                                        <div class="flex items-center space-x-2">
+                                            <i data-lucide="alert-triangle" size="20"></i>
+                                            <span>Hesabı Sil</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (modalName === 'search') {
+                modalsContainer.innerHTML = `
+                   <div class="fixed inset-0 z-40 bg-gray-50 dark:bg-slate-900 flex flex-col pt-16 animate-fade-in">
+                        <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex items-center space-x-2">
+                            <button onclick="closeModal()" class="p-2 text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-800 rounded-full"><i data-lucide="x"></i></button>
+                            <form onsubmit="performSearch(event)" class="flex-1 flex bg-white dark:bg-slate-800 rounded-full border border-gray-200 dark:border-slate-700 overflow-hidden">
+                                <input id="searchInput" class="flex-1 bg-transparent px-4 py-2 outline-none text-gray-900 dark:text-white" placeholder="Kullanıcı adı ara...">
+                                <button type="submit" class="px-4 text-cyan-500 hover:text-cyan-400"><i data-lucide="search"></i></button>
+                            </form>
+                        </div>
+                        <div id="searchResults" class="flex-1 overflow-y-auto p-4"></div>
+                    </div>
+                `;
+            }
+            lucide.createIcons();
         }
 
-        function timeSince(date) {
-            const seconds = Math.floor((new Date() - date) / 1000);
-            let interval = seconds / 31536000;
-            if (interval > 1) return Math.floor(interval) + " yıl";
-            interval = seconds / 2592000;
-            if (interval > 1) return Math.floor(interval) + " ay";
-            interval = seconds / 86400;
-            if (interval > 1) return Math.floor(interval) + " gün";
-            interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + " saat";
-            interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + " dk";
-            return "Az önce";
+        window.closeModal = () => {
+            document.getElementById('modalsContainer').innerHTML = '';
+        };
+
+        // --- Logic: Create Post ---
+        let currentPostImage = null;
+        window.handlePostImage = (input) => {
+            const file = input.files[0];
+            if (file) {
+                if (file.size > 2097152) { alert("Resim 2MB'dan büyük olamaz."); return; }
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    currentPostImage = reader.result;
+                    document.getElementById('postImgEl').src = currentPostImage;
+                    document.getElementById('postImagePreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        window.removePostImage = () => {
+            currentPostImage = null;
+            document.getElementById('postImagePreview').classList.add('hidden');
+            document.getElementById('postFileInput').value = '';
+        };
+        window.submitPost = async () => {
+            const text = document.getElementById('postText').value;
+            if (!text && !currentPostImage) return;
+            
+            const btn = document.getElementById('postSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = "...";
+
+            try {
+                await addDoc(collection(db, getCollectionPath('posts')), {
+                    text,
+                    image: currentPostImage,
+                    userId: state.user.uid,
+                    username: state.user.displayName,
+                    userPhoto: state.user.photoURL,
+                    likes: [],
+                    createdAt: serverTimestamp()
+                });
+                closeModal();
+                currentPostImage = null;
+            } catch (e) {
+                console.error(e);
+                alert("Hata oluştu.");
+                btn.disabled = false;
+            }
+        };
+
+        // --- Logic: Search ---
+        window.performSearch = async (e) => {
+            e.preventDefault();
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            if (term.length < 3) return;
+            
+            const container = document.getElementById('searchResults');
+            container.innerHTML = '<div class="text-center text-gray-500">Aranıyor...</div>';
+
+            try {
+                const q = query(
+                    collection(db, getCollectionPath('users_meta')),
+                    where('username', '>=', term),
+                    where('username', '<=', term + '\uf8ff'),
+                    limit(10)
+                );
+                const snapshot = await getDocs(q);
+                const results = snapshot.docs.map(d => d.data()).filter(u => u.uid !== state.user.uid);
+
+                if (results.length === 0) {
+                    container.innerHTML = '<div class="text-center text-gray-500">Kullanıcı bulunamadı.</div>';
+                } else {
+                    container.innerHTML = results.map(u => `
+                        <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl mb-2 shadow-sm border border-gray-100 dark:border-slate-700">
+                            <div class="flex items-center space-x-3">
+                                <div class="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-gray-700 dark:text-white">
+                                    ${u.username[0].toUpperCase()}
+                                </div>
+                                <span class="font-semibold text-gray-900 dark:text-white">${u.username}</span>
+                            </div>
+                            <button onclick="openChatWithUser('${u.uid}', '${u.username}')" class="bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 px-3 py-1 rounded-full text-sm font-medium hover:bg-cyan-500/20">
+                                Mesaj
+                            </button>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+        
+        // --- Logic: Chat ---
+        window.openChatWithUser = (uid, username) => {
+            state.chatUser = { uid, username };
+            closeModal();
+            openChat(state.chatUser);
+        };
+
+        window.openChat = async (targetUser) => {
+            const modalsContainer = document.getElementById('modalsContainer');
+            // Basic Layout
+            modalsContainer.innerHTML = `
+                 <div class="fixed inset-0 z-40 bg-gray-50 dark:bg-slate-900 flex flex-col md:flex-row h-full pt-16 md:pt-0 animate-fade-in">
+                    <!-- Sidebar -->
+                    <div id="chatSidebar" class="w-full md:w-80 border-r border-gray-200 dark:border-slate-700 flex flex-col bg-white dark:bg-slate-900 ${targetUser ? 'hidden md:flex' : 'flex'}">
+                        <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                             <h2 class="text-xl font-bold text-gray-900 dark:text-white">Sohbetler</h2>
+                             <button onclick="closeModal()" class="md:hidden text-gray-500"><i data-lucide="x"></i></button>
+                             <button onclick="closeModal()" class="hidden md:block text-gray-500 hover:text-red-500"><i data-lucide="x"></i></button>
+                        </div>
+                        <div id="chatList" class="flex-1 overflow-y-auto p-2">
+                             <p class="text-center text-gray-400 mt-4">Yükleniyor...</p>
+                        </div>
+                    </div>
+
+                    <!-- Message Area -->
+                    <div id="chatArea" class="flex-1 flex flex-col bg-gray-50 dark:bg-slate-950 ${!targetUser ? 'hidden md:flex' : 'flex'}">
+                        ${targetUser ? getChatAreaHTML(targetUser) : `
+                             <div class="flex-1 flex items-center justify-center text-gray-400 flex-col">
+                                <i data-lucide="message-circle" size="64" class="mb-4 opacity-20"></i>
+                                <p>Sohbet seçin.</p>
+                            </div>
+                        `}
+                    </div>
+                 </div>
+            `;
+            lucide.createIcons();
+
+            // Load Sidebar Users (Recent from posts for demo)
+            const q = query(collection(db, getCollectionPath('posts')), orderBy('createdAt', 'desc'), limit(50));
+            getDocs(q).then(snapshot => {
+                const users = new Map();
+                if (targetUser) users.set(targetUser.uid, targetUser);
+                snapshot.docs.forEach(doc => {
+                    const data = doc.data();
+                    if (data.userId !== state.user.uid) {
+                        users.set(data.userId, { uid: data.userId, username: data.username });
+                    }
+                });
+                
+                const listEl = document.getElementById('chatList');
+                if (users.size === 0) {
+                     listEl.innerHTML = '<p class="text-center text-gray-400 mt-4">Kimse yok.</p>';
+                } else {
+                    listEl.innerHTML = Array.from(users.values()).map(u => `
+                        <div onclick="switchChat('${u.uid}', '${u.username}')" class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition hover:bg-gray-100 dark:hover:bg-slate-800 ${targetUser?.uid === u.uid ? 'bg-cyan-50 dark:bg-slate-800 border-l-4 border-cyan-500' : ''}">
+                             <div class="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-gray-700 dark:text-white font-bold">
+                                ${u.username[0].toUpperCase()}
+                            </div>
+                             <p class="text-gray-900 dark:text-white font-medium">${u.username}</p>
+                        </div>
+                    `).join('');
+                }
+            });
+
+            if (targetUser) loadMessages(targetUser);
+        };
+
+        window.switchChat = (uid, username) => {
+            state.chatUser = { uid, username };
+            openChat(state.chatUser);
+        };
+
+        function getChatAreaHTML(user) {
+            return `
+                <div class="p-4 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center space-x-3 md:pt-4 pt-0">
+                    <button onclick="document.getElementById('chatArea').classList.add('hidden'); document.getElementById('chatSidebar').classList.remove('hidden');" class="md:hidden text-gray-500"><i data-lucide="arrow-left"></i></button>
+                    <div class="h-8 w-8 rounded-full bg-cyan-600 flex items-center justify-center text-white text-sm font-bold">${user.username[0].toUpperCase()}</div>
+                    <h3 class="text-gray-900 dark:text-white font-bold">${user.username}</h3>
+                </div>
+                <div id="msgContainer" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-slate-900">
+                    <p class="text-center text-gray-400">Yükleniyor...</p>
+                </div>
+                <form onsubmit="sendChatMsg(event)" class="p-3 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 flex space-x-2">
+                    <input id="msgInput" class="flex-1 bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-white rounded-full px-4 py-2 border border-transparent focus:border-cyan-500 focus:bg-white dark:focus:bg-black outline-none transition" placeholder="Mesaj yaz...">
+                    <button type="submit" class="bg-cyan-600 text-white p-2 rounded-full hover:bg-cyan-500 shadow-lg"><i data-lucide="send" size="20"></i></button>
+                </form>
+            `;
         }
 
-        window.logout = () => signOut(auth);
+        function loadMessages(targetUser) {
+            if (state.unsubscribeChat) state.unsubscribeChat();
+            
+            const chatId = [state.user.uid, targetUser.uid].sort().join('_');
+            const q = query(collection(db, getCollectionPath(`chats/${chatId}/messages`)), orderBy('createdAt', 'asc'));
+            
+            state.unsubscribeChat = onSnapshot(q, (snapshot) => {
+                const msgs = snapshot.docs.map(d => d.data());
+                const container = document.getElementById('msgContainer');
+                if(container) {
+                    container.innerHTML = msgs.map(msg => `
+                        <div class="flex ${msg.senderId === state.user.uid ? 'justify-end' : 'justify-start'}">
+                            <div class="max-w-[75%] p-3 rounded-2xl shadow-sm text-sm ${msg.senderId === state.user.uid ? 'bg-cyan-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 rounded-bl-none border border-gray-100 dark:border-slate-700'}">
+                                ${msg.text}
+                            </div>
+                        </div>
+                    `).join('');
+                    container.scrollTop = container.scrollHeight;
+                }
+            });
+        }
+
+        window.sendChatMsg = async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('msgInput');
+            const text = input.value.trim();
+            if (!text || !state.chatUser) return;
+            
+            input.value = '';
+            const chatId = [state.user.uid, state.chatUser.uid].sort().join('_');
+            await addDoc(collection(db, getCollectionPath(`chats/${chatId}/messages`)), {
+                text,
+                senderId: state.user.uid,
+                createdAt: serverTimestamp()
+            });
+        };
+
+        // --- Logic: Settings & Lightbox ---
+        window.toggleTheme = () => {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', state.theme);
+            if (state.theme === 'dark') document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+            openModal('settings'); // Re-render modal to update toggle UI
+        };
+
+        window.deleteAccount = async () => {
+             const confirmName = prompt(`Onaylamak için kullanıcı adını ("${state.user.displayName}") yaz:`);
+             if (confirmName === state.user.displayName) {
+                 await deleteUser(state.user);
+                 closeModal();
+             }
+        };
+
+        window.openLightbox = (src) => {
+            const modalsContainer = document.getElementById('modalsContainer');
+            modalsContainer.innerHTML = `
+                <div onclick="closeModal()" class="fixed inset-0 z-[60] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+                    <button onclick="closeModal()" class="absolute top-4 right-4 text-white p-2 hover:bg-white/20 rounded-full transition"><i data-lucide="x" size="32"></i></button>
+                    <img src="${src}" class="max-h-[90vh] max-w-[95vw] object-contain rounded-lg shadow-2xl" onclick="event.stopPropagation()">
+                </div>
+            `;
+            lucide.createIcons();
+        };
 
     </script>
 </body>
