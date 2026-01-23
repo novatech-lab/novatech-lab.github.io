@@ -1,622 +1,218 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOVA Pro - Gelişmiş Sosyal Deneyim</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        // Dark mode initialization
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass-effect { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-        .dark .glass-effect { background: rgba(15, 23, 42, 0.7); }
-        .post-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .post-card:hover { transform: translateY(-2px); shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
-        .loading-spinner { border-top-color: #0ea5e9; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .dark ::-webkit-scrollbar-thumb { background: #334155; }
-    </style>
+<meta charset="UTF-8">
+<title>NOVAgram</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{margin:0;font-family:Arial;background:#fafafa}
+#auth,#app{max-width:500px;margin:auto;padding:20px}
+input,textarea,button{width:100%;padding:10px;margin:5px 0}
+button{background:#3897f0;color:#fff;border:none;border-radius:6px}
+.post{background:#fff;border:1px solid #ddd;margin-bottom:15px}
+.post img{width:100%}
+.flex{display:flex;justify-content:space-between;align-items:center}
+.small{font-size:12px;color:#555}
+.user{padding:5px;border-bottom:1px solid #eee}
+</style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+<body>
 
-    <!-- Loading Screen -->
-    <div id="loading-overlay" class="fixed inset-0 z-[3000] bg-white dark:bg-slate-950 flex flex-col items-center justify-center">
-        <div class="relative w-20 h-20 mb-4">
-            <div class="absolute inset-0 border-4 border-slate-100 dark:border-slate-800 rounded-full"></div>
-            <div class="absolute inset-0 border-4 border-transparent border-t-sky-500 rounded-full animate-spin"></div>
-        </div>
-        <p class="text-sky-600 font-bold text-lg animate-pulse tracking-widest">NOVA</p>
-    </div>
+<div id="auth">
+<h2>NOVAgram</h2>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Şifre">
+<input id="name" placeholder="Ad (kayıt için)">
+<button onclick="authSubmit()">Giriş / Kayıt</button>
+<p id="err"></p>
+</div>
 
-    <!-- Auth Section -->
-    <div id="auth-screen" class="fixed inset-0 z-[1000] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg">
-            <div class="text-center mb-10">
-                <div class="bg-sky-500 w-16 h-16 rounded-3xl rotate-12 mx-auto flex items-center justify-center mb-4 shadow-lg shadow-sky-200 dark:shadow-none">
-                    <i data-lucide="zap" class="text-white w-8 h-8 -rotate-12"></i>
-                </div>
-                <h1 class="text-4xl font-extrabold tracking-tighter text-slate-900 dark:text-white mb-2">Hoş Geldiniz</h1>
-                <p id="auth-subtitle" class="text-slate-500 text-sm">Sosyal medyanın en "saf" haliyle tanışın.</p>
-            </div>
+<div id="app" style="display:none">
 
-            <div class="space-y-4">
-                <div id="register-only-fields" class="hidden space-y-4">
-                    <input id="auth-name" type="text" placeholder="Tam Adınız" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-sky-500 transition-all">
-                </div>
-                <input id="auth-email" type="email" placeholder="E-posta" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-sky-500 transition-all">
-                <input id="auth-password" type="password" placeholder="Şifre" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-sky-500 transition-all">
-                
-                <p id="auth-error" class="text-red-500 text-xs text-center font-bold bg-red-50 dark:bg-red-900/10 p-4 rounded-2xl hidden border border-red-100 dark:border-red-900/30"></p>
+<div class="flex">
+<b id="me"></b>
+<button onclick="logout()">Çıkış</button>
+</div>
 
-                <button id="auth-main-btn" onclick="handleAuthSubmit()" class="w-full bg-sky-500 text-white py-4 rounded-2xl font-black text-lg hover:bg-sky-600 transition-all shadow-xl shadow-sky-200 dark:shadow-none active:scale-95">Giriş Yap</button>
-                
-                <div class="text-center mt-8">
-                    <button id="auth-toggle-btn" onclick="toggleAuthMode()" class="text-slate-500 font-semibold hover:text-sky-500 transition">Hesabınız yok mu? <span class="text-sky-500 underline decoration-2 underline-offset-4">Hemen Katıl</span></button>
-                </div>
-            </div>
-        </div>
-    </div>
+<h3>Profil</h3>
+<input id="bio" placeholder="Bio">
+<button onclick="saveProfile()">Kaydet</button>
 
-    <!-- Main App UI -->
-    <div id="app-container" class="hidden">
-        <!-- Navbar -->
-        <nav class="sticky top-0 z-50 glass-effect border-b border-slate-200 dark:border-slate-800">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-20">
-                    <div class="flex items-center gap-8">
-                        <h1 class="text-3xl font-black text-sky-500 cursor-pointer select-none">NOVA</h1>
-                        <div class="hidden md:flex relative group w-64">
-                            <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4"></i>
-                            <input type="text" placeholder="Keşfet..." class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-full py-2.5 pl-11 pr-4 text-sm focus:ring-2 focus:ring-sky-500 transition-all outline-none">
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center gap-3 sm:gap-6">
-                        <button onclick="toggleTheme()" class="p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-                            <i data-lucide="sun" class="w-5 h-5 hidden dark:block text-amber-400"></i>
-                            <i data-lucide="moon" class="w-5 h-5 block dark:hidden text-slate-600"></i>
-                        </button>
-                        <div class="relative group">
-                            <img id="nav-avatar" class="w-12 h-12 rounded-2xl border-2 border-white dark:border-slate-700 cursor-pointer object-cover shadow-sm">
-                            <div class="absolute right-0 mt-3 w-56 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 py-3 hidden group-hover:block animate-in fade-in slide-in-from-top-2 duration-200">
-                                <div class="px-4 py-2 border-b border-slate-50 dark:border-slate-800 mb-2">
-                                    <p id="nav-username" class="font-bold text-sm truncate"></p>
-                                    <p class="text-[10px] text-slate-400 uppercase tracking-tighter">Profil Yönetimi</p>
-                                </div>
-                                <button onclick="window.scrollTo(0,0)" class="w-full text-left px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-3 transition">
-                                    <i data-lucide="user" class="w-4 h-4"></i> Profilim
-                                </button>
-                                <button onclick="signOutUser()" class="w-full text-left px-4 py-3 text-sm font-semibold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/10 flex items-center gap-3 transition">
-                                    <i data-lucide="log-out" class="w-4 h-4"></i> Oturumu Kapat
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
+<h3>Kullanıcılar</h3>
+<div id="users"></div>
 
-        <main class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <!-- Left Sidebar -->
-            <aside class="lg:col-span-3 space-y-6 hidden lg:block">
-                <div class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-sm border border-slate-200 dark:border-slate-800">
-                    <div class="text-center">
-                        <div class="relative inline-block mb-4">
-                            <img id="profile-card-avatar" class="w-24 h-24 rounded-[2rem] mx-auto border-4 border-slate-50 dark:border-slate-800 object-cover shadow-lg">
-                            <div class="absolute -bottom-2 -right-2 bg-green-500 w-6 h-6 rounded-full border-4 border-white dark:border-slate-900"></div>
-                        </div>
-                        <h3 id="profile-card-name" class="font-black text-xl mb-1">...</h3>
-                        <p class="text-xs text-sky-500 font-bold uppercase tracking-widest mb-4">Nova Üyesi</p>
-                        
-                        <div class="grid grid-cols-2 gap-4 py-4 border-y border-slate-100 dark:border-slate-800 mb-4">
-                            <div>
-                                <p class="text-lg font-black" id="stat-posts">0</p>
-                                <p class="text-[10px] text-slate-400 font-bold uppercase">Post</p>
-                            </div>
-                            <div>
-                                <p class="text-lg font-black" id="stat-likes">0</p>
-                                <p class="text-[10px] text-slate-400 font-bold uppercase">Beğeni</p>
-                            </div>
-                        </div>
-                        <p id="profile-bio" class="text-xs text-slate-500 leading-relaxed italic">"Henüz bir biyografi eklenmedi."</p>
-                    </div>
-                </div>
+<h3>Yeni Post</h3>
+<input type="file" id="file">
+<textarea id="caption" placeholder="Açıklama"></textarea>
+<button onclick="createPost()">Paylaş</button>
 
-                <div class="bg-gradient-to-br from-sky-500 to-indigo-600 p-8 rounded-[2.5rem] text-white shadow-xl">
-                    <h4 class="font-bold text-lg mb-2">Premium'a Geç!</h4>
-                    <p class="text-xs opacity-80 mb-4 leading-relaxed">Özel profil rozetleri ve sınırsız post uzunluğu için NOVA+ abonesi olun.</p>
-                    <button class="w-full bg-white text-sky-600 py-3 rounded-2xl font-bold text-xs hover:scale-105 transition-all">Detayları Gör</button>
-                </div>
-            </aside>
+<h3>Feed</h3>
+<div id="feed"></div>
 
-            <!-- Feed Area -->
-            <section class="lg:col-span-6 space-y-8">
-                <!-- Composer -->
-                <div class="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] shadow-md border border-slate-200 dark:border-slate-800">
-                    <div class="flex gap-4">
-                        <img id="composer-avatar" class="w-14 h-14 rounded-2xl shrink-0 object-cover bg-slate-100">
-                        <div class="flex-1 space-y-4">
-                            <textarea id="post-content" placeholder="Aklından neler geçiyor, Nova sakini?" class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl p-5 focus:ring-2 focus:ring-sky-500 resize-none text-[15px] min-h-[120px] outline-none transition-all placeholder:text-slate-400 dark:text-white"></textarea>
-                            <div id="media-preview" class="hidden relative group">
-                                <img id="post-image-preview" class="w-full h-48 object-cover rounded-2xl border border-slate-100 dark:border-slate-800">
-                                <button onclick="clearMedia()" class="absolute top-2 right-2 bg-black/50 text-white p-2 rounded-full hover:bg-black transition"><i data-lucide="x" class="w-4 h-4"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
-                        <div class="flex gap-2">
-                            <button onclick="triggerImageInput()" class="p-3 text-slate-500 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-500 rounded-2xl transition-all" title="Görsel Ekle">
-                                <i data-lucide="image" class="w-5 h-5"></i>
-                            </button>
-                            <button class="p-3 text-slate-500 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-500 rounded-2xl transition-all" title="Duygu/Aktivite">
-                                <i data-lucide="smile" class="w-5 h-5"></i>
-                            </button>
-                        </div>
-                        <button id="publish-btn" onclick="createPost()" class="bg-sky-500 text-white px-10 py-3 rounded-2xl font-black text-sm hover:bg-sky-600 transition-all shadow-lg shadow-sky-100 dark:shadow-none active:scale-95 disabled:opacity-50">Paylaş</button>
-                    </div>
-                    <!-- Gizli input -->
-                    <input type="text" id="image-url-input" placeholder="Görsel URL yapıştırın..." class="hidden w-full mt-4 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-100 text-xs outline-none focus:ring-1 focus:ring-sky-500">
-                </div>
+</div>
 
-                <!-- Feed -->
-                <div id="posts-container" class="space-y-6">
-                    <!-- Dinamik olarak yüklenecek -->
-                </div>
-            </section>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getAuth,onAuthStateChanged,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore,collection,doc,
+setDoc,getDoc,addDoc,
+query,onSnapshot,
+updateDoc,where,
+arrayUnion,arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getStorage,ref,
+uploadBytes,getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
-            <!-- Right Sidebar -->
-            <aside class="lg:col-span-3 space-y-6">
-                <div class="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm sticky top-24">
-                    <h3 class="font-black text-sm mb-6 text-slate-900 dark:text-white uppercase tracking-wider flex items-center justify-between">
-                        Trendler <i data-lucide="trending-up" class="w-4 h-4 text-sky-500"></i>
-                    </h3>
-                    <div class="space-y-6">
-                        <div class="group cursor-pointer">
-                            <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Teknoloji · Gündem</p>
-                            <p class="font-bold text-sm group-hover:text-sky-500 transition">#NovaAI</p>
-                            <p class="text-[10px] text-slate-500">2.5K Paylaşım</p>
-                        </div>
-                        <div class="group cursor-pointer">
-                            <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Yaşam · Trend</p>
-                            <p class="font-bold text-sm group-hover:text-sky-500 transition">#GelecekBurada</p>
-                            <p class="text-[10px] text-slate-500">1.2K Paylaşım</p>
-                        </div>
-                        <div class="group cursor-pointer">
-                            <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Geliştirici · Dünya</p>
-                            <p class="font-bold text-sm group-hover:text-sky-500 transition">#CleanCode</p>
-                            <p class="text-[10px] text-slate-500">850 Paylaşım</p>
-                        </div>
-                    </div>
-                </div>
+const firebaseConfig = {
+  apiKey: "AIzaSyBGFyQsqe32hGgskY5yRfrbXlH8MuHKaLE",
+  authDomain: "novatech-e7507.firebaseapp.com",
+  projectId: "novatech-e7507",
+  storageBucket: "novatech-e7507.firebasestorage.app",
+  messagingSenderId: "425311220171",
+  appId: "1:425311220171:web:6b9d3cf03fb946e2ba064e"
+};
 
-                <div class="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
-                    <h3 class="font-black text-sm mb-6 text-slate-900 dark:text-white uppercase tracking-wider">Kimler Burada?</h3>
-                    <div id="online-users" class="space-y-4 max-h-64 overflow-y-auto pr-2">
-                        <!-- Kullanıcılar listelenecek -->
-                    </div>
-                </div>
-            </aside>
-        </main>
-    </div>
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-    <!-- Chat Widget -->
-    <div id="chat-window" class="fixed bottom-0 right-4 sm:right-8 w-[90%] sm:w-[400px] z-[100] bg-white dark:bg-slate-900 rounded-t-[2.5rem] shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col h-[550px] transition-all transform translate-y-full hidden">
-        <div class="bg-sky-500 p-6 text-white flex justify-between items-center rounded-t-[2.5rem]">
-            <div class="flex items-center gap-4">
-                <div class="relative">
-                    <img id="chat-avatar" class="w-10 h-10 rounded-2xl border-2 border-white/20 object-cover">
-                    <span class="absolute -top-1 -right-1 bg-green-400 w-3 h-3 rounded-full border-2 border-sky-500"></span>
-                </div>
-                <div>
-                    <p id="chat-title" class="font-black text-sm">...</p>
-                    <p class="text-[10px] font-bold opacity-80 uppercase tracking-tighter">Nova Chat</p>
-                </div>
-            </div>
-            <button onclick="closeChat()" class="hover:bg-white/20 p-2 rounded-xl transition"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/50 dark:bg-slate-950/50"></div>
-        <div class="p-6 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
-            <div class="flex gap-2 bg-slate-100 dark:bg-slate-800 p-2 rounded-2xl">
-                <input id="chat-input" type="text" placeholder="Bir şeyler yaz..." class="flex-1 bg-transparent border-none px-4 py-2 text-sm outline-none dark:text-white" onkeydown="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()" class="bg-sky-500 text-white p-3 rounded-xl hover:bg-sky-600 transition shadow-lg shadow-sky-200 dark:shadow-none"><i data-lucide="send" class="w-4 h-4"></i></button>
-            </div>
-        </div>
-    </div>
+let currentUser = null;
 
-    <!-- Global Toast / Modal for Errors/Confirms -->
-    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 z-[5000] px-6 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl text-sm font-bold opacity-0 pointer-events-none transition-all duration-300"></div>
+onAuthStateChanged(auth, async user=>{
+  if(user){
+    currentUser=user;
+    authDiv(false);
+    document.getElementById("me").innerText=user.email;
+    loadUsers();
+    loadFeed();
+  }
+});
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, addDoc, updateDoc, onSnapshot, serverTimestamp, getDoc, setDoc, arrayUnion, arrayRemove, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+function authDiv(show){
+  auth.style.display=show?"block":"none";
+  app.style.display=show?"none":"block";
+}
 
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nova-social-pro-v1';
+window.authSubmit = async ()=>{
+  try{
+    await signInWithEmailAndPassword(auth,email.value,password.value);
+  }catch{
+    const res = await createUserWithEmailAndPassword(auth,email.value,password.value);
+    await setDoc(doc(db,"users",res.user.uid),{
+      name:name.value,
+      bio:""
+    });
+  }
+}
 
-        let currentUser = null;
-        let userData = null;
-        let isRegisterMode = false;
-        let activeChat = null;
-        let unsubMsgs = null;
-        let postImageUrl = "";
+window.logout = ()=>signOut(auth);
 
-        // --- AUTH ---
-        onAuthStateChanged(auth, async (user) => {
-            const overlay = document.getElementById('loading-overlay');
-            const authScreen = document.getElementById('auth-screen');
-            const appContainer = document.getElementById('app-container');
+window.saveProfile = async ()=>{
+  await updateDoc(doc(db,"users",currentUser.uid),{
+    bio:bio.value
+  });
+}
 
-            if (user) {
-                currentUser = user;
-                const synced = await syncProfile(user);
-                if (synced) {
-                    overlay.classList.add('hidden');
-                    authScreen.classList.add('hidden');
-                    appContainer.classList.remove('hidden');
-                    initData();
-                } else {
-                    setTimeout(() => location.reload(), 2000);
-                }
-            } else {
-                overlay.classList.add('hidden');
-                authScreen.classList.remove('hidden');
-                appContainer.classList.add('hidden');
-            }
-        });
+window.createPost = async ()=>{
+  const file = document.getElementById("file").files[0];
+  const storageRef = ref(storage,`posts/${currentUser.uid}/${Date.now()}`);
+  await uploadBytes(storageRef,file);
+  const url = await getDownloadURL(storageRef);
 
-        async function syncProfile(user) {
-            try {
-                const userDoc = await getDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'data'));
-                if (userDoc.exists()) {
-                    userData = userDoc.data();
-                    document.getElementById('nav-avatar').src = userData.photoURL;
-                    document.getElementById('nav-username').innerText = userData.displayName;
-                    document.getElementById('profile-card-avatar').src = userData.photoURL;
-                    document.getElementById('profile-card-name').innerText = userData.displayName;
-                    document.getElementById('composer-avatar').src = userData.photoURL;
-                    if(userData.bio) document.getElementById('profile-bio').innerText = userData.bio;
-                    return true;
-                }
-                return false;
-            } catch (e) { return false; }
-        }
+  await addDoc(collection(db,"posts"),{
+    uid:currentUser.uid,
+    image:url,
+    caption:caption.value,
+    likes:[],
+    createdAt:Date.now()
+  });
+}
 
-        window.toggleAuthMode = () => {
-            isRegisterMode = !isRegisterMode;
-            document.getElementById('register-only-fields').classList.toggle('hidden', !isRegisterMode);
-            document.getElementById('auth-main-btn').innerText = isRegisterMode ? 'Hesap Oluştur' : 'Giriş Yap';
-            document.getElementById('auth-subtitle').innerText = isRegisterMode ? 'Yeni bir dünya seni bekliyor.' : 'Sosyal medyanın en "saf" haliyle tanışın.';
-            document.getElementById('auth-toggle-btn').innerHTML = isRegisterMode ? 'Zaten hesabınız var mı? <span class="text-sky-500 underline decoration-2 underline-offset-4">Giriş Yap</span>' : 'Hesabınız yok mu? <span class="text-sky-500 underline decoration-2 underline-offset-4">Hemen Katıl</span>';
-        };
+function loadUsers(){
+  onSnapshot(collection(db,"users"),snap=>{
+    users.innerHTML="";
+    snap.forEach(u=>{
+      if(u.id!==currentUser.uid){
+        users.innerHTML+=`
+        <div class="user">
+        ${u.data().name || u.id}
+        <button onclick="follow('${u.id}')">Takip</button>
+        </div>`;
+      }
+    });
+  });
+}
 
-        window.handleAuthSubmit = async () => {
-            const email = document.getElementById('auth-email').value.trim();
-            const password = document.getElementById('auth-password').value;
-            const name = document.getElementById('auth-name').value.trim();
-            const errBox = document.getElementById('auth-error');
+window.follow = async (uid)=>{
+  await setDoc(doc(db,"follows",currentUser.uid,"following",uid),{ok:true});
+}
 
-            if (!email || !password) return;
-            errBox.classList.add('hidden');
+function loadFeed(){
+  const q = query(collection(db,"posts"));
+  onSnapshot(q,async snap=>{
+    feed.innerHTML="";
+    for(const docu of snap.docs){
+      const p = docu.data();
+      const f = await getDoc(doc(db,"follows",currentUser.uid,"following",p.uid));
+      if(f.exists() || p.uid===currentUser.uid){
+        renderPost(docu.id,p);
+      }
+    }
+  });
+}
 
-            try {
-                if (isRegisterMode) {
-                    if (!name) throw new Error("İsim boş bırakılamaz.");
-                    const res = await createUserWithEmailAndPassword(auth, email, password);
-                    const profile = {
-                        uid: res.user.uid,
-                        displayName: name,
-                        photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${res.user.uid}`,
-                        bio: "Nova dünyasına hoş geldim!",
-                        createdAt: new Date().toISOString(),
-                        postCount: 0,
-                        likeCount: 0
-                    };
-                    await setDoc(doc(db, 'artifacts', appId, 'users', res.user.uid, 'profile', 'data'), profile);
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users_index', res.user.uid), profile);
-                } else {
-                    await signInWithEmailAndPassword(auth, email, password);
-                }
-            } catch (err) {
-                errBox.innerText = err.message;
-                errBox.classList.remove('hidden');
-            }
-        };
+async function renderPost(id,p){
+  const u = await getDoc(doc(db,"users",p.uid));
+  const name = u.exists()?u.data().name:"user";
+  const liked = p.likes.includes(currentUser.uid);
 
-        window.signOutUser = () => signOut(auth);
+  feed.innerHTML+=`
+  <div class="post">
+    <b>${name}</b>
+    <img src="${p.image}">
+    <p>${p.caption}</p>
+    <button onclick="likePost('${id}')">
+      ${liked?"💔":"❤️"} ${p.likes.length}
+    </button>
+    <input id="c${id}" placeholder="Yorum">
+    <button onclick="comment('${id}')">Gönder</button>
+    <div id="cm${id}"></div>
+  </div>`;
+  loadComments(id);
+}
 
-        // --- CORE DATA ---
-        function initData() {
-            // Posts Sub
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), (snap) => {
-                const posts = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                renderPosts(posts.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)));
-                
-                // Stat update
-                const myPosts = posts.filter(p => p.authorId === currentUser.uid);
-                document.getElementById('stat-posts').innerText = myPosts.length;
-                let totalLikes = 0;
-                myPosts.forEach(p => totalLikes += (p.likes?.length || 0));
-                document.getElementById('stat-likes').innerText = totalLikes;
-            });
+window.likePost = async (id)=>{
+  const refp = doc(db,"posts",id);
+  const snap = await getDoc(refp);
+  const likes = snap.data().likes;
+  if(likes.includes(currentUser.uid)){
+    await updateDoc(refp,{likes:arrayRemove(currentUser.uid)});
+  }else{
+    await updateDoc(refp,{likes:arrayUnion(currentUser.uid)});
+  }
+}
 
-            // Users Sub
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users_index'), (snap) => {
-                const users = snap.docs.map(d => d.data());
-                renderUsers(users);
-            });
-        }
+window.comment = async (id)=>{
+  const text = document.getElementById("c"+id).value;
+  await addDoc(collection(db,"comments",id,"list"),{
+    uid:currentUser.uid,
+    text
+  });
+}
 
-        // --- POST LOGIC ---
-        window.triggerImageInput = () => {
-            const input = document.getElementById('image-url-input');
-            input.classList.toggle('hidden');
-            input.oninput = (e) => {
-                const url = e.target.value.trim();
-                if(url.match(/\.(jpeg|jpg|gif|png|webp|svg)$/) != null) {
-                    postImageUrl = url;
-                    document.getElementById('post-image-preview').src = url;
-                    document.getElementById('media-preview').classList.remove('hidden');
-                }
-            };
-        };
-
-        window.clearMedia = () => {
-            postImageUrl = "";
-            document.getElementById('media-preview').classList.add('hidden');
-            document.getElementById('image-url-input').value = "";
-        };
-
-        window.createPost = async () => {
-            const content = document.getElementById('post-content').value.trim();
-            if (!content && !postImageUrl) return;
-            
-            const btn = document.getElementById('publish-btn');
-            btn.disabled = true;
-            btn.innerText = "Yükleniyor...";
-
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), {
-                    content,
-                    imageUrl: postImageUrl,
-                    authorId: currentUser.uid,
-                    authorName: userData.displayName,
-                    authorPhoto: userData.photoURL,
-                    likes: [],
-                    comments: [],
-                    createdAt: serverTimestamp()
-                });
-                document.getElementById('post-content').value = "";
-                clearMedia();
-                showToast("Düşüncelerin evrene yayıldı! 🚀");
-            } catch (e) {
-                showToast("Paylaşırken bir hata oldu.");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Paylaş";
-            }
-        };
-
-        function renderPosts(posts) {
-            const container = document.getElementById('posts-container');
-            if (posts.length === 0) {
-                container.innerHTML = `<div class="bg-white dark:bg-slate-900 p-12 rounded-[2.5rem] text-center border-2 border-dashed border-slate-200 dark:border-slate-800"><p class="text-slate-400 font-bold">Burada henüz kimse yok. İlk postu sen at!</p></div>`;
-                return;
-            }
-
-            container.innerHTML = posts.map(p => {
-                const isLiked = p.likes?.includes(currentUser.uid);
-                return `
-                    <div class="post-card bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden group">
-                        <div class="p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center gap-4">
-                                    <img src="${p.authorPhoto}" class="w-12 h-12 rounded-2xl object-cover shadow-sm">
-                                    <div>
-                                        <p class="font-black text-sm">${p.authorName}</p>
-                                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Nova Sakini</p>
-                                    </div>
-                                </div>
-                                ${p.authorId === currentUser.uid ? `
-                                    <button onclick="window.deletePost('${p.id}')" class="opacity-0 group-hover:opacity-100 p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/10 rounded-xl transition-all">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    </button>
-                                ` : ''}
-                            </div>
-                            
-                            <p class="text-slate-700 dark:text-slate-200 text-sm leading-relaxed mb-4 whitespace-pre-wrap">${p.content}</p>
-                            
-                            ${p.imageUrl ? `
-                                <img src="${p.imageUrl}" class="w-full h-72 object-cover rounded-3xl mb-4 border border-slate-100 dark:border-slate-800" onerror="this.style.display='none'">
-                            ` : ''}
-
-                            <div class="flex items-center gap-6 pt-4 border-t border-slate-100 dark:border-slate-800">
-                                <button onclick="window.likePost('${p.id}')" class="flex items-center gap-2 group/btn">
-                                    <div class="p-2 rounded-xl transition-all ${isLiked ? 'bg-rose-50 dark:bg-rose-900/10 text-rose-500' : 'text-slate-400 group-hover/btn:bg-slate-100 dark:group-hover/btn:bg-slate-800'}">
-                                        <i data-lucide="heart" class="w-5 h-5 ${isLiked ? 'fill-current' : ''}"></i>
-                                    </div>
-                                    <span class="text-xs font-black ${isLiked ? 'text-rose-500' : 'text-slate-500'}">${p.likes?.length || 0}</span>
-                                </button>
-                                <button onclick="window.toggleComments('${p.id}')" class="flex items-center gap-2 group/btn">
-                                    <div class="p-2 rounded-xl transition-all text-slate-400 group-hover/btn:bg-slate-100 dark:group-hover/btn:bg-slate-800">
-                                        <i data-lucide="message-circle" class="w-5 h-5"></i>
-                                    </div>
-                                    <span class="text-xs font-black text-slate-500">${p.comments?.length || 0}</span>
-                                </button>
-                            </div>
-
-                            <!-- Comment Section (Hidden by Default) -->
-                            <div id="comments-${p.id}" class="hidden mt-4 pt-4 border-t border-slate-50 dark:border-slate-800 animate-in slide-in-from-top-2">
-                                <div class="space-y-3 mb-4 max-h-48 overflow-y-auto pr-2">
-                                    ${p.comments?.length ? p.comments.map(c => `
-                                        <div class="flex gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl">
-                                            <img src="${c.photo}" class="w-6 h-6 rounded-lg object-cover">
-                                            <div>
-                                                <p class="text-[10px] font-black">${c.name}</p>
-                                                <p class="text-[11px] text-slate-600 dark:text-slate-400">${c.text}</p>
-                                            </div>
-                                        </div>
-                                    `).join('') : '<p class="text-[10px] text-center text-slate-400 py-2">İlk yorumu sen yap!</p>'}
-                                </div>
-                                <div class="flex gap-2">
-                                    <input id="comment-input-${p.id}" type="text" placeholder="Yorum ekle..." class="flex-1 bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-2 text-xs outline-none focus:ring-1 focus:ring-sky-500">
-                                    <button onclick="window.addComment('${p.id}')" class="bg-sky-500 text-white p-2 rounded-xl hover:bg-sky-600 transition"><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            lucide.createIcons();
-        }
-
-        window.likePost = async (id) => {
-            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'posts', id);
-            const snap = await getDoc(ref);
-            if (!snap.exists()) return;
-            const likes = snap.data().likes || [];
-            if (likes.includes(currentUser.uid)) {
-                await updateDoc(ref, { likes: arrayRemove(currentUser.uid) });
-            } else {
-                await updateDoc(ref, { likes: arrayUnion(currentUser.uid) });
-            }
-        };
-
-        window.toggleComments = (id) => {
-            const el = document.getElementById(`comments-${id}`);
-            el.classList.toggle('hidden');
-        };
-
-        window.addComment = async (id) => {
-            const input = document.getElementById(`comment-input-${id}`);
-            const text = input.value.trim();
-            if(!text) return;
-            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'posts', id);
-            await updateDoc(ref, {
-                comments: arrayUnion({
-                    uid: currentUser.uid,
-                    name: userData.displayName,
-                    photo: userData.photoURL,
-                    text: text,
-                    at: new Date().toISOString()
-                })
-            });
-            input.value = "";
-        };
-
-        window.deletePost = async (id) => {
-            if(confirm("Bu paylaşımı sonsuza dek silmek istediğine emin misin?")) {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'posts', id));
-                showToast("Paylaşım silindi.");
-            }
-        };
-
-        // --- USERS & CHAT ---
-        function renderUsers(users) {
-            const container = document.getElementById('online-users');
-            container.innerHTML = users.map(u => `
-                <div onclick="window.openChat('${u.uid}', '${u.displayName}', '${u.photoURL}')" class="flex items-center justify-between p-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl cursor-pointer transition-all group">
-                    <div class="flex items-center gap-3">
-                        <div class="relative">
-                            <img src="${u.photoURL}" class="w-10 h-10 rounded-xl object-cover shadow-sm">
-                            <span class="absolute -top-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900"></span>
-                        </div>
-                        <div>
-                            <p class="text-xs font-black">${u.displayName} ${u.uid === currentUser.uid ? '<span class="text-sky-500">(Sen)</span>' : ''}</p>
-                            <p class="text-[9px] text-slate-400 font-bold uppercase">Çevrimiçi</p>
-                        </div>
-                    </div>
-                    <i data-lucide="message-square" class="w-4 h-4 text-slate-300 group-hover:text-sky-500 transition"></i>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        window.openChat = (uid, name, photo) => {
-            if (uid === currentUser.uid) return;
-            const roomId = [currentUser.uid, uid].sort().join("_");
-            activeChat = { roomId, name, photo };
-            
-            const win = document.getElementById('chat-window');
-            win.classList.remove('hidden');
-            setTimeout(() => win.style.transform = "translateY(0)", 10);
-            
-            document.getElementById('chat-title').innerText = name;
-            document.getElementById('chat-avatar').src = photo;
-            
-            if (unsubMsgs) unsubMsgs();
-            unsubMsgs = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'chats', roomId, 'messages'), (snap) => {
-                const msgs = snap.docs.map(d => d.data()).sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
-                renderChat(msgs);
-            });
-        };
-
-        function renderChat(msgs) {
-            const container = document.getElementById('chat-messages');
-            container.innerHTML = msgs.map(m => `
-                <div class="flex ${m.senderId === currentUser.uid ? 'justify-end' : 'justify-start'}">
-                    <div class="max-w-[75%] px-5 py-3 rounded-3xl text-xs font-medium shadow-sm ${m.senderId === currentUser.uid ? 'bg-sky-500 text-white rounded-tr-none' : 'bg-white dark:bg-slate-800 dark:text-slate-100 rounded-tl-none border border-slate-100 dark:border-slate-700'}">
-                        ${m.text}
-                    </div>
-                </div>
-            `).join('');
-            container.scrollTop = container.scrollHeight;
-        }
-
-        window.sendMessage = async () => {
-            const input = document.getElementById('chat-input');
-            if (!input.value.trim() || !activeChat) return;
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'chats', activeChat.roomId, 'messages'), {
-                text: input.value,
-                senderId: currentUser.uid,
-                createdAt: serverTimestamp()
-            });
-            input.value = "";
-        };
-
-        window.closeChat = () => {
-            const win = document.getElementById('chat-window');
-            win.style.transform = "translateY(100%)";
-            setTimeout(() => win.classList.add('hidden'), 300);
-            if (unsubMsgs) unsubMsgs();
-        };
-
-        // --- UTILS ---
-        function showToast(text) {
-            const t = document.getElementById('toast');
-            t.innerText = text;
-            t.style.opacity = "1";
-            t.style.pointerEvents = "auto";
-            t.style.transform = "translate(-50%, 10px)";
-            setTimeout(() => {
-                t.style.opacity = "0";
-                t.style.pointerEvents = "none";
-                t.style.transform = "translate(-50%, 0)";
-            }, 3000);
-        }
-
-        window.toggleTheme = () => {
-            document.documentElement.classList.toggle('dark');
-            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-            lucide.createIcons();
-        };
-
-        lucide.createIcons();
-    </script>
+function loadComments(id){
+  onSnapshot(collection(db,"comments",id,"list"),snap=>{
+    const box = document.getElementById("cm"+id);
+    box.innerHTML="";
+    snap.forEach(c=>{
+      box.innerHTML+=`<div class="small">💬 ${c.data().text}</div>`;
+    });
+  });
+}
+</script>
 </body>
 </html>
