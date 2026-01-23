@@ -3,516 +3,579 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NovaTech V4 Pro Ultimate</title>
+    <title>NovaTech Social</title>
     
-    <!-- Google Fonts & Font Awesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
-            --bg: #030508;
-            --card: #0c0f16;
-            --border: #1e2532;
-            --primary: #6366f1;
-            --primary-light: #818cf8;
-            --accent: #10b981;
-            --danger: #ef4444;
-            --text: #f9fafb;
+            --bg: #0b0e14;
+            --card: #151921;
+            --border: #262c38;
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --text: #ffffff;
             --text-dim: #94a3b8;
-            --xp: #fbce44;
+            --danger: #ef4444;
+            --success: #10b981;
             --nav-h: 65px;
-            --sidebar-w: 260px;
         }
 
-        body.light-mode {
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --border: #e2e8f0;
-            --text: #0f172a;
-            --text-dim: #64748b;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
         body {
             background: var(--bg);
             color: var(--text);
             overflow-x: hidden;
-            line-height: 1.5;
-            transition: background 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* Notifications */
-        #notification-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
-        .toast {
-            background: var(--card);
-            border: 1px solid var(--border);
-            padding: 14px 20px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideIn 0.3s ease-out;
-            min-width: 250px;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        /* Loading */
+        #loader {
+            position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 15px;
         }
 
         /* Auth Screen */
         #auth-screen {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 5000;
-            display: none; /* JS will show if not logged in */
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            position: fixed; inset: 0; background: var(--bg); z-index: 8000;
+            display: none; align-items: center; justify-content: center; padding: 20px;
             background-image: radial-gradient(circle at 50% 50%, #1e1b4b 0%, var(--bg) 100%);
         }
 
-        /* Loading Screen */
-        #loading-screen {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 6000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 20px;
+        .auth-card {
+            width: 100%; max-width: 400px; padding: 30px;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 24px; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Main App Layout */
+        /* Layout */
         header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: var(--nav-h);
-            background: var(--card);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
+            position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
+            background: rgba(21, 25, 33, 0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border); display: flex;
+            align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000;
         }
 
-        .logo { font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
-        .logo span { color: var(--primary); }
-
-        .sidebar {
-            width: var(--sidebar-w);
-            background: var(--card);
-            border-right: 1px solid var(--border);
-            position: fixed;
-            top: var(--nav-h);
-            bottom: 0;
-            left: 0;
-            z-index: 900;
-            padding: 20px;
-            transition: transform 0.3s ease;
-            overflow-y: auto;
+        .main-container {
+            max-width: 600px; margin: var(--nav-h) auto 0; padding: 20px 15px;
         }
 
-        .main-content {
-            margin-left: var(--sidebar-w);
-            margin-top: var(--nav-h);
-            padding: 24px;
-            max-width: 1000px;
-        }
-
+        /* Components */
         .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            position: relative;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 16px; margin-bottom: 20px;
         }
 
-        /* Elements */
         .btn {
-            padding: 10px 18px;
-            border-radius: 12px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: 0.2s;
+            padding: 12px 18px; border-radius: 12px; border: none;
+            font-weight: 600; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-size: 0.95rem;
         }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-secondary { background: rgba(128,128,128,0.1); color: var(--text); }
-        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-ghost { background: transparent; color: var(--text-dim); }
+        .btn-ghost:hover { color: var(--text); background: rgba(255,255,255,0.05); }
 
-        input {
-            width: 100%;
-            background: rgba(128,128,128,0.05);
-            border: 1px solid var(--border);
-            padding: 12px 16px;
-            border-radius: 12px;
-            color: var(--text);
-            margin-bottom: 12px;
-            outline: none;
+        input, textarea {
+            width: 100%; background: #0b0e14; border: 1px solid var(--border);
+            padding: 14px; border-radius: 12px; color: var(--text);
+            margin-bottom: 12px; outline: none; font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+        input:focus { border-color: var(--primary); }
+
+        /* Social Feed */
+        .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; background: #262c38; }
+        .post-img { width: 100%; border-radius: 12px; margin-top: 12px; display: block; border: 1px solid var(--border); }
+        
+        .post-actions {
+            display: flex; gap: 15px; margin-top: 15px; padding-top: 12px;
+            border-top: 1px solid var(--border);
         }
 
-        .xp-bar { height: 10px; background: rgba(0,0,0,0.1); border-radius: 20px; overflow: hidden; margin-top: 10px; }
-        .xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light)); width: 0%; transition: 0.5s; }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            color: var(--text-dim);
-            text-decoration: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-bottom: 4px;
+        .action-item {
+            display: flex; align-items: center; gap: 6px; color: var(--text-dim);
+            cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+            padding: 5px 10px; border-radius: 8px;
         }
-        .nav-link:hover, .nav-link.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+        .action-item:hover { color: var(--primary); background: rgba(139, 92, 246, 0.1); }
+        .liked { color: var(--danger) !important; }
 
-        @media (max-width: 900px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); z-index: 2000; }
-            .main-content { margin-left: 0; }
+        /* Comments Section */
+        .comments-panel {
+            margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);
+            display: none;
         }
+        .comment { display: flex; gap: 10px; margin-bottom: 12px; font-size: 0.85rem; }
+        .comment-content {
+            background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 10px; flex: 1;
+        }
+
+        /* Image Upload Preview */
+        .preview-box { position: relative; display: none; margin-bottom: 12px; text-align: center; }
+        .preview-box img { max-height: 250px; border-radius: 12px; border: 1px solid var(--border); }
+        .remove-preview {
+            position: absolute; top: 10px; right: 10px; background: var(--danger);
+            color: white; width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Notifications */
+        #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; }
+        .toast {
+            background: var(--card); color: var(--text); padding: 12px 24px; border: 1px solid var(--border);
+            border-radius: 30px; margin-bottom: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease; font-weight: 500;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
     </style>
 </head>
 <body>
 
-    <div id="notification-container"></div>
-
-    <!-- 1. Loading Screen (Initial) -->
-    <div id="loading-screen">
-        <div class="spinner"></div>
-        <p style="color: var(--text-dim);">NovaTech Hazırlanıyor...</p>
+    <!-- Loading State -->
+    <div id="loader">
+        <i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--primary)"></i>
+        <span style="color:var(--text-dim); font-size:0.9rem; font-weight:500;">Bağlanıyor...</span>
     </div>
 
-    <!-- 2. Single Auth Screen -->
+    <!-- Auth Screen -->
     <div id="auth-screen">
-        <div class="card" style="width: 100%; max-width: 400px; text-align: center;">
-            <h1 class="logo" style="justify-content: center; font-size: 2rem; margin-bottom: 10px;">NOVA<span>TECH</span></h1>
-            <p style="color: var(--text-dim); margin-bottom: 25px;">Geleceğin Eğitim Platformu</p>
-            <input type="email" id="auth-email" placeholder="E-posta">
+        <div class="auth-card">
+            <h1 style="font-weight:900; font-size:2rem; margin-bottom:5px; letter-spacing:-1.5px;">NOVA<span style="color:var(--primary)">SOCIAL</span></h1>
+            <p style="color:var(--text-dim); margin-bottom:30px; font-size:0.95rem;">Paylaş, Etkileşim Kur, Sosyalleş.</p>
+            
+            <input type="email" id="auth-email" placeholder="E-posta Adresi">
             <input type="password" id="auth-pass" placeholder="Şifre">
-            <button class="btn btn-primary" style="width: 100%;" onclick="handleAuthAction()">Giriş Yap / Kayıt Ol</button>
-            <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 15px;">Yeni kullanıcılar otomatik kayıt edilir.</p>
+            
+            <button class="btn btn-primary" style="width:100%; margin-top:10px;" id="auth-submit-btn" onclick="handleAuth()">
+                Giriş Yap / Kaydol
+            </button>
+            <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 20px;">
+                Yeni kullanıcı mısın? Bilgilerini girerek otomatik kaydolabilirsin.
+            </p>
         </div>
     </div>
 
-    <!-- 3. Main App UI -->
-    <div id="app-root" style="display: none;">
+    <!-- Main App Content -->
+    <div id="app" style="display:none;">
         <header>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <button class="btn btn-secondary" onclick="document.getElementById('sidebar').classList.toggle('open')">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="logo">NOVA<span>TECH</span></div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div id="daily-btn" class="btn btn-secondary" onclick="claimDailyReward()">
-                    <i class="fas fa-gift" style="color: var(--xp)"></i>
-                </div>
-                <img id="user-avatar" style="width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--border);">
+            <h2 style="font-weight:900; font-size:1.3rem; letter-spacing:-1px; cursor:pointer;" onclick="window.scrollTo({top:0, behavior:'smooth'})">NOVA<span style="color:var(--primary)">SOCIAL</span></h2>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <img id="my-avatar" class="avatar" style="width:34px; height:34px; cursor:pointer; border:2px solid var(--border);" onclick="toggleSettings()">
+                <button class="btn btn-ghost" style="padding:8px;" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </header>
 
-        <aside class="sidebar" id="sidebar">
-            <div class="card" style="padding: 15px; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <img id="side-avatar" style="width: 45px; height: 45px; border-radius: 50%;">
-                    <div style="overflow: hidden;">
-                        <div id="side-name" style="font-weight: 700; white-space: nowrap; text-overflow: ellipsis;">Yükleniyor...</div>
-                        <div id="side-rank" style="font-size: 0.7rem; color: var(--primary); font-weight: 800;">ACEMİ</div>
-                    </div>
+        <div class="main-container">
+            <!-- Create Post -->
+            <div class="card">
+                <textarea id="post-input" placeholder="Neler düşünüyorsun?" rows="3" style="resize:none; border:none; background:transparent; padding:0; margin-bottom:15px; font-size:1.1rem;"></textarea>
+                
+                <div id="image-preview-container" class="preview-box">
+                    <img id="image-preview-element" src="">
+                    <div class="remove-preview" onclick="clearImage()"><i class="fas fa-times"></i></div>
                 </div>
-                <div class="xp-bar"><div id="xp-fill" class="xp-fill"></div></div>
-                <div id="xp-text" style="font-size: 0.65rem; margin-top: 5px; text-align: right; color: var(--text-dim);">0 / 1000 XP</div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top: 1px solid var(--border); pt-15; padding-top:15px;">
+                    <label class="btn btn-ghost" style="cursor:pointer; padding:8px 12px; font-size:0.9rem;">
+                        <i class="fas fa-image" style="color:var(--primary)"></i> Görsel Ekle
+                        <input type="file" id="file-input" hidden accept="image/*" onchange="previewFile(this)">
+                    </label>
+                    <button class="btn btn-primary" id="publish-btn" onclick="publishPost()">Paylaş</button>
+                </div>
             </div>
 
-            <nav>
-                <div class="nav-link active" onclick="switchTab('forum')"><i class="fas fa-home"></i> Sosyal Akış</div>
-                <div class="nav-link" onclick="switchTab('study')"><i class="fas fa-book"></i> Ders Çalış</div>
-                <div class="nav-link" onclick="switchTab('ranks')"><i class="fas fa-trophy"></i> Sıralama</div>
-                <div class="nav-link" onclick="switchTab('settings')"><i class="fas fa-cog"></i> Ayarlar</div>
-            </nav>
-
-            <button class="btn btn-danger" onclick="logout()" style="width: 100%; margin-top: 20px;">
-                <i class="fas fa-sign-out-alt"></i> Çıkış Yap
-            </button>
-        </aside>
-
-        <main class="main-content">
-            <!-- Forum Tab -->
-            <section id="tab-forum" class="tab-pane">
-                <div class="card">
-                    <textarea id="post-text" placeholder="Bugün neler çalıştın?" style="width:100%; background:transparent; border:none; color:var(--text); outline:none; resize:none; font-size:1rem;" rows="3"></textarea>
-                    <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
-                        <button class="btn btn-primary" onclick="submitPost()">Paylaş (+10 XP)</button>
-                    </div>
-                </div>
-                <div id="feed-container"></div>
-            </section>
-
-            <!-- Other tabs are managed by JS -->
-            <section id="tab-study" class="tab-pane" style="display:none;">
-                <div class="card">
-                    <h3>Çalışma Girişi</h3>
-                    <input type="text" id="lesson-name" placeholder="Ders Adı (Örn: Matematik)">
-                    <input type="number" id="q-count" placeholder="Soru Sayısı">
-                    <button class="btn btn-primary" style="width:100%" onclick="saveStudy()">Kaydet (+50 XP)</button>
-                </div>
-            </section>
-
-            <section id="tab-ranks" class="tab-pane" style="display:none;">
-                <div class="card" id="leaderboard-content">
-                    <h3>Liderlik Tablosu</h3>
-                </div>
-            </section>
-
-            <section id="tab-settings" class="tab-pane" style="display:none;">
-                <div class="card">
-                    <h3>Profil Ayarları</h3>
-                    <input type="text" id="name-change" placeholder="Yeni İsim">
-                    <button class="btn btn-primary" onclick="updateName()">Güncelle</button>
-                </div>
-            </section>
-        </main>
+            <!-- Feed Container -->
+            <div id="feed"></div>
+        </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settings-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(5px);">
+        <div class="auth-card" style="max-width:360px;">
+            <h3 style="margin-bottom:20px;">Profili Düzenle</h3>
+            <div style="position:relative; display:inline-block; margin-bottom:20px;">
+                <img id="edit-avatar-preview" class="avatar" style="width:100px; height:100px; border:3px solid var(--primary);">
+                <label style="position:absolute; bottom:0; right:0; background:var(--primary); width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <i class="fas fa-camera" style="font-size:0.8rem;"></i>
+                    <input type="file" hidden accept="image/*" onchange="updateAvatarPreview(this)">
+                </label>
+            </div>
+            <input type="text" id="display-name" placeholder="Kullanıcı Adı">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn btn-ghost" style="flex:1" onclick="toggleSettings()">İptal</button>
+                <button class="btn btn-primary" style="flex:1" id="save-profile-btn" onclick="saveProfile()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
-        import { getDatabase, ref, set, push, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // CONFIG
-        const firebaseConfig = {
-            apiKey: "AIzaSyBGFyQsqe32hGgskY5yRfrbXlH8MuHKaLE",
-            authDomain: "novatech-e7507.firebaseapp.com",
-            databaseURL: "https://novatech-e7507-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "novatech-e7507"
-        };
-
+        // Global Variables
+        const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getDatabase(app);
-        const APP_ID = "novatech_v4_pro_ultimate";
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nova-social-final-v1';
 
-        let userData = null;
+        let currentUser = null;
+        let selectedImageData = null;
+        let tempAvatarData = null;
 
-        // AUTH LOGIC
+        // --- AUTH TRACKER ---
         onAuthStateChanged(auth, async (user) => {
-            const loading = document.getElementById('loading-screen');
+            const loader = document.getElementById('loader');
             const authScreen = document.getElementById('auth-screen');
-            const mainApp = document.getElementById('app-root');
+            const appScreen = document.getElementById('app');
 
             if (user) {
-                // User is signed in
-                await syncUserData(user);
-                loading.style.display = 'none';
+                currentUser = user;
+                await ensureUserProfile(user);
                 authScreen.style.display = 'none';
-                mainApp.style.display = 'block';
-                initListeners();
+                appScreen.style.display = 'block';
+                initFeed();
+                syncMyProfile(user.uid);
             } else {
-                // User is signed out
-                loading.style.display = 'none';
+                currentUser = null;
                 authScreen.style.display = 'flex';
-                mainApp.style.display = 'none';
+                appScreen.style.display = 'none';
             }
+            loader.style.display = 'none';
         });
 
-        window.handleAuthAction = async () => {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
-            if(!email || !pass) return showToast("Alanları doldurun", "error");
+        // --- AUTH ACTIONS ---
+        window.handleAuth = async () => {
+            const email = document.getElementById('auth-email').value.trim();
+            const pass = document.getElementById('auth-pass').value.trim();
+            const btn = document.getElementById('auth-submit-btn');
+
+            if(!email || !pass) return showToast("Lütfen tüm alanları doldurun.");
+            if(pass.length < 6) return showToast("Şifre en az 6 karakter olmalıdır.");
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
 
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
             } catch (e) {
-                try {
-                    await createUserWithEmailAndPassword(auth, email, pass);
-                    showToast("Hesap oluşturuldu ve giriş yapıldı!");
-                } catch (err) {
-                    showToast("Hata: " + err.message, "error");
+                if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
+                    try {
+                        await createUserWithEmailAndPassword(auth, email, pass);
+                        showToast("Hoş geldin! Hesabın oluşturuldu.");
+                    } catch (err) {
+                        showToast("Hata: " + err.message);
+                    }
+                } else {
+                    showToast("Giriş başarısız: Bilgilerinizi kontrol edin.");
                 }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Giriş Yap / Kaydol';
             }
         };
 
-        // DATABASE LOGIC
-        async function syncUserData(user) {
-            const userRef = ref(db, `artifacts/${APP_ID}/users/${user.uid}/profile`);
-            onValue(userRef, snap => {
-                const data = snap.val();
-                if(!data) {
-                    const initial = {
-                        uid: user.uid,
-                        name: user.email.split('@')[0],
-                        xp: 0,
-                        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`,
-                        lastReward: 0
-                    };
-                    set(userRef, initial);
-                    update(ref(db, `artifacts/${APP_ID}/public/leaderboard/${user.uid}`), { name: initial.name, xp: 0, avatar: initial.avatar });
-                } else {
-                    userData = data;
-                    renderProfile();
+        // --- PROFILE SYSTEM ---
+        async function ensureUserProfile(user) {
+            const userRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'data');
+            const snap = await getDoc(userRef);
+            if(!snap.exists()) {
+                await setDoc(userRef, {
+                    name: user.email.split('@')[0],
+                    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`,
+                    uid: user.uid,
+                    createdAt: Date.now()
+                });
+            }
+        }
+
+        function syncMyProfile(uid) {
+            const userRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'data');
+            onSnapshot(userRef, (snap) => {
+                if(snap.exists()) {
+                    const data = snap.data();
+                    document.getElementById('my-avatar').src = data.avatar;
+                    document.getElementById('edit-avatar-preview').src = data.avatar;
+                    document.getElementById('display-name').value = data.name;
                 }
             });
         }
 
-        function renderProfile() {
-            if(!userData) return;
-            document.getElementById('side-name').innerText = userData.name;
-            document.getElementById('user-avatar').src = userData.avatar;
-            document.getElementById('side-avatar').src = userData.avatar;
-            
-            const level = Math.floor(userData.xp / 1000);
-            const xpInLevel = userData.xp % 1000;
-            document.getElementById('xp-fill').style.width = (xpInLevel / 10) + "%";
-            document.getElementById('xp-text').innerText = `${xpInLevel} / 1000 XP (Seviye ${level + 1})`;
-        }
-
-        function initListeners() {
-            // Forum Feed
-            onValue(ref(db, `artifacts/${APP_ID}/public/posts`), snap => {
-                const container = document.getElementById('feed-container');
-                container.innerHTML = "";
-                const data = snap.val();
-                if(!data) return;
-                Object.values(data).reverse().forEach(post => {
-                    container.innerHTML += `
-                        <div class="card">
-                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-                                <img src="${post.avatar}" style="width:30px; height:30px; border-radius:50%;">
-                                <b>${post.author}</b>
-                                <span style="font-size:0.7rem; color:var(--text-dim); margin-left:auto;">${new Date(post.ts).toLocaleTimeString()}</span>
-                            </div>
-                            <p>${post.content}</p>
-                        </div>
-                    `;
-                });
-            });
-
-            // Leaderboard
-            onValue(ref(db, `artifacts/${APP_ID}/public/leaderboard`), snap => {
-                const container = document.getElementById('leaderboard-content');
-                container.innerHTML = "<h3>Liderlik Tablosu</h3>";
-                const data = snap.val();
-                if(!data) return;
-                Object.values(data).sort((a,b) => b.xp - a.xp).slice(0, 10).forEach((u, i) => {
-                    container.innerHTML += `
-                        <div style="display:flex; align-items:center; gap:15px; padding:10px; border-bottom:1px solid var(--border);">
-                            <span style="font-weight:800; width:20px;">${i+1}</span>
-                            <img src="${u.avatar}" style="width:30px; height:30px; border-radius:50%;">
-                            <span style="flex:1">${u.name}</span>
-                            <b style="color:var(--primary)">${u.xp} XP</b>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        // ACTIONS
-        window.addXP = async (amount) => {
-            const newXp = (userData.xp || 0) + amount;
-            await update(ref(db, `artifacts/${APP_ID}/users/${auth.currentUser.uid}/profile`), { xp: newXp });
-            await update(ref(db, `artifacts/${APP_ID}/public/leaderboard/${auth.currentUser.uid}`), { xp: newXp });
+        window.toggleSettings = () => {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+            tempAvatarData = null;
         };
 
-        window.submitPost = async () => {
-            const text = document.getElementById('post-text').value.trim();
+        window.updateAvatarPreview = (input) => {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('edit-avatar-preview').src = e.target.result;
+                tempAvatarData = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.saveProfile = async () => {
+            const name = document.getElementById('display-name').value.trim();
+            if(!name) return showToast("İsim boş olamaz.");
+            
+            const btn = document.getElementById('save-profile-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            const userRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'data');
+            const updates = { name: name };
+            if(tempAvatarData) updates.avatar = tempAvatarData;
+            
+            try {
+                await updateDoc(userRef, updates);
+                showToast("Profil güncellendi.");
+                toggleSettings();
+            } catch (e) {
+                showToast("Hata oluştu.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Kaydet';
+            }
+        };
+
+        // --- FEED & POSTS ---
+        function initFeed() {
+            const postsRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts');
+            const q = query(postsRef); // Simplified query per Rule 2
+            
+            onSnapshot(q, (snap) => {
+                const feed = document.getElementById('feed');
+                const posts = [];
+                snap.forEach(doc => posts.push({id: doc.id, ...doc.data()}));
+                
+                // Manual sort by timestamp (Descending)
+                posts.sort((a,b) => b.timestamp - a.timestamp);
+                
+                feed.innerHTML = "";
+                posts.forEach(post => {
+                    feed.appendChild(renderPost(post));
+                });
+            });
+        }
+
+        function renderPost(post) {
+            const div = document.createElement('div');
+            div.className = 'card';
+            const isLiked = post.likes && post.likes[currentUser.uid];
+            const likeCount = post.likeCount || 0;
+
+            div.innerHTML = `
+                <div class="post-header">
+                    <img src="${post.authorAvatar}" class="avatar">
+                    <div style="flex:1">
+                        <div style="font-weight:700; font-size:0.95rem;">${post.authorName}</div>
+                        <div style="font-size:0.7rem; color:var(--text-dim);">${timeSince(post.timestamp)}</div>
+                    </div>
+                    ${post.authorId === currentUser.uid ? `<i class="fas fa-ellipsis-h" style="cursor:pointer; color:var(--text-dim);" onclick="deletePost('${post.id}')"></i>` : ''}
+                </div>
+                <div style="margin-bottom:8px; white-space: pre-wrap;">${post.content}</div>
+                ${post.image ? `<img src="${post.image}" class="post-img">` : ''}
+                
+                <div class="post-actions">
+                    <div class="action-item ${isLiked ? 'liked' : ''}" onclick="handleLike('${post.id}', ${!!isLiked})">
+                        <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i>
+                        <span>${likeCount}</span>
+                    </div>
+                    <div class="action-item" onclick="toggleComments('${post.id}')">
+                        <i class="far fa-comment"></i>
+                        <span>Yorumlar</span>
+                    </div>
+                </div>
+
+                <div id="comments-box-${post.id}" class="comments-panel">
+                    <div id="comment-list-${post.id}"></div>
+                    <div style="display:flex; gap:10px; margin-top:12px;">
+                        <input type="text" id="comment-input-${post.id}" placeholder="Yorum ekle..." style="margin-bottom:0; padding:10px; border-radius:10px;">
+                        <button class="btn btn-primary" style="padding:0 15px;" onclick="postComment('${post.id}')"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            `;
+            return div;
+        }
+
+        window.previewFile = (input) => {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    if(w > 1000) { h *= 1000/w; w = 1000; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    selectedImageData = canvas.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('image-preview-element').src = selectedImageData;
+                    document.getElementById('image-preview-container').style.display = 'block';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.clearImage = () => {
+            selectedImageData = null;
+            document.getElementById('image-preview-container').style.display = 'none';
+            document.getElementById('file-input').value = "";
+        };
+
+        window.publishPost = async () => {
+            const content = document.getElementById('post-input').value.trim();
+            if(!content && !selectedImageData) return showToast("Bir şeyler yazmalısın.");
+
+            const btn = document.getElementById('publish-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            try {
+                const profileSnap = await getDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'data'));
+                const p = profileSnap.data();
+
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), {
+                    authorId: currentUser.uid,
+                    authorName: p.name,
+                    authorAvatar: p.avatar,
+                    content: content,
+                    image: selectedImageData,
+                    timestamp: Date.now(),
+                    likeCount: 0,
+                    likes: {}
+                });
+
+                document.getElementById('post-input').value = "";
+                clearImage();
+                showToast("Paylaşıldı!");
+            } catch (e) {
+                showToast("Paylaşım başarısız.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Paylaş';
+            }
+        };
+
+        window.handleLike = async (postId, isLiked) => {
+            const postRef = doc(db, 'artifacts', appId, 'public', 'data', 'posts', postId);
+            const snap = await getDoc(postRef);
+            if(!snap.exists()) return;
+
+            const data = snap.data();
+            const likes = data.likes || {};
+            let count = data.likeCount || 0;
+
+            if(isLiked) {
+                delete likes[currentUser.uid];
+                count = Math.max(0, count - 1);
+            } else {
+                likes[currentUser.uid] = true;
+                count++;
+            }
+            await updateDoc(postRef, { likes, likeCount: count });
+        };
+
+        window.toggleComments = (postId) => {
+            const panel = document.getElementById(`comments-box-${postId}`);
+            const list = document.getElementById(`comment-list-${postId}`);
+            
+            if(panel.style.display === 'block') {
+                panel.style.display = 'none';
+                return;
+            }
+
+            panel.style.display = 'block';
+            
+            const commentsRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts', postId, 'comments');
+            onSnapshot(commentsRef, (snap) => {
+                const comments = [];
+                snap.forEach(d => comments.push({id: d.id, ...d.data()}));
+                comments.sort((a,b) => a.ts - b.ts);
+                
+                list.innerHTML = comments.map(c => `
+                    <div class="comment">
+                        <img src="${c.avatar}" class="avatar" style="width:28px; height:28px;">
+                        <div class="comment-content">
+                            <div style="font-weight:700; font-size:0.75rem; color:var(--primary);">${c.author}</div>
+                            <div>${c.text}</div>
+                        </div>
+                    </div>
+                `).join('');
+                if(comments.length === 0) list.innerHTML = '<div style="color:var(--text-dim); text-align:center; font-size:0.8rem; padding:10px;">Henüz yorum yok. İlk sen yaz!</div>';
+            });
+        };
+
+        window.postComment = async (postId) => {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const text = input.value.trim();
             if(!text) return;
-            await push(ref(db, `artifacts/${APP_ID}/public/posts`), {
-                author: userData.name,
-                avatar: userData.avatar,
-                content: text,
+
+            const profileSnap = await getDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'data'));
+            const p = profileSnap.data();
+
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'posts', postId, 'comments'), {
+                author: p.name,
+                avatar: p.avatar,
+                authorId: currentUser.uid,
+                text: text,
                 ts: Date.now()
             });
-            document.getElementById('post-text').value = "";
-            addXP(10);
-            showToast("Paylaşıldı! +10 XP");
+            input.value = "";
         };
 
-        window.saveStudy = () => {
-            const lesson = document.getElementById('lesson-name').value;
-            const q = document.getElementById('q-count').value;
-            if(!lesson || !q) return;
-            addXP(50);
-            showToast("Harika çalışma! +50 XP");
-            document.getElementById('lesson-name').value = "";
-            document.getElementById('q-count').value = "";
+        window.deletePost = async (postId) => {
+            if(confirm("Bu gönderiyi silmek istediğine emin misin?")) {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'posts', postId));
+                showToast("Gönderi silindi.");
+            }
         };
 
-        window.claimDailyReward = async () => {
-            const now = Date.now();
-            if(now - (userData.lastReward || 0) < 24*60*60*1000) return showToast("Bugün zaten aldın!", "error");
-            await update(ref(db, `artifacts/${APP_ID}/users/${auth.currentUser.uid}/profile`), { lastReward: now });
-            addXP(100);
-            showToast("Günlük bonus! +100 XP");
-        };
-
-        window.updateName = async () => {
-            const newName = document.getElementById('name-change').value.trim();
-            if(newName.length < 3) return;
-            await update(ref(db, `artifacts/${APP_ID}/users/${auth.currentUser.uid}/profile`), { name: newName });
-            await update(ref(db, `artifacts/${APP_ID}/public/leaderboard/${auth.currentUser.uid}`), { name: newName });
-            showToast("İsim güncellendi!");
-        };
-
-        window.switchTab = (tab) => {
-            document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById('tab-' + tab).style.display = 'block';
-            event.currentTarget.classList.add('active');
-            if(window.innerWidth < 900) document.getElementById('sidebar').classList.remove('open');
-        };
-
-        window.showToast = (msg, type = "success") => {
-            const c = document.getElementById('notification-container');
+        // --- UTILS ---
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
             const t = document.createElement('div');
             t.className = 'toast';
-            t.style.borderLeft = `5px solid ${type === 'success' ? 'var(--accent)' : 'var(--danger)'}`;
             t.innerText = msg;
-            c.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
-        };
+            container.appendChild(t);
+            setTimeout(() => {
+                t.style.opacity = '0';
+                setTimeout(() => t.remove(), 500);
+            }, 3000);
+        }
+
+        function timeSince(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " yıl";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " ay";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " gün";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " saat";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " dk";
+            return "Az önce";
+        }
 
         window.logout = () => signOut(auth);
 
