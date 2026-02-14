@@ -1,218 +1,68 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>NOVAgram</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-body{margin:0;font-family:Arial;background:#fafafa}
-#auth,#app{max-width:500px;margin:auto;padding:20px}
-input,textarea,button{width:100%;padding:10px;margin:5px 0}
-button{background:#3897f0;color:#fff;border:none;border-radius:6px}
-.post{background:#fff;border:1px solid #ddd;margin-bottom:15px}
-.post img{width:100%}
-.flex{display:flex;justify-content:space-between;align-items:center}
-.small{font-size:12px;color:#555}
-.user{padding:5px;border-bottom:1px solid #eee}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaTech Lab | Eğitim Portalı</title>
+    <link rel="stylesheet" href="styles.css"> <!-- CSS Bağlantısı -->
 </head>
 <body>
+    <header>
+        <h1>NovaTech Lab</h1>
+        <nav>
+            <ul>
+                <li><a href="#software-development">Yazılım Geliştirme</a></li>
+                <li><a href="#mathematics">Matematik</a></li>
+                <li><a href="#language-learning">Dil Öğrenme</a></li>
+                <li><a href="#art">Sanat</a></li>
+                <li><a href="#resources">Kaynaklar</a></li>
+            </ul>
+        </nav>
+    </header>
 
-<div id="auth">
-<h2>NOVAgram</h2>
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Şifre">
-<input id="name" placeholder="Ad (kayıt için)">
-<button onclick="authSubmit()">Giriş / Kayıt</button>
-<p id="err"></p>
-</div>
+    <main>
+        <!-- Ana giriş kısmı -->
+        <section id="introduction">
+            <h2>Hoşgeldiniz!</h2>
+            <p>NovaTech Lab'e hoş geldiniz! Burada yazılım geliştirme, matematik, dil öğrenme ve sanat konularında dersler, testler ve kaynaklar bulabilirsiniz. Öğrenmeye başlayın!</p>
+        </section>
 
-<div id="app" style="display:none">
+        <!-- Konu Başlıkları -->
+        <section id="software-development">
+            <h2>Yazılım Geliştirme</h2>
+            <p>Yazılım dillerini öğrenmeye başlayın. Python, JavaScript ve diğer dillerde temel dersler ve projeler.</p>
+            <button><a href="software-development.html">Başla</a></button>
+        </section>
 
-<div class="flex">
-<b id="me"></b>
-<button onclick="logout()">Çıkış</button>
-</div>
+        <section id="mathematics">
+            <h2>Matematik</h2>
+            <p>Matematiksel kavramlar, algebra, geometri ve analiz dersleri.</p>
+            <button><a href="mathematics.html">Başla</a></button>
+        </section>
 
-<h3>Profil</h3>
-<input id="bio" placeholder="Bio">
-<button onclick="saveProfile()">Kaydet</button>
+        <section id="language-learning">
+            <h2>Dil Öğrenme</h2>
+            <p>İngilizce, İspanyolca ve diğer dillerde pratik yapabileceğiniz alıştırmalar.</p>
+            <button><a href="language-learning.html">Başla</a></button>
+        </section>
 
-<h3>Kullanıcılar</h3>
-<div id="users"></div>
+        <section id="art">
+            <h2>Sanat</h2>
+            <p>Sanat teorisi ve uygulamaları, resim, heykel ve grafik tasarım dersleri.</p>
+            <button><a href="art.html">Başla</a></button>
+        </section>
 
-<h3>Yeni Post</h3>
-<input type="file" id="file">
-<textarea id="caption" placeholder="Açıklama"></textarea>
-<button onclick="createPost()">Paylaş</button>
+        <section id="resources">
+            <h2>Kaynaklar</h2>
+            <p>Konularla ilgili kitaplar, videolar ve araçlar.</p>
+            <button><a href="resources.html">Kaynaklara Göz At</a></button>
+        </section>
+    </main>
 
-<h3>Feed</h3>
-<div id="feed"></div>
+    <footer>
+        <p>&copy; 2026 NovaTech Lab. Tüm Hakları Saklıdır.</p>
+    </footer>
 
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth,onAuthStateChanged,
-createUserWithEmailAndPassword,
-signInWithEmailAndPassword,
-signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore,collection,doc,
-setDoc,getDoc,addDoc,
-query,onSnapshot,
-updateDoc,where,
-arrayUnion,arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { getStorage,ref,
-uploadBytes,getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBGFyQsqe32hGgskY5yRfrbXlH8MuHKaLE",
-  authDomain: "novatech-e7507.firebaseapp.com",
-  projectId: "novatech-e7507",
-  storageBucket: "novatech-e7507.firebasestorage.app",
-  messagingSenderId: "425311220171",
-  appId: "1:425311220171:web:6b9d3cf03fb946e2ba064e"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-
-let currentUser = null;
-
-onAuthStateChanged(auth, async user=>{
-  if(user){
-    currentUser=user;
-    authDiv(false);
-    document.getElementById("me").innerText=user.email;
-    loadUsers();
-    loadFeed();
-  }
-});
-
-function authDiv(show){
-  auth.style.display=show?"block":"none";
-  app.style.display=show?"none":"block";
-}
-
-window.authSubmit = async ()=>{
-  try{
-    await signInWithEmailAndPassword(auth,email.value,password.value);
-  }catch{
-    const res = await createUserWithEmailAndPassword(auth,email.value,password.value);
-    await setDoc(doc(db,"users",res.user.uid),{
-      name:name.value,
-      bio:""
-    });
-  }
-}
-
-window.logout = ()=>signOut(auth);
-
-window.saveProfile = async ()=>{
-  await updateDoc(doc(db,"users",currentUser.uid),{
-    bio:bio.value
-  });
-}
-
-window.createPost = async ()=>{
-  const file = document.getElementById("file").files[0];
-  const storageRef = ref(storage,`posts/${currentUser.uid}/${Date.now()}`);
-  await uploadBytes(storageRef,file);
-  const url = await getDownloadURL(storageRef);
-
-  await addDoc(collection(db,"posts"),{
-    uid:currentUser.uid,
-    image:url,
-    caption:caption.value,
-    likes:[],
-    createdAt:Date.now()
-  });
-}
-
-function loadUsers(){
-  onSnapshot(collection(db,"users"),snap=>{
-    users.innerHTML="";
-    snap.forEach(u=>{
-      if(u.id!==currentUser.uid){
-        users.innerHTML+=`
-        <div class="user">
-        ${u.data().name || u.id}
-        <button onclick="follow('${u.id}')">Takip</button>
-        </div>`;
-      }
-    });
-  });
-}
-
-window.follow = async (uid)=>{
-  await setDoc(doc(db,"follows",currentUser.uid,"following",uid),{ok:true});
-}
-
-function loadFeed(){
-  const q = query(collection(db,"posts"));
-  onSnapshot(q,async snap=>{
-    feed.innerHTML="";
-    for(const docu of snap.docs){
-      const p = docu.data();
-      const f = await getDoc(doc(db,"follows",currentUser.uid,"following",p.uid));
-      if(f.exists() || p.uid===currentUser.uid){
-        renderPost(docu.id,p);
-      }
-    }
-  });
-}
-
-async function renderPost(id,p){
-  const u = await getDoc(doc(db,"users",p.uid));
-  const name = u.exists()?u.data().name:"user";
-  const liked = p.likes.includes(currentUser.uid);
-
-  feed.innerHTML+=`
-  <div class="post">
-    <b>${name}</b>
-    <img src="${p.image}">
-    <p>${p.caption}</p>
-    <button onclick="likePost('${id}')">
-      ${liked?"💔":"❤️"} ${p.likes.length}
-    </button>
-    <input id="c${id}" placeholder="Yorum">
-    <button onclick="comment('${id}')">Gönder</button>
-    <div id="cm${id}"></div>
-  </div>`;
-  loadComments(id);
-}
-
-window.likePost = async (id)=>{
-  const refp = doc(db,"posts",id);
-  const snap = await getDoc(refp);
-  const likes = snap.data().likes;
-  if(likes.includes(currentUser.uid)){
-    await updateDoc(refp,{likes:arrayRemove(currentUser.uid)});
-  }else{
-    await updateDoc(refp,{likes:arrayUnion(currentUser.uid)});
-  }
-}
-
-window.comment = async (id)=>{
-  const text = document.getElementById("c"+id).value;
-  await addDoc(collection(db,"comments",id,"list"),{
-    uid:currentUser.uid,
-    text
-  });
-}
-
-function loadComments(id){
-  onSnapshot(collection(db,"comments",id,"list"),snap=>{
-    const box = document.getElementById("cm"+id);
-    box.innerHTML="";
-    snap.forEach(c=>{
-      box.innerHTML+=`<div class="small">💬 ${c.data().text}</div>`;
-    });
-  });
-}
-</script>
+    <script src="scripts.js"></script> <!-- JavaScript Bağlantısı -->
 </body>
 </html>
